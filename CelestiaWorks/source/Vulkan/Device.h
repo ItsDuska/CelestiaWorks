@@ -40,17 +40,26 @@ namespace celestia {
 		Device& operator = (const Device&) = delete;
 
 
-		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-		SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 		void getFramebufferSize(int* width, int* height);
 		VkPhysicalDevice getPhysicalDevice();
 		VkDevice getDevice();
 		VkSurfaceKHR getSurface();
+		VkCommandPool getCommandPool() { return commandPool; }
+		VkQueue getGraphicsQueue() { return graphicsQueue; }
+		VkQueue getPresentQueue() { return presentQueue; }
+		SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
+
+		//uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+		QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
+		//VkFormat findSupportedFormat(
+			//const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
 	private:
 		void createInstance();
 		void createDebugMessenger();
 		void createDevice();
 		void createSurface();
+		void createCommandPool();
 
 		void pickPhysicalDevice();
 		bool isDeviceSuitable(VkPhysicalDevice device);
@@ -60,6 +69,8 @@ namespace celestia {
 		std::vector<const char*> getExtensions();
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
+		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+		SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
 		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -89,6 +100,7 @@ namespace celestia {
 		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 		VkQueue graphicsQueue;
 		VkQueue presentQueue;
+		VkCommandPool commandPool;
 
 		// ehkä device samaan hommaan ja niistä struct?
 	};
@@ -96,5 +108,23 @@ namespace celestia {
 
 }
 
+/* TODO:
+	public:
+	VkCommandPool getCommandPool() { return commandPool; }
+	VkDevice device() { return device_; }
+	VkSurfaceKHR surface() { return surface_; }
+	VkQueue graphicsQueue() { return graphicsQueue_; }
+	VkQueue presentQueue() { return presentQueue_; }
+	SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
 
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
+	VkFormat findSupportedFormat(
+	  const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
+
+	private:
+	 void createCommandPool();
+
+*/
 

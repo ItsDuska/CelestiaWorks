@@ -7,10 +7,13 @@ celestia::Device::Device(Window& window)
 	createDebugMessenger();
 	createSurface();
 	createDevice();
+	createCommandPool();
 }
 
 celestia::Device::~Device()
 {
+	vkDestroyCommandPool(device, commandPool, nullptr);
+
 	vkDestroyDevice(device, nullptr);
 
 	if (VALIDATION_LAYERS)
@@ -155,6 +158,22 @@ void celestia::Device::createDevice()
 void celestia::Device::createSurface()
 {
 	window.createSurface(instance, &surface);
+}
+
+void celestia::Device::createCommandPool()
+{
+	QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
+
+	VkCommandPoolCreateInfo poolInfo{};
+
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+	if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create command pool!");
+	}
 }
 
 void celestia::Device::pickPhysicalDevice()

@@ -15,5 +15,11 @@ void celestia::Application::run()
 	{
 		glfwPollEvents();
 		// do stuff
+
+		//update game logic
+		
+		//render
+
+		
 	}
 }
