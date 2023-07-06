@@ -8,13 +8,13 @@ namespace celestia
 	public:
 		VkPipeline buildPipeline(VkDevice device, VkRenderPass pass);
 
-		std::vector<VkPipelineShaderStageCreateInfo> shaderStages; // shaderit
+		std::vector<VkPipelineShaderStageCreateInfo> shaderStages{}; // shaderit
 		VkPipelineViewportStateCreateInfo viewportState;
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly;
 		VkViewport viewport;
 		VkRect2D scissor;
-		VkPipelineDynamicStateCreateInfo dynamicInfo;
+		//VkPipelineDynamicStateCreateInfo dynamicInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizer;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 		VkPipelineMultisampleStateCreateInfo multisampling;

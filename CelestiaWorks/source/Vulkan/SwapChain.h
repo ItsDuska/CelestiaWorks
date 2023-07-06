@@ -9,6 +9,7 @@ namespace celestia
 		SwapChain(Device& device);
 		~SwapChain();
 		void recreateSwapChain();
+		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 		VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		VkRenderPass getRenderPass() { return renderPass; }
@@ -18,6 +19,10 @@ namespace celestia
 		VkExtent2D getSwapChainExtent() { return swapChainExtent; }
 		float getSwapChainExtentWidth() { return (float)swapChainExtent.width; }
 		float getSwapChainExtentHeight() { return (float)swapChainExtent.height; }
+		VkSemaphore getImageAvailableSemaphore(int index) { return imageAvailableSemaphores[index]; }
+		VkSemaphore getRenderFinishedSemaphore(int index) { return renderFinishedSemaphores[index]; }
+		VkFence& getInFlightFence(int index) { return inFlightFences[index]; }
+		VkSwapchainKHR& getSwapchain() { return swapChain; }
 
 	private:
 		void createSwapChain();
@@ -40,7 +45,6 @@ namespace celestia
 		Device &device;
 		VkRenderPass renderPass;
 
-		const int MAX_FRAMES_IN_FLIGHT = 2;
 		std::vector<VkSemaphore> imageAvailableSemaphores;
 		std::vector<VkSemaphore> renderFinishedSemaphores;
 		std::vector<VkFence> inFlightFences;

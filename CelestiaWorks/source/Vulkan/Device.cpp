@@ -12,6 +12,7 @@ celestia::Device::Device(Window& window)
 
 celestia::Device::~Device()
 {
+	deletionQueue.flush();
 	vkDestroyCommandPool(device, commandPool, nullptr);
 
 	vkDestroyDevice(device, nullptr);

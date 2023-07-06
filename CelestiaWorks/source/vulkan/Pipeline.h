@@ -84,11 +84,19 @@ namespace celestia
 		Pipeline(Device &device, SwapChain &swapChain);
 		~Pipeline();
 		void initPipelines();
+		/*
+		func getPipeline 
+		func getPipelineLayout
+		*/
+		VkPipeline getPipeline() { return meshPipeline; }
+		// tänne get material ja mappi siitä
+		Material* createMaterial(VkPipeline pipeline, VkPipelineLayout layout, const std::string& name);
+
+		Material* getMaterial(const std::string& name);
 
 	private:
 		VkShaderModule createShaderModule(const std::vector<char>& code);
 		VkPipelineShaderStageCreateInfo createShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule);
-		VkPipelineVertexInputStateCreateInfo createVertexInputInfo();
 		VkPipelineInputAssemblyStateCreateInfo createInputAssembly(VkPrimitiveTopology primitiveTopology);
 		VkViewport createViewport();
 		VkRect2D createScissors();
@@ -103,7 +111,9 @@ namespace celestia
 		Device& device;
 		SwapChain& swapChain;
 
-		VkPipelineLayout tempLayout;
-		VkPipeline tempPipeline;
+		VkPipelineLayout meshLayout;
+		VkPipeline meshPipeline;
+
+		std::unordered_map <std::string, Material> materials;
 	};
 }

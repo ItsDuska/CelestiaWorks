@@ -4,33 +4,58 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <array>
+#include <functional>
+#include <deque>
 
-struct Vertex
-{
-	glm::vec3 pos;
-	glm::vec3 color;
+namespace celestia {
 
-	static VkVertexInputBindingDescription getBindingDescription()
+	struct Vertex
 	{
-		VkVertexInputBindingDescription bindingDescription{};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		return bindingDescription;
-	}
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescription()
+		glm::vec3 position;
+		glm::vec3 normal;
+		glm::vec3 color;
+
+		static VkVertexInputBindingDescription getBindingDescription();
+		
+		static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescription();
+	};
+
+	struct DeletionQueue
 	{
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
+		std::deque<std::function<void()>> deletors;
 
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
+		void pushFunction(std::function<void()>&& function);
 
-		return attributeDescriptions;
-	}
-};
+		void flush();
+	};
+
+	struct AllocatedBuffer
+	{
+		VkBuffer buffer;
+		VkDeviceMemory bufferMemory;
+	};
+
+	
+	struct Mesh
+	{
+		std::vector<Vertex> vertices;
+		std::vector<uint16_t> indices;
+		AllocatedBuffer vertexAllocation;
+		AllocatedBuffer indiciesAllocation;
+	};
+
+	struct Material {
+		VkPipeline pipeline;
+		VkPipelineLayout pipelineLayout;
+	};
+
+	struct RenderObject {
+		Mesh* mesh;
+
+		Material* material;
+
+		glm::mat4 transformMatrix;
+	};
+
+
+}

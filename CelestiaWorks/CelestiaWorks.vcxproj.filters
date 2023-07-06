@@ -24,22 +24,31 @@
     <ClCompile Include="source\application\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Vulkan\Device.cpp">
+    <ClCompile Include="source\vulkan\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Vulkan\SwapChain.cpp">
+    <ClCompile Include="source\vulkan\SwapChain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Vulkan\Render.cpp">
+    <ClCompile Include="source\vulkan\Render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Vulkan\SimpleRenderingSystem.cpp">
+    <ClCompile Include="source\vulkan\SimpleRenderingSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Vulkan\Pipeline.cpp">
+    <ClCompile Include="source\vulkan\Pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Vulkan\BuildPipeline.cpp">
+    <ClCompile Include="source\vulkan\BuildPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\vulkan\Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\vulkan\VulkanTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\vulkan\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,29 +59,39 @@
     <ClInclude Include="source\application\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\Device.h">
+    <ClInclude Include="source\vulkan\Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\VulkanIncludes.h">
+    <ClInclude Include="source\vulkan\VulkanIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\SwapChain.h">
+    <ClInclude Include="source\vulkan\SwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\Render.h">
+    <ClInclude Include="source\vulkan\Render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\SimpleRenderingSystem.h">
+    <ClInclude Include="source\vulkan\SimpleRenderingSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\Pipeline.h">
+    <ClInclude Include="source\vulkan\Pipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\BuildPipeline.h">
+    <ClInclude Include="source\vulkan\BuildPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vulkan\VulkanTypes.h">
+    <ClInclude Include="source\vulkan\VulkanTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\vulkan\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\vulkan\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\temp.vert" />
+    <None Include="shaders\temp.frag" />
   </ItemGroup>
 </Project>

@@ -151,27 +151,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\Vulkan\BuildPipeline.cpp" />
-    <ClCompile Include="source\Vulkan\Pipeline.cpp" />
-    <ClCompile Include="source\Vulkan\SimpleRenderingSystem.cpp" />
-    <ClCompile Include="source\Vulkan\Render.cpp" />
-    <ClCompile Include="source\Vulkan\Device.cpp" />
+    <ClCompile Include="source\vulkan\Scene.cpp" />
+    <ClCompile Include="source\vulkan\Buffer.cpp" />
+    <ClCompile Include="source\vulkan\BuildPipeline.cpp" />
+    <ClCompile Include="source\vulkan\Pipeline.cpp" />
+    <ClCompile Include="source\vulkan\SimpleRenderingSystem.cpp" />
+    <ClCompile Include="source\vulkan\Render.cpp" />
+    <ClCompile Include="source\vulkan\Device.cpp" />
     <ClCompile Include="source\application\Application.cpp" />
     <ClCompile Include="source\CelestiaWorks.cpp" />
+    <ClCompile Include="source\vulkan\VulkanTypes.cpp" />
     <ClCompile Include="source\window\Window.cpp" />
-    <ClCompile Include="source\Vulkan\SwapChain.cpp" />
+    <ClCompile Include="source\vulkan\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\Vulkan\BuildPipeline.h" />
-    <ClInclude Include="source\Vulkan\Pipeline.h" />
-    <ClInclude Include="source\Vulkan\SimpleRenderingSystem.h" />
-    <ClInclude Include="source\Vulkan\Render.h" />
-    <ClInclude Include="source\VulkanIncludes.h" />
-    <ClInclude Include="source\Vulkan\Device.h" />
+    <ClInclude Include="source\vulkan\Scene.h" />
+    <ClInclude Include="source\vulkan\Buffer.h" />
+    <ClInclude Include="source\vulkan\BuildPipeline.h" />
+    <ClInclude Include="source\vulkan\Pipeline.h" />
+    <ClInclude Include="source\vulkan\SimpleRenderingSystem.h" />
+    <ClInclude Include="source\vulkan\Render.h" />
+    <ClInclude Include="source\vulkan\VulkanIncludes.h" />
+    <ClInclude Include="source\vulkan\Device.h" />
     <ClInclude Include="source\application\Application.h" />
-    <ClInclude Include="source\Vulkan\VulkanTypes.h" />
+    <ClInclude Include="source\vulkan\VulkanTypes.h" />
     <ClInclude Include="source\window\Window.h" />
-    <ClInclude Include="source\Vulkan\SwapChain.h" />
+    <ClInclude Include="source\vulkan\SwapChain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\temp.frag" />
+    <None Include="shaders\temp.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

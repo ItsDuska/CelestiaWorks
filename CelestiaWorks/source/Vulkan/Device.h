@@ -1,5 +1,6 @@
 #pragma once
 #include "window/Window.h"
+#include "VulkanTypes.h"
 
 namespace celestia {
 
@@ -47,12 +48,15 @@ namespace celestia {
 		VkCommandPool getCommandPool() { return commandPool; }
 		VkQueue getGraphicsQueue() { return graphicsQueue; }
 		VkQueue getPresentQueue() { return presentQueue; }
+		void setFrameBufferResized(bool val) { window.setFrameBufferResized(val); }
+		bool frameBufferResized() { return window.isFrameBufferResized(); }
 		SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
 
 		//uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
 		//VkFormat findSupportedFormat(
 			//const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+		DeletionQueue deletionQueue;
 
 	private:
 		void createInstance();

@@ -1,5 +1,5 @@
 #pragma once
-#include "VulkanIncludes.h"
+#include "vulkan/VulkanIncludes.h"
 #include <string>
 
 namespace celestia {
@@ -14,6 +14,8 @@ namespace celestia {
 		Window& operator = (const Window&) = delete;
 
 		bool shouldClose() { return glfwWindowShouldClose(window); }
+		void setFrameBufferResized(bool val) { framebufferResized = val; }
+		bool isFrameBufferResized() { return framebufferResized; }
 
 		void createSurface(VkInstance instance, VkSurfaceKHR *surface);
 		void getFramebufferSize(int* width, int* height);

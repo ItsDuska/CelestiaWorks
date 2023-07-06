@@ -19,7 +19,8 @@ void celestia::Application::run()
 		//update game logic
 		
 		//render
-
+		render.drawObjects(scene.getRenderObjects(), scene.getRenderObjectSizes());
 		
 	}
+	vkDeviceWaitIdle(device.getDevice());
 }

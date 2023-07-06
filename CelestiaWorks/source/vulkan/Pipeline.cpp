@@ -9,14 +9,14 @@ celestia::Pipeline::Pipeline(Device& device, SwapChain &swapChain)
 
 celestia::Pipeline::~Pipeline()
 {
-	vkDestroyPipeline(device.getDevice(), tempPipeline, nullptr);
-	vkDestroyPipelineLayout(device.getDevice(), tempLayout, nullptr);
+	vkDestroyPipeline(device.getDevice(), meshPipeline, nullptr);
+	vkDestroyPipelineLayout(device.getDevice(), meshLayout, nullptr);
 }
 
 void celestia::Pipeline::initPipelines()
 {
-	VkShaderModule vertShaderModule = createShaderModule(readFile("shaders/temp.vert.spv"));
-	VkShaderModule fragShaderModule = createShaderModule(readFile("shaders/temp.frag.spv"));
+	VkShaderModule vertShaderModule = createShaderModule(readFile("shaders/vert.spv"));
+	VkShaderModule fragShaderModule = createShaderModule(readFile("shaders/frag.spv"));
 
 	BuildPipeline pipelineBuilder;
 
@@ -36,28 +36,63 @@ void celestia::Pipeline::initPipelines()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = createLayoutInfo();
 
-	if (vkCreatePipelineLayout(device.getDevice(), &pipelineLayoutInfo, nullptr, &tempLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(device.getDevice(), &pipelineLayoutInfo, nullptr, &meshLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout!");
 	}
 
+	auto bindingDescription = Vertex::getBindingDescription();
+	auto attributeDescriptions = Vertex::getAttributeDescription();
 
-	pipelineBuilder.vertexInputInfo = createVertexInputInfo();
+	VkPipelineVertexInputStateCreateInfo info{};
+	info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	info.pNext = nullptr;
+	info.vertexBindingDescriptionCount = 1;
+	info.pVertexBindingDescriptions = &bindingDescription;
+	info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	info.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+
+	pipelineBuilder.vertexInputInfo = info;
 	pipelineBuilder.inputAssembly = createInputAssembly(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 	pipelineBuilder.viewport = createViewport();
 	pipelineBuilder.scissor = createScissors();
 
-	pipelineBuilder.dynamicInfo = createDynamicState();
+	//pipelineBuilder.dynamicInfo = createDynamicState();
 	pipelineBuilder.rasterizer = createRasterizer(VK_POLYGON_MODE_FILL);
 
 	pipelineBuilder.multisampling = createMultisampling();
 	pipelineBuilder.colorBlendAttachment = createColorBlendAttachment();
-	pipelineBuilder.pipelineLayout = tempLayout;
+	pipelineBuilder.pipelineLayout = meshLayout;
 
-	tempPipeline = pipelineBuilder.buildPipeline(device.getDevice(), swapChain.getRenderPass());
+	meshPipeline = pipelineBuilder.buildPipeline(device.getDevice(), swapChain.getRenderPass());
+
+	createMaterial(meshPipeline, meshLayout, "default");
 
 
+	vkDestroyShaderModule(device.getDevice(), fragShaderModule, nullptr);
+	vkDestroyShaderModule(device.getDevice(), vertShaderModule, nullptr);
+}
+
+celestia::Material* celestia::Pipeline::createMaterial(VkPipeline pipeline, VkPipelineLayout layout, const std::string& name)
+{
+	Material mat;
+	mat.pipeline = pipeline;
+	mat.pipelineLayout = layout;
+	materials[name] = mat;
+	return &materials[name];
+}
+
+celestia::Material* celestia::Pipeline::getMaterial(const std::string& name)
+{
+	auto it = materials.find(name);
+	if (it == materials.end()) {
+		return nullptr;
+	}
+	else {
+		return &(*it).second;
+	}
 }
 
 VkShaderModule celestia::Pipeline::createShaderModule(const std::vector<char>& code)
@@ -86,24 +121,6 @@ VkPipelineShaderStageCreateInfo celestia::Pipeline::createShaderStageCreateInfo(
 	createInfo.pName = "main";
 
 	return createInfo;
-}
-
-VkPipelineVertexInputStateCreateInfo celestia::Pipeline::createVertexInputInfo()
-{
-	//auto bindingDescription = Vertex::getBindingDescription();
-	//auto attributeDescriptions = Vertex::getAttributeDescription();
-
-	VkPipelineVertexInputStateCreateInfo info{};
-	info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	info.pNext = nullptr;
-	info.vertexAttributeDescriptionCount = 0;
-	info.vertexBindingDescriptionCount = 0;
-
-	//info.vertexBindingDescriptionCount = 1;
-	//info.pVertexBindingDescriptions = &bindingDescription;
-	//info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-	//info.pVertexAttributeDescriptions = attributeDescriptions.data();
-	return info;
 }
 
 VkPipelineInputAssemblyStateCreateInfo celestia::Pipeline::createInputAssembly(VkPrimitiveTopology primitiveTopology)

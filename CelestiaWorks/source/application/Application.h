@@ -3,6 +3,9 @@
 #include "vulkan/Device.h"
 #include "vulkan/SwapChain.h"
 #include "vulkan/Pipeline.h"
+#include "vulkan/Render.h"
+#include "vulkan/Buffer.h"
+#include "vulkan/Scene.h"
 
 namespace celestia
 {
@@ -18,9 +21,13 @@ namespace celestia
 		Device device{window};
 		SwapChain swapChain{device};
 		Pipeline pipeline{ device,swapChain };
+		Buffer buffer{ device };
+		Scene scene{ buffer, pipeline };
+		Render render{ device,swapChain };
+
 
 	};
-
+	
 }
 
 
@@ -53,6 +60,7 @@ Renderer class:
 TODO YLEINEN:
 -classien muokkaaminen 
 
+- OMA CLASS RENDER_OBJECTIEN LUOMISEEN
 
 
 TODO VULKAN OSAT:

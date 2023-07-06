@@ -1,5 +1,6 @@
 #pragma once
-
+#include "SwapChain.h"
+#include "Pipeline.h"
 /*
 	Handlaa kaiken renderaamiseen aka simppelit funtiot
 	For future Olli:
@@ -51,14 +52,26 @@ Tänne pipeline
 
 */
 
-
-
-class Render
+namespace celestia
 {
-public:
-	void drawObjects();
-private:
 
+	class Render
+	{
+	public:
+		Render(Device &device, SwapChain& swapChain);
+		~Render();
+		void drawObjects(std::vector<RenderObject>& first, int count);
+	private:
+		void createCommandBuffers();
+		void recordCommandBuffers(VkCommandBuffer commandBuffer,
+			uint32_t imageIndex,
+			std::vector<RenderObject>& first,
+			int count);
 
-};
+		std::vector<VkCommandBuffer> commandBuffers;
+		Device& device;
+		SwapChain& swapChain;
+		uint32_t currentFrame;
+	};
 
+}

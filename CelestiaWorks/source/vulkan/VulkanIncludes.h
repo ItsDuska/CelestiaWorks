@@ -15,6 +15,7 @@
 #include <fstream>
 #include <array>
 #include <memory>
+#include <unordered_map>
 
 #ifdef NDEBUG
 const bool VALIDATION_LAYERS = false;
