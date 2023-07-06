@@ -151,6 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Vulkan\BuildPipeline.cpp" />
+    <ClCompile Include="source\Vulkan\Pipeline.cpp" />
     <ClCompile Include="source\Vulkan\SimpleRenderingSystem.cpp" />
     <ClCompile Include="source\Vulkan\Render.cpp" />
     <ClCompile Include="source\Vulkan\Device.cpp" />
@@ -160,11 +162,14 @@
     <ClCompile Include="source\Vulkan\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Vulkan\BuildPipeline.h" />
+    <ClInclude Include="source\Vulkan\Pipeline.h" />
     <ClInclude Include="source\Vulkan\SimpleRenderingSystem.h" />
     <ClInclude Include="source\Vulkan\Render.h" />
     <ClInclude Include="source\VulkanIncludes.h" />
     <ClInclude Include="source\Vulkan\Device.h" />
     <ClInclude Include="source\application\Application.h" />
+    <ClInclude Include="source\Vulkan\VulkanTypes.h" />
     <ClInclude Include="source\window\Window.h" />
     <ClInclude Include="source\Vulkan\SwapChain.h" />
   </ItemGroup>

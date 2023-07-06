@@ -15,6 +15,7 @@ Simple rendering system:
 	unique_ptr<Pipeline> pipeline;
 	VkPipelineLayout pipelineLayout;
 
+	lol shart et tuu k‰ytt‰‰n n‰it‰ tai render classia :)
 
 */
 

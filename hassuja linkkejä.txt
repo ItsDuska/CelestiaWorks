@@ -1,0 +1,5 @@
+https://vkguide.dev/docs/chapter-4/descriptors/
+
+https://vkguide.dev/docs/chapter-3/scene_management/
+https://vkguide.dev/docs/chapter-2/pipeline_walkthrough/
+https://vkguide.dev/docs/chapter-2/cleanup/

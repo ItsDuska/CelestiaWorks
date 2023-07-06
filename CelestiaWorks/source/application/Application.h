@@ -1,7 +1,8 @@
 #pragma once
 #include "window/Window.h"
-#include "Vulkan/Device.h"
+#include "vulkan/Device.h"
 #include "vulkan/SwapChain.h"
+#include "vulkan/Pipeline.h"
 
 namespace celestia
 {
@@ -16,6 +17,8 @@ namespace celestia
 		Window window{ 800,600,"CelestiaWorks" };
 		Device device{window};
 		SwapChain swapChain{device};
+		Pipeline pipeline{ device,swapChain };
+
 	};
 
 }

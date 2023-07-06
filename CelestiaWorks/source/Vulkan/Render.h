@@ -37,8 +37,28 @@ low level renderer:
 
 */
 
+
+
+
+
+/*
+
+UUS IDEA:
+RENDER OTTAA KAIKKI TARVITTAVAT VULKAN HOMMAT:
+draw call toteutuu t‰‰ll‰
+
+T‰nne pipeline
+
+*/
+
+
+
 class Render
 {
+public:
+	void drawObjects();
+private:
+
 
 };
 
