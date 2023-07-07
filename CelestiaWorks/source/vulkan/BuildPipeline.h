@@ -14,6 +14,7 @@ namespace celestia
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly;
 		VkViewport viewport;
 		VkRect2D scissor;
+		VkPipelineDepthStencilStateCreateInfo depthStencil;
 		//VkPipelineDynamicStateCreateInfo dynamicInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizer;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;

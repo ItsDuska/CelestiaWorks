@@ -6,8 +6,12 @@
 #include <array>
 #include <functional>
 #include <deque>
+#include "vk_mem_alloc.h" // TÄN VOIS SIIRTÄÄ MUUALLE???
+
 
 namespace celestia {
+
+	const int MAX_FRAMES_IN_FLIGHT = 2;
 
 	struct Vertex
 	{
@@ -57,5 +61,24 @@ namespace celestia {
 		glm::mat4 transformMatrix;
 	};
 
+	struct AllocatedImage {
+		VkImage image;
+		VmaAllocation allocation;
+	};
 
+	struct CameraData {
+		glm::mat4 view;
+		glm::mat4 proj;
+		glm::mat4 viewproj;
+	};
+
+	struct FrameData {
+		AllocatedBuffer cameraBuffer;
+		VkDescriptorSet globalDescriptor;
+	};
+
+	struct MeshPushConstants {
+		glm::vec4 data;
+		glm::mat4 renderMatrix;
+	};
 }

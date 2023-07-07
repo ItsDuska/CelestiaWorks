@@ -1,14 +1,14 @@
 #include "Render.h"
 
-celestia::Render::Render(Device& device, SwapChain& swapChain)
-	: device{device}, swapChain{swapChain}
+celestia::Render::Render(Device& device, SwapChain& swapChain, Descriptor& descriptor)
+	: device{device}, swapChain{swapChain},descriptor{descriptor}
 {
 	createCommandBuffers();
 }
 
 celestia::Render::~Render()
 {
-	vkFreeCommandBuffers(device.getDevice(), device.getCommandPool(), swapChain.MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
+	vkFreeCommandBuffers(device.getDevice(), device.getCommandPool(), MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
 }
 
 void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count)
@@ -77,14 +77,14 @@ void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count)
 		throw std::runtime_error("failed to present swap chain image!");
 	}
 
-	currentFrame = (currentFrame + 1) % swapChain.MAX_FRAMES_IN_FLIGHT;
+	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
 	
 }
 
 void celestia::Render::createCommandBuffers()
 {
-	commandBuffers.resize(swapChain.MAX_FRAMES_IN_FLIGHT);
+	commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -120,49 +120,98 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 	renderPassInfo.renderArea.offset = { 0,0 };
 	renderPassInfo.renderArea.extent = swapChain.getSwapChainExtent();
 
+	VkClearValue depthClear;
+	depthClear.depthStencil.depth = 1.f;
+
 	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	renderPassInfo.clearValueCount = 2;
+
+	VkClearValue clearValues[] = { clearColor, depthClear };
+	renderPassInfo.pClearValues = &clearValues[0];
 
 	Mesh* lastMesh = nullptr;
 	Material* lastMaterial = nullptr;
+
+	//HASSU HASSU UNIFORM BUFFER CALC...
+	static auto startTime = std::chrono::high_resolution_clock::now();
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+	float rotata =  std::sin((double)0.3*time);
+
+	glm::vec3 camPos = { rotata,0.f,-3.f-rotata };
+
+	glm::mat4 view = glm::translate(glm::mat4(1.f), camPos);
+	//camera projection
+	glm::mat4 projection = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
+	//glm::mat4 projection = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	projection[1][1] *= -1;
+
+	//fill a GPU camera data struct
+	CameraData camData;
+	camData.proj = projection;
+	camData.view = view;
+	camData.viewproj = projection * view;
+
+	FrameData& frameData = descriptor.getFrameData(currentFrame);
+	VkDeviceSize bufferSize = sizeof(CameraData);
+
+
+	void* data;
+	vkMapMemory(device.getDevice(), frameData.cameraBuffer.bufferMemory, 0, bufferSize, 0, &data);
+	memcpy(data, &camData, (size_t)bufferSize);
+	vkUnmapMemory(device.getDevice(), frameData.cameraBuffer.bufferMemory);
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 	for (int i = 0; i < count; i++)
 	{
-		RenderObject& object = first[i];
 
 		//only bind the pipeline if it doesn't match with the already bound one
-		if (object.material != lastMaterial) {
+		if (first[i].material != lastMaterial) {
 
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, object.material->pipeline);
-			lastMaterial = object.material;
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, first[i].material->pipeline);
+			lastMaterial = first[i].material;
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+				first[i].material->pipelineLayout, 0, 1, &frameData.globalDescriptor, 0, nullptr);
 		}
 
+		glm::vec3 camPos1 = { 0.f,0.f,-2.f };
 
-		//glm::mat4 model = object.transformMatrix;
-		//final render matrix, that we are calculating on the cpu
-		//glm::mat4 mesh_matrix = projection * view * model;
+		glm::mat4 view1 = glm::translate(glm::mat4(1.f), camPos1);
+		//camera projection
+		glm::mat4 projection1 = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
+		projection1[1][1] *= -1;
+		//model rotation
+		glm::mat4 model1 = glm::rotate(glm::mat4{ 1.0f }, time * glm::radians(45.f), glm::vec3(1, 1, 0));
 
-		//MeshPushConstants constants;
-		//constants.render_matrix = mesh_matrix;
+		//calculate final mesh matrix
+		glm::mat4 mesh_matrix = projection1 * view1 * model1;
 
-		//upload the mesh to the GPU via push constants
-		//vkCmdPushConstants(cmd, object.material->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+
+
+
+		MeshPushConstants constants;
+		//constants.renderMatrix = first[i].transformMatrix;
+		constants.renderMatrix =mesh_matrix;
+
+
+		//upload the matrix to the GPU via push constants
+		vkCmdPushConstants(commandBuffer, first[i].material->pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
+		
 
 		//only bind the mesh if it's a different one from last bind
-		if (object.mesh != lastMesh) {
+		if (first[i].mesh != lastMesh) {
 			//bind the mesh vertex buffer with offset 0
 			VkDeviceSize offset = 0;
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &object.mesh->vertexAllocation.buffer, &offset);
-			vkCmdBindIndexBuffer(commandBuffer, object.mesh->indiciesAllocation.buffer, 0, VK_INDEX_TYPE_UINT16);
-			lastMesh = object.mesh;
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &first[i].mesh->vertexAllocation.buffer, &offset);
+			vkCmdBindIndexBuffer(commandBuffer, first[i].mesh->indiciesAllocation.buffer, 0, VK_INDEX_TYPE_UINT16);
+			lastMesh = first[i].mesh;
 		}
 
-		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(object.mesh->indices.size()), 1, 0, 0, 0);
+		vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(first[i].mesh->indices.size()), 1, 0, 0, 0);
 
-		//vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
 
 		/*
 		VkViewport viewport{};
@@ -182,12 +231,6 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 		VkBuffer vertexBuffers[] = { vertexBuffer };
 		*/
 
-
-		//VkDeviceSize offsets[] = { 0 };
-		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		//vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-
-		//CmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 		
 	}
 

@@ -2,6 +2,7 @@
 #include "window/Window.h"
 #include "VulkanTypes.h"
 
+
 namespace celestia {
 
 	const std::vector<const char*> validationLayers = {
@@ -54,6 +55,9 @@ namespace celestia {
 
 		//uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
+
+		VmaAllocator& getAllocator();
+
 		//VkFormat findSupportedFormat(
 			//const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 		DeletionQueue deletionQueue;
@@ -64,6 +68,7 @@ namespace celestia {
 		void createDevice();
 		void createSurface();
 		void createCommandPool();
+		void createAllocator();
 
 		void pickPhysicalDevice();
 		bool isDeviceSuitable(VkPhysicalDevice device);
@@ -92,7 +97,6 @@ namespace celestia {
 			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks* pAllocator);
 
-		
 
 		// variables
 
@@ -105,6 +109,7 @@ namespace celestia {
 		VkQueue graphicsQueue;
 		VkQueue presentQueue;
 		VkCommandPool commandPool;
+		VmaAllocator allocator;
 
 		// ehkä device samaan hommaan ja niistä struct?
 	};

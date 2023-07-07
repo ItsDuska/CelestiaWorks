@@ -28,6 +28,7 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	pipelineInfo.pStages = shaderStages.data();
 	pipelineInfo.pVertexInputState = &vertexInputInfo;
 	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizer;
 	pipelineInfo.pMultisampleState = &multisampling;
@@ -37,7 +38,6 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-	//TÄSSÄ ONGELMA TODO
 	VkPipeline newPipeline;
 	if (vkCreateGraphicsPipelines(
 		device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS) {

@@ -121,7 +121,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;C:\Users\ollis\Documents\KoodiKirjastot\glfw-3.3.8.bin.WIN64\include;C:\Users\ollis\Documents\KoodiKirjastot\glm;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;C:\Users\ollis\Documents\KoodiKirjastot\glfw-3.3.8.bin.WIN64\include;C:\Users\ollis\Documents\KoodiKirjastot\glm;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +139,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;C:\Users\ollis\Documents\KoodiKirjastot\glfw-3.3.8.bin.WIN64\include;C:\Users\ollis\Documents\KoodiKirjastot\glm;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;C:\Users\ollis\Documents\KoodiKirjastot\glfw-3.3.8.bin.WIN64\include;C:\Users\ollis\Documents\KoodiKirjastot\glm;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\vulkan\Descriptor.cpp" />
     <ClCompile Include="source\vulkan\Scene.cpp" />
     <ClCompile Include="source\vulkan\Buffer.cpp" />
     <ClCompile Include="source\vulkan\BuildPipeline.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="source\vulkan\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\vulkan\Descriptor.h" />
     <ClInclude Include="source\vulkan\Scene.h" />
     <ClInclude Include="source\vulkan\Buffer.h" />
     <ClInclude Include="source\vulkan\BuildPipeline.h" />

@@ -6,6 +6,7 @@
 #include "vulkan/Render.h"
 #include "vulkan/Buffer.h"
 #include "vulkan/Scene.h"
+#include "vulkan/Descriptor.h"
 
 namespace celestia
 {
@@ -20,10 +21,11 @@ namespace celestia
 		Window window{ 800,600,"CelestiaWorks" };
 		Device device{window};
 		SwapChain swapChain{device};
-		Pipeline pipeline{ device,swapChain };
 		Buffer buffer{ device };
+		Descriptor descriptor{ device, buffer };
+		Pipeline pipeline{ device,swapChain, descriptor };
 		Scene scene{ buffer, pipeline };
-		Render render{ device,swapChain };
+		Render render{ device,swapChain, descriptor};
 
 
 	};
@@ -64,9 +66,6 @@ TODO YLEINEN:
 
 
 TODO VULKAN OSAT:
-graphics pipeline || oma class
-vertex & index & command buffers || oma class
-draw func
-models || oma class
-gameObject || oma class
+UNIFORM BUFFERS
+TEXTURES??
 */

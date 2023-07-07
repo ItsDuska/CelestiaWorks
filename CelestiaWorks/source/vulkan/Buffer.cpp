@@ -21,7 +21,11 @@ celestia::Mesh* celestia::Buffer::get_mesh(const std::string& name)
 	}
 }
 
-void celestia::Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+void celestia::Buffer::createBuffer(VkDeviceSize size,
+	VkBufferUsageFlags usage,
+	VkMemoryPropertyFlags properties,
+	VkBuffer& buffer,
+	VkDeviceMemory& bufferMemory)
 {
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -52,16 +56,24 @@ void celestia::Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 
 void celestia::Buffer::createMesh()
 {
+
+	
 	const std::vector<Vertex> vertices = {
-		{{-0.5f, -0.5f,0.f},{0.f,0.f,0.f}, {1.0f, 0.1f, 0.1f}},
-		{{0.5f, -0.5f,0.f},{0.f,0.f,0.f}, {0.0f, 1.0f, 0.0f}},
-		{{0.5f, 0.5f,0.f},{0.f,0.f,0.f}, {0.0f, 0.0f, 1.0f}},
-		{{-0.5f, 0.5f,0.f},{0.f,0.f,0.f}, {1.0f, 1.0f, 1.0f}}
+		{{-0.5f, 0.5f,0.f},{0.f,0.f,0.f}, {1.0f, 0.1f, 0.1f}}, //1
+		{{0.f, 0.5f,0.f},{0.f,0.f,0.f}, {0.0f, 1.0f, 0.0f}},//2
+		{{-0.5f, 0.f,0.f},{0.f,0.f,0.f}, {0.0f, 0.0f, 1.0f}},//3
+		{{0.f, 0.f,0.f},{0.f,0.f,0.f}, {1.0f, 0.5f, 1.0f}},//4
+		{{-0.25f, 0.25f,0.5f},{0.f,0.f,0.f}, {0.2f, 0.2f, 1.0f}}// top
 	};
 
 	const std::vector<uint16_t> indices = {
-		0, 1, 2, 2, 3, 0
+		0, 1, 2, 2, 3, 1, // pohja
+		0,1,4, // abe
+		0,2,4,//ace
+		2,3,4,//cde
+		3,1,4//dbe
 	};
+	
 
 
 	Mesh mesh;

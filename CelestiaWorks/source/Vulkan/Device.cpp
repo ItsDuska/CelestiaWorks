@@ -1,4 +1,6 @@
 #include "Device.h"
+#define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h"
 
 celestia::Device::Device(Window& window)
 	:window{window}
@@ -8,11 +10,13 @@ celestia::Device::Device(Window& window)
 	createSurface();
 	createDevice();
 	createCommandPool();
+	createAllocator();
 }
 
 celestia::Device::~Device()
 {
 	deletionQueue.flush();
+	vmaDestroyAllocator(allocator);
 	vkDestroyCommandPool(device, commandPool, nullptr);
 
 	vkDestroyDevice(device, nullptr);
@@ -39,6 +43,11 @@ VkDevice celestia::Device::getDevice()
 VkSurfaceKHR celestia::Device::getSurface()
 {
 	return surface;
+}
+
+VmaAllocator& celestia::Device::getAllocator()
+{
+	return allocator;
 }
 
 void celestia::Device::createInstance()
@@ -175,6 +184,15 @@ void celestia::Device::createCommandPool()
 	{
 		throw std::runtime_error("Failed to create command pool!");
 	}
+}
+
+void celestia::Device::createAllocator()
+{
+	VmaAllocatorCreateInfo allocatorInfo = {};
+	allocatorInfo.physicalDevice = physicalDevice;
+	allocatorInfo.device = device;
+	allocatorInfo.instance = instance;
+	vmaCreateAllocator(&allocatorInfo, &allocator);
 }
 
 void celestia::Device::pickPhysicalDevice()

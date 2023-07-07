@@ -1,8 +1,8 @@
 #include "Pipeline.h"
 
 
-celestia::Pipeline::Pipeline(Device& device, SwapChain &swapChain)
-	: device{device}, swapChain{swapChain}
+celestia::Pipeline::Pipeline(Device& device, SwapChain &swapChain, Descriptor &descriptor)
+	: device{device}, swapChain{swapChain}, descriptor{ descriptor }
 {
 	initPipelines();
 }
@@ -36,6 +36,16 @@ void celestia::Pipeline::initPipelines()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = createLayoutInfo();
 
+	VkPushConstantRange pushConstant;
+	pushConstant.offset = 0;
+	pushConstant.size = sizeof(MeshPushConstants);
+	pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+	pipelineLayoutInfo.pPushConstantRanges = &pushConstant;
+	pipelineLayoutInfo.pushConstantRangeCount = 1;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &descriptor.getDescriptorSetLayout();
+
 	if (vkCreatePipelineLayout(device.getDevice(), &pipelineLayoutInfo, nullptr, &meshLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout!");
@@ -58,6 +68,8 @@ void celestia::Pipeline::initPipelines()
 
 	pipelineBuilder.viewport = createViewport();
 	pipelineBuilder.scissor = createScissors();
+
+	pipelineBuilder.depthStencil = depthStencilCreateInfo(true, false, VK_COMPARE_OP_LESS_OR_EQUAL);
 
 	//pipelineBuilder.dynamicInfo = createDynamicState();
 	pipelineBuilder.rasterizer = createRasterizer(VK_POLYGON_MODE_FILL);
@@ -170,6 +182,23 @@ VkPipelineDynamicStateCreateInfo celestia::Pipeline::createDynamicState()
 	dynamicState.pDynamicStates = dynamicStates.data();
 
 	return dynamicState;
+}
+
+VkPipelineDepthStencilStateCreateInfo celestia::Pipeline::depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp)
+{
+	VkPipelineDepthStencilStateCreateInfo info = {};
+	info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	info.pNext = nullptr;
+
+	info.depthTestEnable = bDepthTest ? VK_TRUE : VK_FALSE;
+	info.depthWriteEnable = bDepthWrite ? VK_TRUE : VK_FALSE;
+	info.depthCompareOp = bDepthTest ? compareOp : VK_COMPARE_OP_ALWAYS;
+	info.depthBoundsTestEnable = VK_FALSE;
+	info.minDepthBounds = 0.0f;
+	info.maxDepthBounds = 1.0f;
+	info.stencilTestEnable = VK_FALSE;
+
+	return info;
 }
 
 

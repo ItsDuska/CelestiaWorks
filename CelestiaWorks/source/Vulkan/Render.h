@@ -1,6 +1,9 @@
 #pragma once
 #include "SwapChain.h"
 #include "Pipeline.h"
+#include "vulkan/Descriptor.h"
+#include <glm/gtx/transform.hpp>
+#include <chrono>
 /*
 	Handlaa kaiken renderaamiseen aka simppelit funtiot
 	For future Olli:
@@ -58,7 +61,7 @@ namespace celestia
 	class Render
 	{
 	public:
-		Render(Device &device, SwapChain& swapChain);
+		Render(Device &device, SwapChain& swapChain,Descriptor& descriptor);
 		~Render();
 		void drawObjects(std::vector<RenderObject>& first, int count);
 	private:
@@ -71,7 +74,9 @@ namespace celestia
 		std::vector<VkCommandBuffer> commandBuffers;
 		Device& device;
 		SwapChain& swapChain;
+		Descriptor& descriptor;
 		uint32_t currentFrame;
+
 	};
 
 }

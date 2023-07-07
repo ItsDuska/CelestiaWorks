@@ -2,6 +2,7 @@
 #include "BuildPipeline.h"
 #include "vulkan/SwapChain.h"
 #include "VulkanTypes.h"
+#include "Descriptor.h"
 /*
 
 pipeline tulee tallentuun unordered mappiin
@@ -81,7 +82,7 @@ namespace celestia
 	class Pipeline
 	{
 	public:
-		Pipeline(Device &device, SwapChain &swapChain);
+		Pipeline(Device &device, SwapChain &swapChain,Descriptor &descriptor);
 		~Pipeline();
 		void initPipelines();
 		/*
@@ -101,6 +102,7 @@ namespace celestia
 		VkViewport createViewport();
 		VkRect2D createScissors();
 		VkPipelineDynamicStateCreateInfo createDynamicState();
+		VkPipelineDepthStencilStateCreateInfo depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp);
 		VkPipelineRasterizationStateCreateInfo createRasterizer(VkPolygonMode polygonMode);
 		VkPipelineMultisampleStateCreateInfo createMultisampling();
 		VkPipelineColorBlendAttachmentState createColorBlendAttachment();
@@ -110,6 +112,7 @@ namespace celestia
 
 		Device& device;
 		SwapChain& swapChain;
+		Descriptor& descriptor;
 
 		VkPipelineLayout meshLayout;
 		VkPipeline meshPipeline;

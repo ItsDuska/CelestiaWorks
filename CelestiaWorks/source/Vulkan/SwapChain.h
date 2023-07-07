@@ -9,7 +9,6 @@ namespace celestia
 		SwapChain(Device& device);
 		~SwapChain();
 		void recreateSwapChain();
-		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 		VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		VkRenderPass getRenderPass() { return renderPass; }
@@ -31,10 +30,14 @@ namespace celestia
 		void createSyncObjects();
 		void createFramebuffers();
 		void cleanupSwapChain();
+		void allocateDepthBuffer();
 
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR chooseSwapPresentMode(const std::vector < VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		VkImageCreateInfo imageCreateInfo(VkFormat format, VkImageUsageFlags usageFlags, VkExtent3D extent);
+		VkImageViewCreateInfo imageviewCreateInfo(VkFormat format, VkImage image, VkImageAspectFlags aspectFlags);
 
 		VkSwapchainKHR swapChain;
 		VkFormat swapChainImageFormat;
@@ -48,6 +51,11 @@ namespace celestia
 		std::vector<VkSemaphore> imageAvailableSemaphores;
 		std::vector<VkSemaphore> renderFinishedSemaphores;
 		std::vector<VkFence> inFlightFences;
+
+		//Depth buffer
+		VkImageView depthImageView;
+		AllocatedImage depthImage;
+		VkFormat depthFormat;
 	};
 
 }
