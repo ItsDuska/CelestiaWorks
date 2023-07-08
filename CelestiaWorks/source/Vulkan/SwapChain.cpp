@@ -15,6 +15,7 @@ celestia::SwapChain::~SwapChain()
 {
 	cleanupSwapChain();
 	vkDestroyRenderPass(device.getDevice(), renderPass, nullptr);
+
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
 		vkDestroySemaphore(device.getDevice(), imageAvailableSemaphores[i], nullptr);
@@ -39,6 +40,7 @@ void celestia::SwapChain::recreateSwapChain()
 
 	createSwapChain();
 	createImageViews();
+	allocateDepthBuffer();
 	createFramebuffers();
 }
 
@@ -105,6 +107,9 @@ void celestia::SwapChain::createSwapChain()
 
 void celestia::SwapChain::cleanupSwapChain()
 {
+	vkDestroyImageView(device.getDevice(), depthImageView, nullptr);
+	vmaDestroyImage(device.getAllocator(), depthImage.image, depthImage.allocation);
+
 	for (size_t i = 0; i < swapChainFramebuffers.size(); i++)
 	{
 		vkDestroyFramebuffer(device.getDevice(), swapChainFramebuffers[i], nullptr);
@@ -146,11 +151,6 @@ void celestia::SwapChain::allocateDepthBuffer()
 	{
 		throw std::runtime_error("Failed to create imageView");
 	}
-
-	device.deletionQueue.pushFunction([=]() {
-		vkDestroyImageView(device.getDevice(), depthImageView, nullptr);
-		vmaDestroyImage(device.getAllocator(), depthImage.image, depthImage.allocation);
-		});
 }
 
 void celestia::SwapChain::createFramebuffers()
@@ -159,7 +159,7 @@ void celestia::SwapChain::createFramebuffers()
 
 	for (size_t i = 0; i < swapChainImageViews.size(); i++)
 	{
-		VkImageView attachments[2] = {
+		std::array<VkImageView,2> attachments = {
 			swapChainImageViews[i],
 			depthImageView
 		};
@@ -167,8 +167,8 @@ void celestia::SwapChain::createFramebuffers()
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = renderPass;
-		framebufferInfo.attachmentCount = 2;
-		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
 		framebufferInfo.width = swapChainExtent.width;
 		framebufferInfo.height = swapChainExtent.height;
 		framebufferInfo.layers = 1;

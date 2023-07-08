@@ -156,7 +156,6 @@
     <ClCompile Include="source\vulkan\Buffer.cpp" />
     <ClCompile Include="source\vulkan\BuildPipeline.cpp" />
     <ClCompile Include="source\vulkan\Pipeline.cpp" />
-    <ClCompile Include="source\vulkan\SimpleRenderingSystem.cpp" />
     <ClCompile Include="source\vulkan\Render.cpp" />
     <ClCompile Include="source\vulkan\Device.cpp" />
     <ClCompile Include="source\application\Application.cpp" />
@@ -171,7 +170,6 @@
     <ClInclude Include="source\vulkan\Buffer.h" />
     <ClInclude Include="source\vulkan\BuildPipeline.h" />
     <ClInclude Include="source\vulkan\Pipeline.h" />
-    <ClInclude Include="source\vulkan\SimpleRenderingSystem.h" />
     <ClInclude Include="source\vulkan\Render.h" />
     <ClInclude Include="source\vulkan\VulkanIncludes.h" />
     <ClInclude Include="source\vulkan\Device.h" />
