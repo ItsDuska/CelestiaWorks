@@ -19,6 +19,7 @@ namespace celestia {
 
 		void createSurface(VkInstance instance, VkSurfaceKHR *surface);
 		void getFramebufferSize(int* width, int* height);
+		GLFWwindow* getGLFWwindow() const { return window; }
 
 	private:
 		void initWindow();

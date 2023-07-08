@@ -11,7 +11,7 @@ celestia::Render::~Render()
 	vkFreeCommandBuffers(device.getDevice(), device.getCommandPool(), MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
 }
 
-void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count)
+void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count, Camera& camera )
 {
 	vkWaitForFences(device.getDevice(), 1, &swapChain.getInFlightFence(currentFrame) , VK_TRUE, UINT64_MAX);
 	uint32_t imageIndex;
@@ -33,7 +33,7 @@ void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count)
 	vkResetFences(device.getDevice(), 1, &swapChain.getInFlightFence(currentFrame));
 
 	vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-	recordCommandBuffers(commandBuffers[currentFrame], imageIndex,first,count);
+	recordCommandBuffers(commandBuffers[currentFrame], imageIndex,first,count,camera);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -101,7 +101,8 @@ void celestia::Render::createCommandBuffers()
 void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer, 
 	uint32_t imageIndex,
 	std::vector<RenderObject>& first,
-	int count)
+	int count,
+	Camera& camera)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -138,6 +139,7 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+	/*
 	float rotata =  std::sin((double)0.3*time);
 
 	glm::vec3 camPos = { rotata,0.f,-3.f-rotata };
@@ -147,12 +149,13 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 	glm::mat4 projection = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
 	//glm::mat4 projection = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	projection[1][1] *= -1;
+	*/
 
 	//fill a GPU camera data struct
 	CameraData camData;
-	camData.proj = projection;
-	camData.view = view;
-	camData.viewproj = projection * view;
+	camData.proj = camera.getProjection();
+	camData.view = camera.getView();
+	camData.viewproj = camera.getProjection() * camera.getView();
 
 	FrameData& frameData = descriptor.getFrameData(currentFrame);
 	VkDeviceSize bufferSize = sizeof(CameraData);

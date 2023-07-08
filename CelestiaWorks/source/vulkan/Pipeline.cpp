@@ -69,7 +69,7 @@ void celestia::Pipeline::initPipelines()
 	pipelineBuilder.viewport = createViewport();
 	pipelineBuilder.scissor = createScissors();
 
-	pipelineBuilder.depthStencil = depthStencilCreateInfo(true, false, VK_COMPARE_OP_LESS_OR_EQUAL);
+	pipelineBuilder.depthStencil = depthStencilCreateInfo(true, true, VK_COMPARE_OP_LESS); // VK_COMPARE_OP_LESS_OR_EQUAL
 
 	//pipelineBuilder.dynamicInfo = createDynamicState();
 	pipelineBuilder.rasterizer = createRasterizer(VK_POLYGON_MODE_FILL);
@@ -200,7 +200,6 @@ VkPipelineDepthStencilStateCreateInfo celestia::Pipeline::depthStencilCreateInfo
 
 	return info;
 }
-
 
 VkPipelineRasterizationStateCreateInfo celestia::Pipeline::createRasterizer(VkPolygonMode polygonMode)
 {

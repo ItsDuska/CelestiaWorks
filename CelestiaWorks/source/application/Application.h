@@ -7,6 +7,8 @@
 #include "vulkan/Buffer.h"
 #include "vulkan/Scene.h"
 #include "vulkan/Descriptor.h"
+#include "gameObjects/Camera.h"
+#include "Keyboard/Keyboard.h"
 
 namespace celestia
 {
@@ -18,6 +20,9 @@ namespace celestia
 		void run();
 
 	private:
+		Camera camera{};
+		Keyboard keyboard{};
+
 		Window window{ 800,600,"CelestiaWorks" };
 		Device device{window};
 		SwapChain swapChain{device};
@@ -26,6 +31,7 @@ namespace celestia
 		Pipeline pipeline{ device,swapChain, descriptor };
 		Scene scene{ buffer, pipeline };
 		Render render{ device,swapChain, descriptor};
+
 
 
 	};
