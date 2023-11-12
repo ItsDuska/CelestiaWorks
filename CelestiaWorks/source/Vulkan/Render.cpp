@@ -11,7 +11,7 @@ celestia::Render::~Render()
 	vkFreeCommandBuffers(device.getDevice(), device.getCommandPool(), MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
 }
 
-void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count, Camera& camera )
+void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count, Player& player)
 {
 	vkWaitForFences(device.getDevice(), 1, &swapChain.getInFlightFence(currentFrame) , VK_TRUE, UINT64_MAX);
 	uint32_t imageIndex;
@@ -33,7 +33,7 @@ void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count, 
 	vkResetFences(device.getDevice(), 1, &swapChain.getInFlightFence(currentFrame));
 
 	vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-	recordCommandBuffers(commandBuffers[currentFrame], imageIndex,first,count,camera);
+	recordCommandBuffers(commandBuffers[currentFrame], imageIndex, first, count, player);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -78,8 +78,6 @@ void celestia::Render::drawObjects(std::vector<RenderObject>& first, int count, 
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-
-	
 }
 
 void celestia::Render::createCommandBuffers()
@@ -102,7 +100,7 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 	uint32_t imageIndex,
 	std::vector<RenderObject>& first,
 	int count,
-	Camera& camera)
+	Player& player)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -153,13 +151,12 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 
 	//fill a GPU camera data struct
 	CameraData camData;
-	camData.proj = camera.getProjection();
-	camData.view = camera.getView();
-	camData.viewproj = camera.getProjection() * camera.getView();
+	camData.proj = player.getProjectionMatrix();
+	camData.view = player.getViewMatrix();
+	camData.viewproj = glm::mat4(1);
 
 	FrameData& frameData = descriptor.getFrameData(currentFrame);
 	VkDeviceSize bufferSize = sizeof(CameraData);
-
 
 	void* data;
 	vkMapMemory(device.getDevice(), frameData.cameraBuffer.bufferMemory, 0, bufferSize, 0, &data);
@@ -197,7 +194,7 @@ void celestia::Render::recordCommandBuffers(VkCommandBuffer commandBuffer,
 
 		MeshPushConstants constants;
 		//constants.renderMatrix = first[i].transformMatrix;
-		constants.renderMatrix =mesh_matrix;
+		constants.renderMatrix = mesh_matrix;
 
 
 		//upload the matrix to the GPU via push constants

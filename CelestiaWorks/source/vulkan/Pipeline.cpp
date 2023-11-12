@@ -205,13 +205,13 @@ VkPipelineRasterizationStateCreateInfo celestia::Pipeline::createRasterizer(VkPo
 {
 	VkPipelineRasterizationStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	info.depthClampEnable = VK_FALSE;
+	info.depthClampEnable = VK_FALSE; // errori tulee jos t‰n laittaa p‰‰lle emt mit‰ tekee
 	//discards all primitives before the rasterization stage if enabled
 	info.rasterizerDiscardEnable = VK_FALSE;
 	info.polygonMode = polygonMode;
 	info.lineWidth = 1.0f;
 	//no backface cull
-	info.cullMode = VK_CULL_MODE_NONE;
+	info.cullMode = VK_CULL_MODE_NONE;  // VK_CULL_MODE_NONE
 	info.frontFace = VK_FRONT_FACE_CLOCKWISE;
 	//no depth bias
 	info.depthBiasEnable = VK_FALSE;

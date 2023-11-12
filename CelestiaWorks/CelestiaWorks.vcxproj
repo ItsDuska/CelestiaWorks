@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\gameObjects\Player.cpp" />
     <ClCompile Include="source\gameObjects\Camera.cpp" />
     <ClCompile Include="source\Keyboard\Keyboard.cpp" />
     <ClCompile Include="source\vulkan\Descriptor.cpp" />
@@ -167,7 +168,9 @@
     <ClCompile Include="source\vulkan\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\gameObjects\Player.h" />
     <ClInclude Include="source\gameObjects\Camera.h" />
+    <ClInclude Include="source\gameObjects\CameraSettings.h" />
     <ClInclude Include="source\gameObjects\GameObjectTypes.h" />
     <ClInclude Include="source\Keyboard\Keyboard.h" />
     <ClInclude Include="source\vulkan\Descriptor.h" />

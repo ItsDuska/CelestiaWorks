@@ -1,5 +1,73 @@
 #include "Camera.h"
 
+celestia::Camera::Camera(glm::vec3 position, float yaw, float pitch)
+	:position{position}, yaw{glm::radians(yaw)}, pitch{glm::radians(pitch)}
+{
+}
+
+void celestia::Camera::update()
+{
+	updateVectors();
+	updateViewMatrix();
+}
+
+void celestia::Camera::updateViewMatrix()
+{
+	viewMatrix = glm::lookAt(position, position + forward, up);
+}
+
+void celestia::Camera::updateVectors()
+{
+	forward.x = glm::cos(yaw) * glm::cos(pitch);
+	forward.y = glm::sin(pitch);
+	forward.z = glm::sin(yaw) * glm::cos(pitch);
+
+	forward = glm::normalize(forward);
+	right = glm::normalize(glm::cross(forward, glm::vec3(0.f, 1.f, 0.f)));
+	up = glm::normalize(glm::cross(right, forward));
+}
+
+void celestia::Camera::rotatePitch(int deltaY)
+{
+	pitch -= deltaY;
+	pitch = glm::clamp(pitch, -PITCH_MAX, PITCH_MAX);
+}
+
+void celestia::Camera::rotateYaw(int deltaX)
+{
+	yaw += deltaX;
+}
+
+void celestia::Camera::moveLeft(float velocity)
+{
+	position -= right * velocity;
+}
+
+void celestia::Camera::moveRight(float velocity)
+{
+	position += right * velocity;
+}
+
+void celestia::Camera::moveUp(float velocity)
+{
+	position += up * velocity;
+}
+
+void celestia::Camera::moveDown(float velocity)
+{
+	position -= up * velocity;
+}
+
+void celestia::Camera::moveForward(float velocity)
+{
+	position += forward * velocity;
+}
+
+void celestia::Camera::moveBack(float velocity)
+{
+	position -= forward * velocity;
+}
+
 void celestia::Camera::setOrthographicProjection(float left, float right, float top, float bottom, float near, float far)
 {
 	projectionMatrix = glm::mat4{ 1.0f };

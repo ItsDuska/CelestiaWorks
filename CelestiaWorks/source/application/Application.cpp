@@ -11,8 +11,6 @@ celestia::Application::~Application()
 // main loop
 void celestia::Application::run()
 {
-	TransformComponent cameraObject{};
-
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	while (!window.shouldClose())
 	{
@@ -23,13 +21,11 @@ void celestia::Application::run()
 			std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
 		currentTime = newTime;
 
-		keyboard.move(window.getGLFWwindow(), frameTime, cameraObject);
-		camera.setViewYXZ(cameraObject.translation, cameraObject.rotation);
-
+		player.updatePos(window.getGLFWwindow(), frameTime);
 		//update game logic
 		
 		//render
-		render.drawObjects(scene.getRenderObjects(), scene.getRenderObjectSizes(),camera);
+		render.drawObjects(scene.getRenderObjects(), scene.getRenderObjectSizes(),player);
 		
 	}
 	vkDeviceWaitIdle(device.getDevice());

@@ -4,7 +4,7 @@
 #include "vulkan/Descriptor.h"
 #include <glm/gtx/transform.hpp>
 #include <chrono>
-#include "gameObjects/Camera.h"
+#include "gameObjects/Player.h"
 /*
 	Handlaa kaiken renderaamiseen aka simppelit funtiot
 	For future Olli:
@@ -64,14 +64,14 @@ namespace celestia
 	public:
 		Render(Device &device, SwapChain& swapChain,Descriptor& descriptor);
 		~Render();
-		void drawObjects(std::vector<RenderObject>& first, int count, Camera& camera);
+		void drawObjects(std::vector<RenderObject>& first, int count, Player& player);
 	private:
 		void createCommandBuffers();
 		void recordCommandBuffers(VkCommandBuffer commandBuffer,
 			uint32_t imageIndex,
 			std::vector<RenderObject>& first,
 			int count,
-			Camera& camera);
+			Player& player);
 
 		std::vector<VkCommandBuffer> commandBuffers;
 		Device& device;
