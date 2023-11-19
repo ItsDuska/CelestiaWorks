@@ -228,7 +228,7 @@ void celestia::SwapChain::createRenderPass()
 
 	VkAttachmentDescription depthAttachment = {};
 	depthAttachment.flags = 0;
-	depthAttachment.format = depthFormat; // tää on jotenki väärä?
+	depthAttachment.format = depthFormat; // tï¿½ï¿½ on jotenki vï¿½ï¿½rï¿½?
 	depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

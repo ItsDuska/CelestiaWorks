@@ -61,7 +61,7 @@ namespace celestia
 }
 
 
-/* TODO: MITÄ TÄMÄN CLASSIN PITÄS TEHDÄ:
+/* TODO: MITï¿½ Tï¿½Mï¿½N CLASSIN PITï¿½S TEHDï¿½:
 	public:
 	 SwapChain(Device &deviceRef, VkExtent2D windowExtent);
 	 SwapChain(

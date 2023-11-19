@@ -41,7 +41,6 @@ namespace celestia {
 		Device(const Device&) = delete;
 		Device& operator = (const Device&) = delete;
 
-
 		void getFramebufferSize(int* width, int* height);
 		VkPhysicalDevice getPhysicalDevice();
 		VkDevice getDevice();
@@ -57,7 +56,6 @@ namespace celestia {
 		QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
 
 		VmaAllocator& getAllocator();
-
 		//VkFormat findSupportedFormat(
 			//const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 		DeletionQueue deletionQueue;
@@ -111,7 +109,7 @@ namespace celestia {
 		VkCommandPool commandPool;
 		VmaAllocator allocator;
 
-		// ehkä device samaan hommaan ja niistä struct?
+		// ehkï¿½ device samaan hommaan ja niistï¿½ struct?
 	};
 
 
