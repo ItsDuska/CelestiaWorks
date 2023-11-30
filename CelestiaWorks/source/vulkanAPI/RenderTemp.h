@@ -15,6 +15,7 @@ namespace celestia {
 
 	class Device;
 	class SwapChain;
+	class Pipeline;
 
 	class CELESTIA_WORKS Render
 	{
@@ -25,6 +26,7 @@ namespace celestia {
 	private:
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;
+		std::unique_ptr<Pipeline> pipeline;
 		//Window window;
 	};
 

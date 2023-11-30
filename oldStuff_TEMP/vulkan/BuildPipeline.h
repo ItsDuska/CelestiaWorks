@@ -19,6 +19,6 @@ namespace celestia
 		VkPipelineRasterizationStateCreateInfo rasterizer;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 		VkPipelineMultisampleStateCreateInfo multisampling;
-		VkPipelineLayout pipelineLayout; // tärkee
+		VkPipelineLayout pipelineLayout; // tï¿½rkee
 	};
 }

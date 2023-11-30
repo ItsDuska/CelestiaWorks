@@ -30,3 +30,14 @@ void Renderer::DrawSprite(float x, float y, float width, float height) {
 
 
 Kokeillaan Valmiina olevalla piirtämis tavalla
+
+
+
+
+KÄYTÄ YHTÄ VERTEX BUFFERIA!! 
+päivitä sitä per frame
+
+
+
+
+

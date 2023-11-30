@@ -63,6 +63,11 @@ void celestia::SwapChain::recreateSwapChain()
 
 }
 
+VkRenderPass celestia::SwapChain::getRenderPass()
+{
+	return renderPass;
+}
+
 void celestia::SwapChain::createSwapChain()
 {
 	SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
