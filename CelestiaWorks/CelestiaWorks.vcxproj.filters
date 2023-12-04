@@ -21,7 +21,7 @@
     <ClCompile Include="source\vulkanAPI\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\RenderTemp.cpp">
+    <ClCompile Include="source\vulkanAPI\RenderBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\vulkanAPI\SwapChain.cpp">
@@ -36,6 +36,12 @@
     <ClCompile Include="source\vulkanAPI\ShaderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\vulkanAPI\Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\front\RenderFront.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\window\Window.h">
@@ -47,7 +53,7 @@
     <ClInclude Include="source\vulkanAPI\Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\RenderTemp.h">
+    <ClInclude Include="source\vulkanAPI\RenderBackend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\vulkanAPI\SwapChain.h">
@@ -66,6 +72,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\vulkanAPI\CelestiaVulkanTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\vulkanAPI\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\front\RenderFront.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

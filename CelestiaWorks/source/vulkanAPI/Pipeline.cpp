@@ -75,6 +75,16 @@ VkPipeline celestia::Pipeline::createPipeline(ShaderObject &shader, DrawingMode 
 	return VkPipeline();
 }
 
+VkPipeline celestia::Pipeline::getDefaultPipeline()
+{
+	return defaultPipeline;
+}
+
+VkPipelineLayout celestia::Pipeline::getDefaultLayout()
+{
+	return defaultPipelineLayout;
+}
+
 VkPipelineInputAssemblyStateCreateInfo celestia::Pipeline::createInputAssembly(DrawingMode mode)
 {
 	VkPipelineInputAssemblyStateCreateInfo info = {};

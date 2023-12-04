@@ -34,11 +34,5 @@ namespace celestia
 		Vec3f color;
 	};
 
-	struct PUSH_CONSTANTS
-	{
-		Vec2f WorldPosition;
-		Vec2f rotation;
-	};
-
 }
 

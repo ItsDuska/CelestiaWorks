@@ -8,7 +8,7 @@
 /*
 	Handlaa kaiken renderaamiseen aka simppelit funtiot
 	For future Olli:
-		lol luuseri joudut miettimään miten simppeli objekti saadaan piirrettyä simppelillä tavalla
+		lol luuseri joudut miettimï¿½ï¿½n miten simppeli objekti saadaan piirrettyï¿½ simppelillï¿½ tavalla
 
 
 low level renderer:
@@ -50,9 +50,9 @@ low level renderer:
 
 UUS IDEA:
 RENDER OTTAA KAIKKI TARVITTAVAT VULKAN HOMMAT:
-draw call toteutuu täällä
+draw call toteutuu tï¿½ï¿½llï¿½
 
-Tänne pipeline
+Tï¿½nne pipeline
 
 */
 

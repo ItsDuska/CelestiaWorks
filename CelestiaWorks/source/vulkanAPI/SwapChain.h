@@ -25,7 +25,6 @@ namespace celestia
 		SwapChain& operator = (const SwapChain&) = delete;
 
 		void recreateSwapChain();
-		//VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
 		VkRenderPass getRenderPass();
 		//VkImageView getImageView(int index) { return swapChainImageViews[index]; }
 		//size_t imageCount() { return swapChainImages.size(); }
@@ -33,10 +32,14 @@ namespace celestia
 		//VkExtent2D getSwapChainExtent() { return swapChainExtent; }
 		//float getSwapChainExtentWidth() { return (float)swapChainExtent.width; }
 		//float getSwapChainExtentHeight() { return (float)swapChainExtent.height; }
-		//VkSemaphore getImageAvailableSemaphore(int index) { return imageAvailableSemaphores[index]; }
-		//VkSemaphore getRenderFinishedSemaphore(int index) { return renderFinishedSemaphores[index]; }
-		//VkFence& getInFlightFence(int index) { return inFlightFences[index]; }
-		//VkSwapchainKHR& getSwapchain() { return swapChain; }
+		VkSemaphore getImageAvailableSemaphore(int index);
+		VkSemaphore getRenderFinishedSemaphore(int index);
+		VkFence& getInFlightFence(int index);
+		VkSwapchainKHR& getSwapchain();
+		VkFramebuffer getFrameBuffer(int index);
+
+
+
 	public:
 		VkExtent2D extent;
 

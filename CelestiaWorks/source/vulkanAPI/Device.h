@@ -3,6 +3,8 @@
 #include <vector>
 #include <optional>
 #include <set>
+#include <queue>
+#include <functional>
 
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
@@ -40,6 +42,16 @@ namespace celestia
 		std::vector<VkPresentModeKHR> presentModes;
 	};
 
+	struct DeletionQueue
+	{
+		std::deque<std::function<void()>> deletors;
+
+		void pushFunction(std::function<void()>&& function);
+
+		void flush();
+	};
+
+
 	class Window;
 
 	class CELESTIA_WORKS Device
@@ -61,6 +73,7 @@ namespace celestia
 		VkQueue presentQueue;
 		VkCommandPool commandPool;
 		VmaAllocator_T* allocator;
+		DeletionQueue deletionQueue;
 
 	private:
 		VkInstance instance;

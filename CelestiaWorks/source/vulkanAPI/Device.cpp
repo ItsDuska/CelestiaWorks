@@ -20,11 +20,13 @@ celestia::Device::Device(Window& window)
 	createDebugMessenger();
 	createSurface(window);
 	createDevice();
+	createCommandPool();
 	createAllocator();
 }
 
 celestia::Device::~Device()
 {
+	//deletionQueue.flush();
 	vmaDestroyAllocator(allocator);
 	vkDestroyCommandPool(device, commandPool, nullptr);
 	vkDestroyDevice(device, nullptr);
@@ -436,4 +438,19 @@ celestia::SwapChainSupportDetails celestia::Device::querySwapChainSupport(VkPhys
 bool celestia::QueueFamilyIndices::isComplete()
 {
 	return graphicsFamily.has_value() && presentFamily.has_value();
+}
+
+void celestia::DeletionQueue::pushFunction(std::function<void()>&& function)
+{
+	deletors.push_back(function);
+}
+
+void celestia::DeletionQueue::flush()
+{
+	for (auto it = deletors.rbegin(); it != deletors.rend(); it++)
+	{
+		(*it)();
+	}
+
+	deletors.clear();
 }

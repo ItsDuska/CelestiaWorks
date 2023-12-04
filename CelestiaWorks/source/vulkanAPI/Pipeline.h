@@ -8,6 +8,7 @@
 #define CELESTIA_WORKS __declspec(dllimport)
 #endif
 
+#include <glm/mat4x4.hpp>
 
 namespace celestia 
 {
@@ -23,6 +24,14 @@ namespace celestia
 		POINTS,
 		LINES
 	};
+
+
+	struct PUSH_CONSTANTS
+	{
+		glm::mat4 transform;
+		glm::mat4 projection;
+	};
+
 
 	class BuildPipeline
 	{
@@ -43,9 +52,6 @@ namespace celestia
 		VkPipelineLayout pipelineLayout; // t rkee
 	};
 
-
-
-
 	class Pipeline
 	{
 	public:
@@ -56,6 +62,7 @@ namespace celestia
 
 		VkPipeline createPipeline(ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors);
 		VkPipeline getDefaultPipeline();
+		VkPipelineLayout getDefaultLayout();
 	private:
 		VkPipeline defaultPipeline;
 		VkPipelineLayout defaultPipelineLayout;

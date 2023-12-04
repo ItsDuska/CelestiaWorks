@@ -10,7 +10,7 @@
 
 
 namespace celestia {
-	class CELESTIA_WORKS Window
+	class Window
 	{
 	public:
 		Window(const Vec2i size, const char* name);

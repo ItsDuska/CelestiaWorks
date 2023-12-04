@@ -3,7 +3,6 @@
 #include "vulkan/vulkan.h"
 #include "celestiaTypes/CelestiaTypes.h"
 
-
 const std::vector<char> celestia::utils::readFile(const char* filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);

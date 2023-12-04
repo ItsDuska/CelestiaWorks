@@ -18,7 +18,9 @@ celestia::SwapChain::SwapChain(Device& device, Window& window)
 	window(window),
 	imageAvailableSemaphores(),
 	renderFinishedSemaphores(),
-	inFlightFences()
+	
+	
+	()
 	*/
 {
 	createSwapChain();
@@ -66,6 +68,31 @@ void celestia::SwapChain::recreateSwapChain()
 VkRenderPass celestia::SwapChain::getRenderPass()
 {
 	return renderPass;
+}
+
+VkSemaphore celestia::SwapChain::getImageAvailableSemaphore(int index)
+{
+	return imageAvailableSemaphores[index];
+}
+
+VkSemaphore celestia::SwapChain::getRenderFinishedSemaphore(int index)
+{
+	return renderFinishedSemaphores[index];
+}
+
+VkFence& celestia::SwapChain::getInFlightFence(int index)
+{
+	return inFlightFences[index];
+}
+
+VkSwapchainKHR& celestia::SwapChain::getSwapchain()
+{
+	return swapChain;
+}
+
+VkFramebuffer celestia::SwapChain::getFrameBuffer(int index)
+{
+	return framebuffers[index];
 }
 
 void celestia::SwapChain::createSwapChain()

@@ -1,31 +1,29 @@
-#include "window/Window.h"
 #include <iostream>
+#include <Windows.h>
 #include <stdexcept>
-#include "vulkanAPI/RenderTemp.h"
+#include "front/RenderFront.h"
+
 
 int main() {
-	//celestia::Application app;
 	bool running = true;
 
 	try
 	{
-		celestia::Window window({ 800,600 }, "Among Us Gaming");
-
-		celestia::Render render(window);
+		celestia::WindowHandle window({ 800,600 }, "Among Us Gaming");
 
 		while (running)
 		{
-			if (!window.processMessages())
+			if (!window.isOpen())
 			{
 				running = false;
 				std::cout << "CLOSING\n";
 			}
 
-			if (window.isFramebufferResized())
-			{
-				window.setFramebufferResized(false);
-				render.draw();
-			}
+			window.beginRenderPass();
+
+			window.draw();
+
+			window.endRenderPass();
 
 			Sleep(10);
 		}
