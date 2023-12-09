@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\front\RenderFront.cpp" />
+    <ClCompile Include="source\math\MatrixMath.cpp" />
     <ClCompile Include="source\utils\Utils.cpp" />
     <ClCompile Include="source\vulkanAPI\Buffer.cpp" />
     <ClCompile Include="source\vulkanAPI\Device.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="source\celestiaTypes\Matrix.h" />
     <ClInclude Include="source\celestiaTypes\Vector.h" />
     <ClInclude Include="source\front\RenderFront.h" />
+    <ClInclude Include="source\math\MatrixMath.h" />
     <ClInclude Include="source\utils\Utils.h" />
     <ClInclude Include="source\vulkanAPI\Buffer.h" />
     <ClInclude Include="source\vulkanAPI\CelestiaVulkanTypes.h" />

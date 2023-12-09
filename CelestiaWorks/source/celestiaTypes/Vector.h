@@ -12,6 +12,20 @@ namespace celestia
 {
 	template<int L, typename T> struct CELESTIA_WORKS Vec;
 
+
+	template<typename T>
+	constexpr Vec<4, T> calc(Vec<4, T> const& a, Vec<4, T> const& b)
+	{
+		return Vec<4, T>(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
+	}
+
+	template<typename T>
+	constexpr Vec<4, T> calcAdd(Vec<4, T> const& a, Vec<4, T> const& b)
+	{
+		return Vec<4, T>(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+	}
+
+
 	//vec2
 	template<typename T>
 	struct CELESTIA_WORKS Vec<2,T>
@@ -162,6 +176,7 @@ namespace celestia
 			return *this;
 		}
 
+
 	};
 
 	//vec4
@@ -215,6 +230,15 @@ namespace celestia
 			this->w += static_cast<T>(v.w);
 			return *this;
 		}
+		
+		constexpr Vec<4, T>& operator+=(T const& s)
+		{
+			this->x += s;
+			this->y += s;
+			this->z += s;
+			this->w += s;
+			return *this;
+		}
 
 		template<typename U>
 		constexpr Vec<4, T>& operator-=(Vec<4, U> const& v)
@@ -225,7 +249,7 @@ namespace celestia
 			this->w -= static_cast<T>(v.w);
 			return *this;
 		}
-
+		
 		template<typename U>
 		constexpr Vec<4, T>& operator*=(Vec<4, U> const& v)
 		{
@@ -234,6 +258,12 @@ namespace celestia
 			this->z *= static_cast<T>(v.z);
 			this->w *= static_cast<T>(v.w);
 			return *this;
+		}
+
+		template<typename U>
+		constexpr Vec<4, T>& operator*=(U scalar) 
+		{
+			return (*this = calc<T>(*this, Vec<4, T>(scalar)));
 		}
 
 		template<typename U>
@@ -246,7 +276,28 @@ namespace celestia
 			return *this;
 		}
 
+		constexpr Vec<4, T> operator*(const T v) const
+		{
+			//return ((*this) *= value);
+			Vec<4, T> result;
+			result.x = this->x * v;
+			result.y = this->y * v;
+			result.z = this->z * v;
+			result.w = this->w * v;
+			return result;
+		}
+
+		
+
+		constexpr Vec<4, T> operator+(const Vec<4,T>& vec) const
+		{
+			return calcAdd(*this, vec);
+		}
+
 	};
+
+
+	//583 rivi
 
 	typedef Vec<2, float> Vec2;
 	typedef Vec<3, float> Vec3;
@@ -261,3 +312,4 @@ namespace celestia
 	typedef Vec<4, unsigned int> Vec4u;
 
 }
+

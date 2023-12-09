@@ -2,7 +2,8 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-#include <glm/mat4x4.hpp>
+//#include <glm/mat4x4.hpp>
+#include "celestiaTypes/Matrix.h"
 
 namespace celestia 
 {
@@ -22,8 +23,8 @@ namespace celestia
 
 	struct PUSH_CONSTANTS
 	{
-		glm::mat4 transform;
-		glm::mat4 projection;
+		Mat4 transform;
+		Mat4 projection;
 	};
 
 

@@ -6,11 +6,8 @@
 #include "CelestiaVulkanTypes.h"
 #include "utils/Utils.h"
 #include "Buffer.h"
-#include <glm/glm.hpp>
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/gtx/transform.hpp>
-
+#include "celestiaTypes/Matrix.h"
+#include "math/MatrixMath.h"
 
 celestia::Render::Render(Window& window)
 	: window(window), imageIndex(0)
@@ -42,20 +39,31 @@ void celestia::Render::draw()
 	
 	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultPipeline());
 
-	Vec2 pos{};
+	Vec3 pos{};
 	pos.x = 250.f;
 	pos.y = 250.f;
+	pos.z = 0.f;
 
-	Vec2 size{};
+	Vec3 size{};
 	size.x = 200.f;
 	size.y = 200.f;
+	size.z = 1.f;
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(pos.x,pos.y, 0.0f));
-	model = glm::scale(model, glm::vec3(size.x, size.y, 1.f));
+	Mat4 model(1.f);
+	model = math::translate(model, pos);
+	model = math::scale(model, size);
 
-	glm::mat4 projection = glm::ortho(0.f, static_cast<float>(window.getWindowSize().x),
-		static_cast<float>(window.getWindowSize().y), 0.f, -1.f, 1.f);
+
+	Mat4 projection = math::ortho(
+		0.f,
+		static_cast<float>(window.getWindowSize().x) ,
+		static_cast<float>(window.getWindowSize().y) ,
+		0.f,
+		-1.f,
+		1.f
+	);
+
+	Mat4 projection1(1.f);
 
 	PUSH_CONSTANTS constants{};
 	constants.projection = projection;
