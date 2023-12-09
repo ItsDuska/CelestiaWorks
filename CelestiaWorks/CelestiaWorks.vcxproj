@@ -163,6 +163,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\celestiaTypes\CelestiaTypes.h" />
+    <ClInclude Include="source\celestiaTypes\Matrix.h" />
+    <ClInclude Include="source\celestiaTypes\Vector.h" />
     <ClInclude Include="source\front\RenderFront.h" />
     <ClInclude Include="source\utils\Utils.h" />
     <ClInclude Include="source\vulkanAPI\Buffer.h" />

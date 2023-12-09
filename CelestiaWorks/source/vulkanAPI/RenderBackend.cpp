@@ -4,6 +4,7 @@
 #include "vulkanAPI/SwapChain.h"
 #include "Pipeline.h"
 #include "CelestiaVulkanTypes.h"
+#include "utils/Utils.h"
 #include "Buffer.h"
 #include <glm/glm.hpp>
 #define GLM_FORCE_RADIANS
@@ -19,6 +20,7 @@ celestia::Render::Render(Window& window)
 	buffer = std::make_unique<Buffer>(*device);
 	pipeline = std::make_unique<Pipeline>(*device, *swapChain);
 	rendering = false;
+	clearColor = { 0.f,0.f,0.f,1.f };
 
 	createCommandBuffers();
 }
@@ -40,11 +42,11 @@ void celestia::Render::draw()
 	
 	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultPipeline());
 
-	Vec2f pos{};
+	Vec2 pos{};
 	pos.x = 250.f;
 	pos.y = 250.f;
 
-	Vec2f size{};
+	Vec2 size{};
 	size.x = 200.f;
 	size.y = 200.f;
 
@@ -117,9 +119,9 @@ void celestia::Render::beginRendering()
 	renderPassInfo.renderArea.offset = { 0,0 };
 	renderPassInfo.renderArea.extent = swapChain->extent;
 
-	VkClearValue clearColor = { {{0.5f, 0.5f, 0.2f, 1.0f}} };
+	VkClearValue clearValue = { {{clearColor.x, clearColor.y, clearColor.z, clearColor.w}} };
 	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	renderPassInfo.pClearValues = &clearValue;
 
 	vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	this->rendering = true;
@@ -184,6 +186,11 @@ void celestia::Render::endRendering()
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
 	rendering = false;
+}
+
+void celestia::Render::setClearColor(celestia::Color& color)
+{
+	clearColor = utils::normalizeColor(color);
 }
 
 void celestia::Render::resize()

@@ -1,7 +1,8 @@
 #include "Utils.h"
 #include <fstream>
 #include "vulkan/vulkan.h"
-#include "celestiaTypes/CelestiaTypes.h"
+
+#define MAX_COLOR_VALUE 255.f;
 
 const std::vector<char> celestia::utils::readFile(const char* filename)
 {
@@ -51,4 +52,15 @@ std::array<VkVertexInputAttributeDescription, 3> celestia::utils::getAttributeDe
     attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
     attributeDescriptions[2].offset = offsetof(Vertex, color);
     return attributeDescriptions;
+}
+
+//Turn 8bit 0-255 color to a float ranging between 0-1. 
+celestia::Vec4 celestia::utils::normalizeColor(Color& color)
+{
+    Vec4 newColor{};
+    newColor.x = color.r / MAX_COLOR_VALUE;
+    newColor.y = color.g / MAX_COLOR_VALUE;
+    newColor.z = color.b / MAX_COLOR_VALUE;
+    newColor.w = color.a / MAX_COLOR_VALUE;
+    return newColor;
 }

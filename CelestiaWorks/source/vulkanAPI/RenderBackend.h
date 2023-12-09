@@ -1,14 +1,8 @@
 #pragma once
-
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
-
 #include <vector>
 #include <memory>
 #include <vulkan/vulkan.h>
+#include "celestiaTypes/CelestiaTypes.h"
 
 namespace celestia
 {
@@ -18,7 +12,7 @@ namespace celestia
 	class Buffer;
 	class Window;
 
-	class CELESTIA_WORKS Render
+	class Render
 	{
 	public:
 		Render(Window &window);
@@ -29,6 +23,7 @@ namespace celestia
 		void draw();
 		void beginRendering();
 		void endRendering();
+		void setClearColor(Color& color);
 	private:
 		void resize();
 		void createCommandBuffers();
@@ -45,6 +40,7 @@ namespace celestia
 		uint32_t currentFrame;
 		uint32_t imageIndex;
 		bool rendering;
+		Vec4 clearColor;
 		//Window window;
 		
 

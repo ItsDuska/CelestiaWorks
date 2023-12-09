@@ -57,9 +57,9 @@ celestia::AllocatedBuffer celestia::Buffer::createBuffer(VkDeviceSize size, VkBu
 
 void celestia::Buffer::createMesh(RawMesh& rawMesh, Mesh& mesh)
 {
-    mesh.indexBufferSize = rawMesh.indices.size();
+    mesh.indexBufferSize = static_cast<uint32_t>(rawMesh.indices.size());
     mesh.indexBuffer = createIndexBuffer(rawMesh);
-    mesh.vertexBufferSize = rawMesh.vertices.size();
+    mesh.vertexBufferSize = static_cast<uint32_t>(rawMesh.vertices.size());
     mesh.vertexBuffer = createVertexBuffer(rawMesh);
 }
 

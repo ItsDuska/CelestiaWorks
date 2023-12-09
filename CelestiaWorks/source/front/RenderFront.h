@@ -14,22 +14,23 @@ namespace celestia
 	class Render;
 	class Window;
 
-	class CELESTIA_WORKS WindowHandle
+	class WindowHandle
 	{
 	public:
-		WindowHandle(const Vec2i size, const char* name);
-		WindowHandle(const WindowHandle&) = delete;
-		WindowHandle& operator = (const WindowHandle&) = delete;
-		~WindowHandle();
+		CELESTIA_WORKS WindowHandle(const Vec2i size, const char* name);
+		CELESTIA_WORKS WindowHandle(const WindowHandle&) = delete;
+		CELESTIA_WORKS WindowHandle& operator = (const WindowHandle&) = delete;
+		CELESTIA_WORKS ~WindowHandle();
 
 	public:
-		void draw() const;
-		void beginRenderPass() const;
-		void endRenderPass() const;
-		bool isOpen() const;
+		CELESTIA_WORKS void draw() const;
+		CELESTIA_WORKS void beginRenderPass() const;
+		CELESTIA_WORKS void endRenderPass() const;
+		CELESTIA_WORKS bool isOpen() const;
+		CELESTIA_WORKS void setClearColor(Color& color);
 
 	private:
-		std::unique_ptr<Render> render;
 		std::unique_ptr<Window> window;
+		std::unique_ptr<Render> render;
 	};
 }

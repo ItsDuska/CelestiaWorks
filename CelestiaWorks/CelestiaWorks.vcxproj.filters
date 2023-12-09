@@ -80,6 +80,12 @@
     <ClInclude Include="source\front\RenderFront.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\celestiaTypes\Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\celestiaTypes\Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\temp.vert" />

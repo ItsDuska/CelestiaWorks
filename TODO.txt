@@ -38,6 +38,11 @@ KÄYTÄ YHTÄ VERTEX BUFFERIA!!
 päivitä sitä per frame
 
 
+BeginRenderPass funktio ottaa Vec3i structin joka kuvaa clear väriä.
 
+Tee funktio uuden shader parametrien tekemiseen eli uus pipeline ja shaderModule.
 
+muuta draw funktio siten että se ottaa vastaan halutun objectin ja piirtää sen.
+
+varmaan joudutaan käyttämään sprite atlas tai se vulkanin sprite layer homma
 

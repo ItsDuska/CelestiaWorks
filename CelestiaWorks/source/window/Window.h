@@ -1,10 +1,4 @@
 #pragma once
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
-
 #include <Windows.h>
 #include "celestiaTypes/CelestiaTypes.h"
 

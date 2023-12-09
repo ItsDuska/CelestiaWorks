@@ -11,11 +11,6 @@
 //#define VMA_IMPLEMENTATION
 //#include "vk_mem_alloc.h"
 
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
 
 #ifdef NDEBUG
 const bool VALIDATION_LAYERS = false;
@@ -54,7 +49,7 @@ namespace celestia
 
 	class Window;
 
-	class CELESTIA_WORKS Device
+	class Device
 	{
 	public:
 		Device(Window& window);

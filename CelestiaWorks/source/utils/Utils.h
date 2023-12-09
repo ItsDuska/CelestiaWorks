@@ -2,21 +2,13 @@
 #include <iostream>
 #include <vector>
 #include <array>
-
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
-
-
+#include "celestiaTypes/CelestiaTypes.h"
 
 struct VkVertexInputBindingDescription;
 struct VkVertexInputAttributeDescription;
 
 namespace celestia
 {
-
 	namespace utils
 	{
 		const std::vector<char> readFile(const char* filename);
@@ -25,6 +17,7 @@ namespace celestia
 
 		std::array<VkVertexInputAttributeDescription, 3> getAttributeDescription();
 		
+		Vec4 normalizeColor(Color& color);
 
 	}
 

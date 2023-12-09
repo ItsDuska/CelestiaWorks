@@ -2,12 +2,6 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
-
 
 namespace celestia
 {
@@ -16,7 +10,7 @@ namespace celestia
 	class Device;
 	class Window;
 
-	class CELESTIA_WORKS SwapChain
+	class SwapChain
 	{
 	public:
 		SwapChain(Device& device,Window& window);

@@ -4,6 +4,10 @@
 #include "front/RenderFront.h"
 
 
+#ifdef TIMING
+#include <chrono>
+#endif // TIMING
+
 int main() {
 	bool running = true;
 
@@ -11,8 +15,17 @@ int main() {
 	{
 		celestia::WindowHandle window({ 800,600 }, "Among Us Gaming");
 
+		celestia::Color color = { 128,128,51,255 };
+
+		window.setClearColor(color);
+
 		while (running)
 		{
+			#ifdef TIMING
+			std::chrono::time_point<std::chrono::system_clock> start, end;
+			start = std::chrono::system_clock::now();
+			#endif
+
 			if (!window.isOpen())
 			{
 				running = false;
@@ -25,9 +38,13 @@ int main() {
 
 			window.endRenderPass();
 
+			#ifdef TIMING
+			//end = std::chrono::system_clock::now();
+			//std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " microseconds\n";
+			#endif
 			Sleep(10);
 		}
-
+		
 	}
 	catch (const std::exception& e)
 	{

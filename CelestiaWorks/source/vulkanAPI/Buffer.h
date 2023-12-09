@@ -8,7 +8,7 @@ namespace celestia
 	class Device;
 
 
-	class CELESTIA_WORKS Buffer
+	class Buffer
 	{
 	public:
 		Buffer(Device& device);

@@ -2,12 +2,6 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
-
 #include <glm/mat4x4.hpp>
 
 namespace celestia 
