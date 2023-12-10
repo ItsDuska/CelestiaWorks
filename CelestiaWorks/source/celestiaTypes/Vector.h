@@ -176,6 +176,24 @@ namespace celestia
 			return *this;
 		}
 
+		constexpr Vec<3, T> operator*(const T v) const
+		{
+			Vec<3, T> result;
+			result.x = this->x * v;
+			result.y = this->y * v;
+			result.z = this->z * v;
+			return result;
+		}
+
+		constexpr Vec<3, T> operator*(const Vec<3, T>& vec) const
+		{
+			return Vec<3, T>(
+				this->x * vec.x,
+				this->y * vec.y,
+				this->z * vec.z
+			);
+		}
+
 
 	};
 

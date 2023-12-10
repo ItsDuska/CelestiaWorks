@@ -1,8 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <vector>
-
-//#include <glm/mat4x4.hpp>
 #include "celestiaTypes/Matrix.h"
 
 namespace celestia 

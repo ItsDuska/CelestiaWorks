@@ -3,11 +3,15 @@
 #include "vulkanAPI/Device.h"
 #include "vulkanAPI/SwapChain.h"
 #include "Pipeline.h"
+#include "Buffer.h"
+
 #include "CelestiaVulkanTypes.h"
 #include "utils/Utils.h"
-#include "Buffer.h"
-#include "celestiaTypes/Matrix.h"
 #include "math/MatrixMath.h"
+#include <chrono>
+
+//#include <glm/glm.hpp>
+//#include <glm/ext/matrix_transform.hpp>
 
 celestia::Render::Render(Window& window)
 	: window(window), imageIndex(0)
@@ -49,8 +53,26 @@ void celestia::Render::draw()
 	size.y = 200.f;
 	size.z = 1.f;
 
+	Vec3 rotate{};
+	rotate.x = 0.f;
+	rotate.y = 0.f;
+	rotate.z = 1.f;
+
+	static auto startTime = std::chrono::high_resolution_clock::now();
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+	const float DEGREE = 360.f;
+	const float angle = fmodf(time*15, DEGREE);
+
+
 	Mat4 model(1.f);
 	model = math::translate(model, pos);
+
+	model = math::translate(model, Vec3(0.5f * size.x, 0.5f * size.y, 0.f));
+	model = math::rotate(model, math::radians(angle), rotate);
+	model = math::translate(model, Vec3(-0.5f * size.x, -0.5f * size.y, 0.f));
+
 	model = math::scale(model, size);
 
 
