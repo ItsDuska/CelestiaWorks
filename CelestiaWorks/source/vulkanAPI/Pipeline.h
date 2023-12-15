@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "celestiaTypes/Matrix.h"
+#include "CelestiaVulkanTypes.h"
 
 namespace celestia 
 {
@@ -48,22 +49,21 @@ namespace celestia
 	class Pipeline
 	{
 	public:
-		Pipeline(Device& device, SwapChain& swapChain);
+		Pipeline(Device& device, SwapChain& swapChain,Descriptor& descriptor);
 		Pipeline(const Pipeline&) = delete;
 		Pipeline& operator = (const Pipeline&) = delete;
 		~Pipeline();
 
-		VkPipeline createPipeline(ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors);
-		VkPipeline getDefaultPipeline();
-		VkPipelineLayout getDefaultLayout();
+		void createPipeline(Material& material, ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors);
+		Material *getDefaultMaterial();
 	private:
-		VkPipeline defaultPipeline;
-		VkPipelineLayout defaultPipelineLayout;
+		Material defaultMaterial;
 
 		BuildPipeline builder;
 
 		Device& device;
 		SwapChain& swapChain;
+		Descriptor& descriptor;
 	private:
 		VkPipelineInputAssemblyStateCreateInfo createInputAssembly(DrawingMode mode);
 		VkViewport createViewport();
@@ -77,11 +77,3 @@ namespace celestia
 	};
 
 }
-
-
-/*
-
-Käytä push constantteja sijaintiin.
-
-
-*/

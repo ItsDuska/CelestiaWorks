@@ -15,5 +15,13 @@ namespace celestia
 		Vec3 color;
 	};
 
+	struct CELESTIA_WORKS BatchVertex
+	{
+		Vec2 position;
+		Vec2 texCoord;
+		Vec4 color;
+		float texIndex;
+	};
+
 }
 

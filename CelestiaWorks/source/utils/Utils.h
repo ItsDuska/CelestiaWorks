@@ -7,6 +7,9 @@
 struct VkVertexInputBindingDescription;
 struct VkVertexInputAttributeDescription;
 
+
+
+
 namespace celestia
 {
 	namespace utils
@@ -18,7 +21,6 @@ namespace celestia
 		std::array<VkVertexInputAttributeDescription, 3> getAttributeDescription();
 		
 		Vec4 normalizeColor(Color& color);
-
 	}
 
 }

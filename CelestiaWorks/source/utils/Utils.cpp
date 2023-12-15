@@ -64,3 +64,5 @@ celestia::Vec4 celestia::utils::normalizeColor(Color& color)
     newColor.w = color.a / MAX_COLOR_VALUE;
     return newColor;
 }
+
+

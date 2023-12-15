@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include "front/RenderFront.h"
 
-
 #ifdef TIMING
 #include <chrono>
 #endif // TIMING
@@ -39,8 +38,8 @@ int main() {
 			window.endRenderPass();
 
 			#ifdef TIMING
-			//end = std::chrono::system_clock::now();
-			//std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " microseconds\n";
+			end = std::chrono::system_clock::now();
+			std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microseconds\n";
 			#endif
 			Sleep(10);
 		}

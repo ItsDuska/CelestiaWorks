@@ -1,8 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include <vector>
 #include <celestiaTypes/CelestiaTypes.h>
-
+#include <vector>
 
 
 namespace celestia
@@ -27,4 +26,16 @@ namespace celestia
 		AllocatedBuffer indexBuffer;
 	};
 	
+	struct Material
+	{
+		VkPipeline pipeline;
+		VkPipelineLayout layout;
+	};
+
+	struct AllocatedImage
+	{
+		VkImage image;
+		VkDeviceMemory memory;
+	};
+
 }

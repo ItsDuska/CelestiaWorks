@@ -3,6 +3,7 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 #include "celestiaTypes/CelestiaTypes.h"
+#include "CelestiaVulkanTypes.h"
 
 namespace celestia
 {
@@ -11,6 +12,8 @@ namespace celestia
 	class Pipeline;
 	class Buffer;
 	class Window;
+	class Image;
+	class Descriptor;
 
 	class Render
 	{
@@ -32,8 +35,11 @@ namespace celestia
 		Window& window;
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;
-		std::unique_ptr<Pipeline> pipeline;
 		std::unique_ptr<Buffer> buffer;
+		std::unique_ptr<Image> image;
+		std::unique_ptr<Descriptor> descriptor;
+
+		std::unique_ptr<Pipeline> pipeline;
 
 		std::vector<VkCommandBuffer> commandBuffers;
 
@@ -41,6 +47,7 @@ namespace celestia
 		uint32_t imageIndex;
 		bool rendering;
 		Vec4 clearColor;
+		bool hasBindedTEMP;
 		//Window window;
 		
 

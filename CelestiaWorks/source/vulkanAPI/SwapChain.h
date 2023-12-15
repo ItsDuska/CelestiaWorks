@@ -5,7 +5,6 @@
 
 namespace celestia
 {
-	constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 	class Device;
 	class Window;
@@ -32,8 +31,6 @@ namespace celestia
 		VkSwapchainKHR& getSwapchain();
 		VkFramebuffer getFrameBuffer(int index);
 
-
-
 	public:
 		VkExtent2D extent;
 
@@ -58,6 +55,10 @@ namespace celestia
 		void createSyncObjects();
 		void createFramebuffers();
 		void cleanupSwapChain();
+
+		VkImageView createImageView(VkImage image, VkFormat format);
+
+		
 
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR chooseSwapPresentMode(const std::vector < VkPresentModeKHR>& availablePresentModes);

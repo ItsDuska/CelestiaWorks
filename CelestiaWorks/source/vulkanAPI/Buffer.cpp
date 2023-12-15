@@ -1,4 +1,5 @@
 #include "Buffer.h"
+#include "CommandBuffer.h"
 #include "vulkanAPI/Device.h"
 
 
@@ -7,10 +8,10 @@ celestia::Buffer::Buffer(Device& device)
 {
     RawMesh mesh{};
     mesh.vertices = {
-        {{-0.5,-0.5},{0,0},{1,0,0}},
-        {{0.5,-0.5},{0,0}, {0,1,0} },
-        {{0.5,0.5 },{ 0,0 },{ 0,0,1 } },
-        {{-0.5,0.5 },{ 0,0 },{ 0.5,0.5,1 } }
+        {{-0.5f,-0.5f}, { 1.f,0.f},  { 1.f, 0.f, 0.f}},
+        {{0.5f,-0.5f},  { 0.f,0.f},  { 0.f, 1.f, 0.f}},
+        {{0.5f, 0.5f},  { 0.f,1.f},  { 0.f, 0.f, 1.f}},
+        {{-0.5f,0.5f},  { 1.f,1.f},  { 0.5f, 0.5f, 1.f}}
     };
 
     mesh.indices = { 0,1,2,2,3,0 };
@@ -63,9 +64,26 @@ void celestia::Buffer::createMesh(RawMesh& rawMesh, Mesh& mesh)
     mesh.vertexBuffer = createVertexBuffer(rawMesh);
 }
 
-celestia::Mesh& celestia::Buffer::getDefaultMesh()
+celestia::Mesh *celestia::Buffer::getDefaultMesh()
 {
-    return defaultMesh;
+    return &defaultMesh;
+}
+
+void celestia::Buffer::updateBatchBuffer(AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const BatchVertex* srcData)
+{
+    AllocatedBuffer stagingBuffer = createBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    void* data;
+    vkMapMemory(device.device, stagingBuffer.memory, 0, dataSize, 0, &data);
+    memcpy(data, srcData, (size_t)dataSize);
+    vkUnmapMemory(device.device, stagingBuffer.memory);
+
+    copyBuffer(stagingBuffer.buffer, dstBuffer.buffer, dataSize, 0, dstOffset);
+    
+    vkDestroyBuffer(device.device, stagingBuffer.buffer, nullptr);
+    vkFreeMemory(device.device, stagingBuffer.memory, nullptr);
 }
 
 /*
@@ -97,7 +115,7 @@ celestia::AllocatedBuffer celestia::Buffer::createVertexBuffer(RawMesh& rawMesh)
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-    copyBuffer(stagingBuffer.buffer, vertexBuffer.buffer, bufferSize);
+    copyBuffer(stagingBuffer.buffer, vertexBuffer.buffer, bufferSize,0,0);
 
     vkDestroyBuffer(device.device, stagingBuffer.buffer, nullptr);
     vkFreeMemory(device.device, stagingBuffer.memory, nullptr);
@@ -140,7 +158,7 @@ celestia::AllocatedBuffer celestia::Buffer::createIndexBuffer(RawMesh& rawMesh)
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-    copyBuffer(stagingBuffer.buffer, indexBuffer.buffer, bufferSize);
+    copyBuffer(stagingBuffer.buffer, indexBuffer.buffer, bufferSize,0,0);
 
     vkDestroyBuffer(device.device, stagingBuffer.buffer, nullptr);
     vkFreeMemory(device.device, stagingBuffer.memory, nullptr);
@@ -154,39 +172,17 @@ celestia::AllocatedBuffer celestia::Buffer::createIndexBuffer(RawMesh& rawMesh)
 }
 
 
-void celestia::Buffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void celestia::Buffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkDeviceSize srcOffset, VkDeviceSize dstOffset)
 {
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = device.commandPool;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(device.device, &allocInfo, &commandBuffer);
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(device.commandPool, device.device);
+    
     VkBufferCopy copyRegion{};
-    copyRegion.srcOffset = 0;
-    copyRegion.dstOffset = 0;
+    copyRegion.srcOffset = srcOffset;
+    copyRegion.dstOffset = dstOffset;
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-    vkEndCommandBuffer(commandBuffer);
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    vkQueueSubmit(device.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device.graphicsQueue);
-    vkFreeCommandBuffers(device.device, device.commandPool, 1, &commandBuffer);
+    endSingleTimeCommands(device.graphicsQueue, device.commandPool, device.device, commandBuffer);
 }
 
 uint32_t celestia::Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)

@@ -4,14 +4,14 @@
 #include "vulkanAPI/SwapChain.h"
 #include "Pipeline.h"
 #include "Buffer.h"
+#include "Image.h"
+#include "Descriptor.h"
 
 #include "CelestiaVulkanTypes.h"
 #include "utils/Utils.h"
 #include "math/MatrixMath.h"
 #include <chrono>
 
-//#include <glm/glm.hpp>
-//#include <glm/ext/matrix_transform.hpp>
 
 celestia::Render::Render(Window& window)
 	: window(window), imageIndex(0)
@@ -19,10 +19,12 @@ celestia::Render::Render(Window& window)
 	device = std::make_unique<Device>(window);
 	swapChain = std::make_unique<SwapChain>(*device, window);
 	buffer = std::make_unique<Buffer>(*device);
-	pipeline = std::make_unique<Pipeline>(*device, *swapChain);
+	image = std::make_unique<Image>(*device, *buffer);
+	descriptor = std::make_unique<Descriptor>(*device, *buffer, *image);
+	pipeline = std::make_unique<Pipeline>(*device, *swapChain,*descriptor);
 	rendering = false;
 	clearColor = { 0.f,0.f,0.f,1.f };
-
+	hasBindedTEMP = false;
 	createCommandBuffers();
 }
 
@@ -41,29 +43,40 @@ void celestia::Render::draw()
 		return;
 	}
 	
-	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultPipeline());
+	if (!hasBindedTEMP)
+	{
+		vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultMaterial()->pipeline);
 
-	Vec3 pos{};
-	pos.x = 250.f;
-	pos.y = 250.f;
-	pos.z = 0.f;
-
-	Vec3 size{};
-	size.x = 200.f;
-	size.y = 200.f;
-	size.z = 1.f;
-
-	Vec3 rotate{};
-	rotate.x = 0.f;
-	rotate.y = 0.f;
-	rotate.z = 1.f;
+		vkCmdBindDescriptorSets(commandBuffers[currentFrame],
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipeline->getDefaultMaterial()->layout,
+			0, 1,
+			&descriptor->getDescriptorSet(currentFrame),
+			0, nullptr
+		);
+	}
 
 	static auto startTime = std::chrono::high_resolution_clock::now();
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+	Vec3 pos{};
+	pos.x = 350.f;
+	pos.y = 250.f;
+	pos.z = 0.f;
+
+	Vec3 size{};
+	size.x = sin(time)*250 +100;
+	size.y = 250.f;
+	size.z = 1.f;
+
+	Vec3 rotate{};
+	rotate.x = 0.f;
+	rotate.y = 0.f;
+	rotate.z = -0.5f;
+
 	const float DEGREE = 360.f;
-	const float angle = fmodf(time*15, DEGREE);
+	const float angle = fmodf(time*20, DEGREE);
 
 
 	Mat4 model(1.f);
@@ -74,7 +87,6 @@ void celestia::Render::draw()
 	model = math::translate(model, Vec3(-0.5f * size.x, -0.5f * size.y, 0.f));
 
 	model = math::scale(model, size);
-
 
 	Mat4 projection = math::ortho(
 		0.f,
@@ -93,18 +105,24 @@ void celestia::Render::draw()
 
 
 	vkCmdPushConstants(commandBuffers[currentFrame],
-		pipeline->getDefaultLayout(),
+		pipeline->getDefaultMaterial()->layout,
 		VK_SHADER_STAGE_VERTEX_BIT, 0,
 		sizeof(PUSH_CONSTANTS),
 		&constants
 	);
 
-	VkDeviceSize offset = 0;
-	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &buffer->getDefaultMesh().vertexBuffer.buffer, &offset);
-	vkCmdBindIndexBuffer(commandBuffers[currentFrame], buffer->getDefaultMesh().indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+	if (!hasBindedTEMP)
+	{
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &buffer->getDefaultMesh()->vertexBuffer.buffer, &offset);
+		vkCmdBindIndexBuffer(commandBuffers[currentFrame], buffer->getDefaultMesh()->indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+		if (currentFrame == MAX_FRAMES_IN_FLIGHT)
+		{
+			hasBindedTEMP = true;
+		}
+	}
 
-
-	vkCmdDrawIndexed(commandBuffers[currentFrame], buffer->getDefaultMesh().indexBufferSize, 1, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffers[currentFrame], buffer->getDefaultMesh()->indexBufferSize, 1, 0, 0, 0);
 }
 
 void celestia::Render::beginRendering()

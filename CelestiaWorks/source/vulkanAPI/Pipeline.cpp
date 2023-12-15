@@ -7,8 +7,8 @@
 #include "celestiaTypes/CelestiaTypes.h"
 
 
-celestia::Pipeline::Pipeline(Device& device, SwapChain& swapChain)
-	:device(device),swapChain(swapChain)
+celestia::Pipeline::Pipeline(Device& device, SwapChain& swapChain, Descriptor& descriptor)
+	:device(device),swapChain(swapChain),descriptor(descriptor)
 {
 	const char* defaultVertexShader = "../CelestiaWorks/shaders/vert.spv";
 	const char* defaultFragmentShader = "../CelestiaWorks/shaders/frag.spv";
@@ -18,23 +18,23 @@ celestia::Pipeline::Pipeline(Device& device, SwapChain& swapChain)
 	shader.loadShader(defaultFragmentShader, ShaderType::FRAGMENT_SHADER);
 	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
-	createPipeline(shader, DrawingMode::TRIANGLE, nullptr);
+	createPipeline(defaultMaterial, shader, DrawingMode::TRIANGLE, &descriptor);
 
 }
 
 celestia::Pipeline::~Pipeline()
 {
-	vkDestroyPipeline(device.device, defaultPipeline, nullptr);
-	vkDestroyPipelineLayout(device.device, defaultPipelineLayout, nullptr);
+	vkDestroyPipeline(device.device, defaultMaterial.pipeline, nullptr);
+	vkDestroyPipelineLayout(device.device, defaultMaterial.layout, nullptr);
 }
 
 
 //Use nullptr for descriptor if not using any uniform buffers or textures.
-VkPipeline celestia::Pipeline::createPipeline(ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors)
+void celestia::Pipeline::createPipeline(Material& material,ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors)
 {
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = createLayoutInfo(shader, descriptors);
 
-	if (vkCreatePipelineLayout(device.device, &pipelineLayoutInfo, nullptr, &defaultPipelineLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(device.device, &pipelineLayoutInfo, nullptr, &material.layout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout!");
 	}
@@ -66,24 +66,20 @@ VkPipeline celestia::Pipeline::createPipeline(ShaderObject &shader, DrawingMode 
 
 	builder.multisampling = createMultisampling();
 	builder.colorBlendAttachment = createColorBlendAttachment();
-	builder.pipelineLayout = defaultPipelineLayout;
+	builder.pipelineLayout = defaultMaterial.layout;
 
-	defaultPipeline = builder.buildPipeline(device.device, swapChain.getRenderPass());
+	material.pipeline = builder.buildPipeline(device.device, swapChain.getRenderPass());
 
 	//createMaterial(meshPipeline, meshLayout, "default");
 
-	return VkPipeline();
 }
 
-VkPipeline celestia::Pipeline::getDefaultPipeline()
+celestia::Material *celestia::Pipeline::getDefaultMaterial()
 {
-	return defaultPipeline;
+	return &defaultMaterial;
 }
 
-VkPipelineLayout celestia::Pipeline::getDefaultLayout()
-{
-	return defaultPipelineLayout;
-}
+
 
 VkPipelineInputAssemblyStateCreateInfo celestia::Pipeline::createInputAssembly(DrawingMode mode)
 {
@@ -196,17 +192,15 @@ VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& sh
 	VkPipelineLayoutCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	info.pNext = nullptr;
-
 	//empty defaults
 	info.flags = 0;
 
 	if (descriptor != nullptr)
 	{
 		info.setLayoutCount = 1; // TODO: descriptoreille funktio joka antaa niitten määrän.
-		//info.pSetLayouts = descriptor.getLayoutSet();
+		info.pSetLayouts = &descriptor->getDescriptorSetLayout();
 	}
-	info.setLayoutCount = 0;
-	info.pSetLayouts = nullptr;
+	
 	info.pushConstantRangeCount = 1;
 	info.pPushConstantRanges = &shader.getPushConstant();
 	return info;
@@ -251,8 +245,8 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
 	VkPipeline newPipeline;
-	if (vkCreateGraphicsPipelines(
-		device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS) {
+	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)
+	{
 		std::cout << "failed to create pipeline\n";
 		return VK_NULL_HANDLE; // failed to create graphics pipeline
 	}
