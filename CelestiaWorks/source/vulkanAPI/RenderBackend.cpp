@@ -7,7 +7,7 @@
 #include "Image.h"
 #include "Descriptor.h"
 
-#include "CelestiaVulkanTypes.h"
+#include "celestiaTypes/CelestiaVulkanTypes.h"
 #include "utils/Utils.h"
 #include "math/MatrixMath.h"
 #include <chrono>
@@ -26,6 +26,7 @@ celestia::Render::Render(Window& window)
 	clearColor = { 0.f,0.f,0.f,1.f };
 	hasBindedTEMP = false;
 	createCommandBuffers();
+	textureID = 0;
 }
 
 celestia::Render::~Render()
@@ -35,7 +36,7 @@ celestia::Render::~Render()
 	device->deletionQueue.flush();
 }
 
-void celestia::Render::draw()
+void celestia::Render::draw(Vec2 pos, Vec2 size)
 {
 	if (!rendering)
 	{
@@ -55,20 +56,26 @@ void celestia::Render::draw()
 			0, nullptr
 		);
 	}
-
+	
 	static auto startTime = std::chrono::high_resolution_clock::now();
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-	Vec3 pos{};
-	pos.x = 350.f;
-	pos.y = 250.f;
-	pos.z = 0.f;
+	Vec3 _pos{};
+	_pos.x = pos.x;
+	_pos.y = pos.y;
+	_pos.z = 0.f;
 
-	Vec3 size{};
-	size.x = sin(time)*250 +100;
-	size.y = 250.f;
-	size.z = 1.f;
+	Vec3 _size{};
+	_size.x = size.x;
+	_size.y = size.y;
+	_size.z = 1.f;
+
+	//Vec3 _size{};
+	//_size.x = sin(time) * 100;
+	//_size.y = sin(time) * 100;
+	//_size.z = 1.f;
+
 
 	Vec3 rotate{};
 	rotate.x = 0.f;
@@ -76,39 +83,49 @@ void celestia::Render::draw()
 	rotate.z = -0.5f;
 
 	const float DEGREE = 360.f;
-	const float angle = fmodf(time*20, DEGREE);
-
+	const float angle = fmodf(time * 20, DEGREE);
 
 	Mat4 model(1.f);
-	model = math::translate(model, pos);
+	model = math::translate(model, _pos);
 
-	model = math::translate(model, Vec3(0.5f * size.x, 0.5f * size.y, 0.f));
+	model = math::translate(model, Vec3(0.5f * _size.x, 0.5f * _size.y, 0.f));
 	model = math::rotate(model, math::radians(angle), rotate);
-	model = math::translate(model, Vec3(-0.5f * size.x, -0.5f * size.y, 0.f));
+	model = math::translate(model, Vec3(-0.5f * _size.x, -0.5f * _size.y, 0.f));
 
-	model = math::scale(model, size);
+	model = math::scale(model, _size);
 
 	Mat4 projection = math::ortho(
 		0.f,
-		static_cast<float>(window.getWindowSize().x) ,
-		static_cast<float>(window.getWindowSize().y) ,
+		static_cast<float>(window.getWindowSize().x),
 		0.f,
+		static_cast<float>(window.getWindowSize().y),
 		-1.f,
 		1.f
 	);
 
-	Mat4 projection1(1.f);
+	UniformBufferObject uniform{};
+	uniform.projection = projection;
+	uniform.transform = model;
 
-	PUSH_CONSTANTS constants{};
-	constants.projection = projection;
-	constants.transform = model;
+	//VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+	//void* data;
+	//vkMapMemory(device->device, buffer->uniformBufferTemp[currentFrame].memory, 0, bufferSize, 0, &data);
+	memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
+	//memcpy(data, &uniform, static_cast<uint32_t>(bufferSize));
+	//vkUnmapMemory(device->device, buffer->uniformBufferTemp[currentFrame].memory);
 
+	//textureID++;
+	//textureID %= 1;
+
+
+	PUSH_CONSTANTS push{};
+	push.texID = textureID;
 
 	vkCmdPushConstants(commandBuffers[currentFrame],
 		pipeline->getDefaultMaterial()->layout,
 		VK_SHADER_STAGE_VERTEX_BIT, 0,
 		sizeof(PUSH_CONSTANTS),
-		&constants
+		&push
 	);
 
 	if (!hasBindedTEMP)
@@ -123,6 +140,7 @@ void celestia::Render::draw()
 	}
 
 	vkCmdDrawIndexed(commandBuffers[currentFrame], buffer->getDefaultMesh()->indexBufferSize, 1, 0, 0, 0);
+		
 }
 
 void celestia::Render::beginRendering()
@@ -263,3 +281,4 @@ void celestia::Render::createCommandBuffers()
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
 }
+

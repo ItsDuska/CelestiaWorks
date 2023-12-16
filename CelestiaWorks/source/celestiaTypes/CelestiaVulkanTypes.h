@@ -1,6 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include <celestiaTypes/CelestiaTypes.h>
+#include "celestiaTypes/CelestiaTypes.h"
+#include "Matrix.h"
 #include <vector>
 
 
@@ -36,6 +37,18 @@ namespace celestia
 	{
 		VkImage image;
 		VkDeviceMemory memory;
+	};
+
+	struct RawTexture
+	{
+		AllocatedImage allocatedImage;
+		VkImageView imageView;
+	};
+
+	struct UniformBufferObject
+	{
+		alignas(16) Mat4 transform;
+		alignas(16) Mat4 projection;
 	};
 
 }

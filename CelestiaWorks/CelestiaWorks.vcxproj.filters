@@ -86,7 +86,7 @@
     <ClInclude Include="source\vulkanAPI\ShaderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\CelestiaVulkanTypes.h">
+    <ClInclude Include="source\celestiaTypes\CelestiaVulkanTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\vulkanAPI\Buffer.h">

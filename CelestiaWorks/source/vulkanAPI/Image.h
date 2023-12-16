@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "CelestiaVulkanTypes.h"
+#include "celestiaTypes/CelestiaVulkanTypes.h"
 
 namespace celestia
 {
@@ -13,11 +13,13 @@ namespace celestia
 		Image(Device& device,Buffer& buffer);
 		~Image();
 
-		void createTextureImage(const char* filepath,AllocatedImage& image);
+		//void createTextureImage(const char* filepath,);
+		void createTextureImage(const char* filepath, RawTexture& texture);
 	public:
-		VkImageView textureImageView;
+		RawTexture defaultTexture;
 		VkSampler textureSampler;
 
+		RawTexture tempTexture;
 	private:
 		void createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling,
 			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, AllocatedImage& image);
@@ -30,7 +32,7 @@ namespace celestia
 		Device& device;
 		Buffer& buffer;
 
-		AllocatedImage defaultTexture;
+		//AllocatedImage defaultTexture;
 	};
 
 }

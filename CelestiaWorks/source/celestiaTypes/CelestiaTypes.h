@@ -13,8 +13,10 @@ namespace celestia
 		Vec2 position;
 		Vec2 texCoord;
 		Vec3 color;
+		uint32_t texIndex;
 	};
 
+	/*
 	struct CELESTIA_WORKS BatchVertex
 	{
 		Vec2 position;
@@ -22,6 +24,6 @@ namespace celestia
 		Vec4 color;
 		float texIndex;
 	};
-
+	*/
 }
 

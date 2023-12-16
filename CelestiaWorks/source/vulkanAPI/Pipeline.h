@@ -2,7 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "celestiaTypes/Matrix.h"
-#include "CelestiaVulkanTypes.h"
+#include "celestiaTypes/CelestiaVulkanTypes.h"
 
 namespace celestia 
 {
@@ -22,8 +22,7 @@ namespace celestia
 
 	struct PUSH_CONSTANTS
 	{
-		Mat4 transform;
-		Mat4 projection;
+		uint32_t texID;
 	};
 
 

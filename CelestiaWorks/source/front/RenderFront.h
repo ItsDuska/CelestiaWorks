@@ -23,7 +23,7 @@ namespace celestia
 		CELESTIA_WORKS ~WindowHandle();
 
 	public:
-		CELESTIA_WORKS void draw() const;
+		CELESTIA_WORKS void draw(Vec2 pos, Vec2 size) const;
 		CELESTIA_WORKS void beginRenderPass() const;
 		CELESTIA_WORKS void endRenderPass() const;
 		CELESTIA_WORKS bool isOpen() const;

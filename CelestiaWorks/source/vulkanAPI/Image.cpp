@@ -14,21 +14,20 @@ Kirjota t‰‰ uudelleen, jotta pystyisit luomaan uusia tekstuureja k‰ytt‰m‰ll‰ vai
 Myˆs mahdollisuus luoda black white 1x1 tekstuuri default tekstuuriks jos joku kuolee.
 */
 
-constexpr const char* TEMP_TEXTURE_PATH = "../assets/TempAsset1.jpg"; // TODO: poista t‰‰
+constexpr const char* TEMP_TEXTURE_PATH = "../assets/test.png"; // TODO: poista t‰‰
 
 
 celestia::Image::Image(Device& device,Buffer& buffer)
 	:device{device}, buffer{buffer}
 {
 	createTextureImage(TEMP_TEXTURE_PATH, defaultTexture);
-	textureImageView = createImageView(defaultTexture.image, VK_FORMAT_R8G8B8A8_SRGB);
+	createTextureImage("../assets/TempAsset1.jpg", tempTexture);
 	createTextureSampler();
 }
 
 celestia::Image::~Image()
 {
 	vkDestroySampler(device.device, textureSampler, nullptr);
-	vkDestroyImageView(device.device, textureImageView, nullptr);
 }
 
 void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling,
@@ -71,12 +70,12 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 
 }
 
-void celestia::Image::createTextureImage(const char* filepath,AllocatedImage& image)
+void celestia::Image::createTextureImage(const char* filepath, RawTexture& texture)
 {
 	Vec2i texSize{};
 	int texChannels;
 	stbi_uc* pixels = stbi_load(filepath, &texSize.x, &texSize.y, &texChannels, STBI_rgb_alpha);
-	VkDeviceSize imageSize = texSize.x * texSize.y * 4;
+	VkDeviceSize imageSize = static_cast<VkDeviceSize>(texSize.x) * texSize.y * 4;
 
 	if (!pixels)
 	{
@@ -98,21 +97,21 @@ void celestia::Image::createTextureImage(const char* filepath,AllocatedImage& im
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		image
+		texture.allocatedImage
 	);
 
-	transitionImageLayout(image.image,
+	transitionImageLayout(texture.allocatedImage.image,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 	);
 
 	copyBufferToImage(stagingBuffer.buffer,
-		image.image,
+		texture.allocatedImage.image,
 		{ static_cast<uint32_t>(texSize.x), static_cast<uint32_t>(texSize.y) }
 	);
 
-	transitionImageLayout(image.image,
+	transitionImageLayout(texture.allocatedImage.image,
 		VK_FORMAT_R8G8B8A8_SRGB,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
@@ -121,9 +120,12 @@ void celestia::Image::createTextureImage(const char* filepath,AllocatedImage& im
 	vkDestroyBuffer(device.device, stagingBuffer.buffer, nullptr);
 	vkFreeMemory(device.device, stagingBuffer.memory, nullptr);
 
+	texture.imageView = createImageView(texture.allocatedImage.image, VK_FORMAT_R8G8B8A8_SRGB);
+
 	device.deletionQueue.pushFunction([=]() {
-		vkDestroyImage(device.device, image.image, nullptr);
-		vkFreeMemory(device.device, image.memory, nullptr);
+		vkDestroyImageView(device.device, texture.imageView, nullptr);
+		vkDestroyImage(device.device, texture.allocatedImage.image, nullptr);
+		vkFreeMemory(device.device, texture.allocatedImage.memory, nullptr);
 		}
 	);
 }

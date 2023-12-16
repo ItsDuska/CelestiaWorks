@@ -19,6 +19,10 @@ namespace celestia
 
 		//FrameData& getFrameData(int currentFrame) { return frameData[currentFrame]; }
 		VkDescriptorSet& getDescriptorSet(int currentFrame);
+
+		void updateDescriptorSetTexture(VkImageView view,VkSampler sampler,
+			uint32_t bindingSlot,int currentFrame);
+
 	private:
 		void createDescriptors();
 

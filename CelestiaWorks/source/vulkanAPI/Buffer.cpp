@@ -7,20 +7,31 @@ celestia::Buffer::Buffer(Device& device)
     :device(device)
 {
     RawMesh mesh{};
+    
+
     mesh.vertices = {
-        {{-0.5f,-0.5f}, { 1.f,0.f},  { 1.f, 0.f, 0.f}},
-        {{0.5f,-0.5f},  { 0.f,0.f},  { 0.f, 1.f, 0.f}},
-        {{0.5f, 0.5f},  { 0.f,1.f},  { 0.f, 0.f, 1.f}},
-        {{-0.5f,0.5f},  { 1.f,1.f},  { 0.5f, 0.5f, 1.f}}
+        {{-0.5f,-0.5f}, { 1.f,0.f},  { 1.f,  0.f, 0.f},  1u},
+        {{0.5f,-0.5f},  { 0.f,0.f},  { 0.f,  1.f, 0.f},  0u},
+        {{0.5f, 0.5f},  { 0.f,1.f},  { 0.f,  0.f, 1.f},  0u},
+        {{-0.5f,0.5f},  { 1.f,1.f},  { 0.5f, 0.5f, 1.f}, 1u}
     };
 
     mesh.indices = { 0,1,2,2,3,0 };
     
+
+   
+
     createMesh(mesh, defaultMesh);
+
+    createUniformBuffers();
 }
 
 celestia::Buffer::~Buffer()
 {
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroyBuffer(device.device, uniformBufferTemp[i].buffer, nullptr);
+        vkFreeMemory(device.device, uniformBufferTemp[i].memory, nullptr);
+    }
 }
 
 celestia::AllocatedBuffer celestia::Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
@@ -69,7 +80,7 @@ celestia::Mesh *celestia::Buffer::getDefaultMesh()
     return &defaultMesh;
 }
 
-void celestia::Buffer::updateBatchBuffer(AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const BatchVertex* srcData)
+void celestia::Buffer::updateBatchBuffer(AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const Vertex* srcData)
 {
     AllocatedBuffer stagingBuffer = createBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -169,6 +180,23 @@ celestia::AllocatedBuffer celestia::Buffer::createIndexBuffer(RawMesh& rawMesh)
         });
     
     return indexBuffer;
+}
+
+void celestia::Buffer::createUniformBuffers()
+{
+    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+    uniformBufferTemp.resize(MAX_FRAMES_IN_FLIGHT);
+    uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        uniformBufferTemp[i] = createBuffer(bufferSize,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        );
+
+        vkMapMemory(device.device, uniformBufferTemp[i].memory, 0, bufferSize, 0, &uniformBuffersMapped[i]);
+    }
 }
 
 

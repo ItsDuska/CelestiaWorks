@@ -4,7 +4,6 @@ mitä pitää tehdä siis:
 
 Vulkanilla 2D rendering sharttings
 windows.h api käytä ikkunaan.
-Kirjoita oma tapa lukea tekstuureita eli kuvia
 Kirjoita oma tapa soittaa musiikkia
 Oma matikka kirjasto????
 
@@ -45,4 +44,22 @@ Tee funktio uuden shader parametrien tekemiseen eli uus pipeline ja shaderModule
 muuta draw funktio siten että se ottaa vastaan halutun objectin ja piirtää sen.
 
 varmaan joudutaan käyttämään sprite atlas tai se vulkanin sprite layer homma
+
+
+
+----------
+
+Material structiin -> VkDescriptorSet textureSet{VK_NULL_HANDLE};
+
+Uus struct Texture:
+
+struct Texture
+{
+	AllocatedImage image;
+	VkImageView imageView;
+};
+
+
+Kun vaihdetaan tekstuuria niin tehään us VkWriteDescriptorSet struct ja sit päivitetään käyttämällä vkUpdateDescriptorSets(), jonka jälkee bindataan uudelleen se.
+
 

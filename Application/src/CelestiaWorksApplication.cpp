@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include <stdexcept>
 #include "front/RenderFront.h"
+#include <chrono>
+
 
 #ifdef TIMING
 #include <chrono>
@@ -33,9 +35,24 @@ int main() {
 
 			window.beginRenderPass();
 
-			window.draw();
+			static auto startTime = std::chrono::high_resolution_clock::now();
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+			
+			celestia::Vec2 pos{};
+			pos.x = 3 * 100.f;
+			pos.y = 3 * 100.f;
+
+			celestia::Vec2 size{};
+
+			size.x = sin(time) * 200;
+			size.y = sin(time) * 200;
+
+			window.draw(pos, size);
 
 			window.endRenderPass();
+
 
 			#ifdef TIMING
 			end = std::chrono::system_clock::now();

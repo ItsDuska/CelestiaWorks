@@ -66,7 +66,7 @@ void celestia::Pipeline::createPipeline(Material& material,ShaderObject &shader,
 
 	builder.multisampling = createMultisampling();
 	builder.colorBlendAttachment = createColorBlendAttachment();
-	builder.pipelineLayout = defaultMaterial.layout;
+	builder.pipelineLayout = material.layout;
 
 	material.pipeline = builder.buildPipeline(device.device, swapChain.getRenderPass());
 

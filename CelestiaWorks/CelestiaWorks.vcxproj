@@ -177,7 +177,7 @@
     <ClInclude Include="source\math\VectorMath.h" />
     <ClInclude Include="source\utils\Utils.h" />
     <ClInclude Include="source\vulkanAPI\Buffer.h" />
-    <ClInclude Include="source\vulkanAPI\CelestiaVulkanTypes.h" />
+    <ClInclude Include="source\celestiaTypes\CelestiaVulkanTypes.h" />
     <ClInclude Include="source\vulkanAPI\CommandBuffer.h" />
     <ClInclude Include="source\vulkanAPI\Descriptor.h" />
     <ClInclude Include="source\vulkanAPI\Device.h" />

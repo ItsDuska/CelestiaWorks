@@ -3,7 +3,6 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 #include "celestiaTypes/CelestiaTypes.h"
-#include "CelestiaVulkanTypes.h"
 
 namespace celestia
 {
@@ -23,7 +22,7 @@ namespace celestia
 		Render& operator = (const Render&) = delete;
 		~Render();
 
-		void draw();
+		void draw(Vec2 pos, Vec2 size);
 		void beginRendering();
 		void endRendering();
 		void setClearColor(Color& color);
@@ -50,7 +49,7 @@ namespace celestia
 		bool hasBindedTEMP;
 		//Window window;
 		
-
+		int textureID;
 
 	};
 }

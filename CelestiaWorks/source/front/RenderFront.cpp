@@ -21,9 +21,9 @@ celestia::WindowHandle::~WindowHandle()
 
 
 //TODO: make this actually draw any gameObjects.
-void celestia::WindowHandle::draw() const
+void celestia::WindowHandle::draw(Vec2 pos, Vec2 size) const
 {
-	render->draw();
+	render->draw(pos,size);
 }
 
 void celestia::WindowHandle::beginRenderPass() const
