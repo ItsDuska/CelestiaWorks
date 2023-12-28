@@ -1,6 +1,7 @@
 #include "VectorMath.h"
 #include <cmath>
 
+
 celestia::Vec3 celestia::math::normalize(const Vec3& vec)
 {
     return vec * inverseSqrt(dotf(vec, vec));

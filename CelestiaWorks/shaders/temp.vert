@@ -12,16 +12,17 @@ layout (location = 2) out flat uint textureID;
 layout (set = 0, binding = 1) uniform constants
 {
 	mat4 transform;
-	mat4 projection;
+	//mat4 projection;
 } matrix;
 
-layout (push_constant) uniform textureIDPush {
-	uint texID;
+layout (push_constant) uniform pushValues {
+	mat4 projection;
 } pushConstants;
 
 void main()
 {
-	gl_Position = matrix.projection * matrix.transform * vec4(position.xy, 0.0, 1.0);
+	//gl_Position = pushConstants.projection * matrix.transform * vec4(position.xy, 0.0, 1.0);
+	gl_Position = pushConstants.projection * vec4(position.xy, 0.0, 1.0);
 	fragTexCoord = texCoord;
 	outColor = color;
 	textureID = texIndex;

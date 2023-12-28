@@ -63,3 +63,33 @@ struct Texture
 Kun vaihdetaan tekstuuria niin tehään us VkWriteDescriptorSet struct ja sit päivitetään käyttämällä vkUpdateDescriptorSets(), jonka jälkee bindataan uudelleen se.
 
 
+Descriporeissa textuureille oli joku flagi jolla pystyy laittamaan shaderiin n määrän shadereita
+
+
+			!!!!!!!!!!!!!!!!!!!!
+eli shaderissa ei tarvi sanoa Sampler2D textures[NUMBER_OF_TEXTURES] vaan sen sijaan
+	->Sampler2D textures[]
+			!!!!!!!!!!!!!!!!!!!!
+			
+			
+Muuta silleen että uniform bufferissa olisi jokaisen quadin rotation matriisist (model matrix).
+Push constantteihin transform matrix koska se on kaikille sama.
+
+
+
+
+Tällä hetkellä yhdessä framessa menee 1420 mikrosekunttia. OPTIMOI TÄÄ
+
+
+otos 1:
+
+window.isOpen() 705 microseconds.
+window.beginRenderPass() 79 microseconds.
+25x window.draw() 1 microseconds.
+window.endRenderPass() 1104 microseconds.
+
+otos 2:
+
+window.isOpen() 929 microseconds.
+window.beginRenderPass() 63 microseconds.
+25x window.draw() 1 microseconds.

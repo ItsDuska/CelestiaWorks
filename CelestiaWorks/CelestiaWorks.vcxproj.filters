@@ -15,31 +15,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\window\Window.cpp">
+    <ClCompile Include="source\backend\window\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\Device.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\RenderBackend.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\SwapChain.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\SwapChain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\utils\Utils.cpp">
+    <ClCompile Include="source\backend\utils\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\Pipeline.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\Pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\ShaderObject.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\ShaderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\Buffer.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\front\RenderFront.cpp">
+    <ClCompile Include="source\frontend\window\RenderFront.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\math\MatrixMath.cpp">
@@ -48,51 +48,57 @@
     <ClCompile Include="source\math\VectorMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\front\batchRender\BatchRender.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\CommandBuffer.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\CommandBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\Image.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\vulkanAPI\Descriptor.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\Descriptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\frontend\texture\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\frontend\sprite\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\window\Window.h">
+    <ClInclude Include="source\backend\window\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\celestiaTypes\CelestiaTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\Device.h">
+    <ClInclude Include="source\backend\vulkanAPI\Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\RenderBackend.h">
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\SwapChain.h">
+    <ClInclude Include="source\backend\vulkanAPI\SwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\Pipeline.h">
+    <ClInclude Include="source\backend\vulkanAPI\Pipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\Utils.h">
+    <ClInclude Include="source\backend\utils\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\ShaderObject.h">
+    <ClInclude Include="source\backend\vulkanAPI\ShaderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\celestiaTypes\CelestiaVulkanTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\Buffer.h">
+    <ClInclude Include="source\backend\vulkanAPI\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\front\RenderFront.h">
+    <ClInclude Include="source\frontend\window\RenderFront.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\celestiaTypes\Matrix.h">
@@ -107,16 +113,25 @@
     <ClInclude Include="source\math\VectorMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\front\batchRender\BatchRender.h">
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\Image.h">
+    <ClInclude Include="source\backend\vulkanAPI\Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\CommandBuffer.h">
+    <ClInclude Include="source\backend\vulkanAPI\CommandBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\vulkanAPI\Descriptor.h">
+    <ClInclude Include="source\backend\vulkanAPI\Descriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\frontend\texture\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\frontend\sprite\Sprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

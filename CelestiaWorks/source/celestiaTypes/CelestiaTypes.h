@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include "celestiaTypes/Vector.h"
-
+#include "celestiaTypes/Matrix.h"
 
 namespace celestia
 {
@@ -16,14 +16,16 @@ namespace celestia
 		uint32_t texIndex;
 	};
 
-	/*
-	struct CELESTIA_WORKS BatchVertex
+	struct CELESTIA_WORKS Rect
 	{
-		Vec2 position;
-		Vec2 texCoord;
-		Vec4 color;
-		float texIndex;
+		Vec2i position;
+		int width;
+		int height;
 	};
-	*/
+
+	struct PUSH_CONSTANTS
+	{
+		alignas(16) Mat4 projection;
+	};
 }
 

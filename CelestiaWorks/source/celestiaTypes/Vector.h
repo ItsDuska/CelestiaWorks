@@ -1,6 +1,4 @@
 #pragma once
-
-
 #ifdef CELESTIA_WORKS_EXPORTS
 #define CELESTIA_WORKS __declspec(dllexport)
 #else
