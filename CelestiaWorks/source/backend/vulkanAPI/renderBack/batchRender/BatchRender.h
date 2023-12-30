@@ -21,8 +21,7 @@ namespace celestia
 		void drawQuad(const Vec2& position,
 			const Vec2& size, const Vec3& color);
 
-		void drawQuad(const Vec2& position,
-			const Vec2& size, const RawTexture* texture);
+		void drawQuad(const VertexPositions* quad, const RawTexture* texture);
 
 	private:
 		std::vector<Vertex> quadBuffer;

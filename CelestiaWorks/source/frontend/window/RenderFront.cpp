@@ -18,7 +18,7 @@ celestia::WindowHandle::~WindowHandle()
 
 void celestia::WindowHandle::draw(const Sprite& sprite) const
 {
-	render->drawQuad(sprite.getPosition(),sprite.getSize(), sprite.getTexture()->pixels.get());
+	render->drawQuad(sprite.quad, sprite.getTexture()->pixels.get());
 }
 
 void celestia::WindowHandle::beginRenderPass() const

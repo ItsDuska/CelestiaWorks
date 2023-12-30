@@ -19,7 +19,8 @@ constexpr const char* TEMP_TEXTURE_PATH = "../assets/image02.png"; // TODO: pois
 
 celestia::Image::Image()
 {
-	defaultTexture = createTextureImage(TEMP_TEXTURE_PATH, nullptr);
+	Vec2i temp;
+	defaultTexture = createTextureImage(TEMP_TEXTURE_PATH, temp);
 	createTextureSampler();
 }
 
@@ -69,7 +70,7 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	vkBindImageMemory(Device::context.device, image.image, image.memory, 0);
 }
 
-celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Vec2i* size)
+celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Vec2i& size)
 {
 	static int id = 0;
 
@@ -83,10 +84,7 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Ve
 		throw std::runtime_error("Failed to load texture image!\n");
 	}
 
-	if (size != nullptr)
-	{
-		*size = texSize;
-	}
+	size = texSize;
 
 	AllocatedBuffer stagingBuffer = Buffer::createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -270,7 +268,7 @@ void celestia::Image::createTextureSampler()
 	//info.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 	info.maxAnisotropy = 1.0f;
 	info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-	info.unnormalizedCoordinates = VK_FALSE;
+	info.unnormalizedCoordinates = VK_FALSE; // VK_FALSE
 	info.compareEnable = VK_FALSE;
 	info.compareOp = VK_COMPARE_OP_ALWAYS;
 	info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;

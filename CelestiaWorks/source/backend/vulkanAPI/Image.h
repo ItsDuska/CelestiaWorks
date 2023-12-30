@@ -10,7 +10,7 @@ namespace celestia
 		Image();
 		~Image();
 
-		static RawTexture createTextureImage(const char* filepath, Vec2i* size);
+		static RawTexture createTextureImage(const char* filepath, Vec2i& size);
 		static void deleteTextureImage(RawTexture& texture);
 	public:
 		RawTexture defaultTexture;

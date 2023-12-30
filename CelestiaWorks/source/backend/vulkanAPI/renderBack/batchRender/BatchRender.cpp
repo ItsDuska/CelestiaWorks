@@ -111,8 +111,13 @@ void celestia::BatchRender::drawQuad(const Vec2& position, const Vec2& size, con
 	indexCount += 6;
 }
 
-void celestia::BatchRender::drawQuad(const Vec2& position, const Vec2& size, const RawTexture* texture)
+void celestia::BatchRender::drawQuad(const VertexPositions* quad, const RawTexture* texture)
 {
+	if (quad == nullptr)
+	{
+		return;
+	}
+
 	if (indexCount >= MAX_INDEX_COUNT || textureSlotIndex >= NUMBER_OF_TEXTURE_IN_SHADER)
 	{
 		endBatch();
@@ -141,26 +146,26 @@ void celestia::BatchRender::drawQuad(const Vec2& position, const Vec2& size, con
 
 	const Vec3 color = { 1.f,1.f,1.f };
 
-	quadBuffer[vertexCount].position = position;
-	quadBuffer[vertexCount].texCoord = { 0.f,0.f };
+	quadBuffer[vertexCount].position = quad[0].position;
+	quadBuffer[vertexCount].texCoord = quad[0].texCoord;
 	quadBuffer[vertexCount].color = color;
 	quadBuffer[vertexCount].texIndex = textureIndex;
 	vertexCount++;
 
-	quadBuffer[vertexCount].position = { position.x + size.x, position.y };
-	quadBuffer[vertexCount].texCoord = { 1.f,0.f };
+	quadBuffer[vertexCount].position = quad[1].position;
+	quadBuffer[vertexCount].texCoord = quad[1].texCoord;
 	quadBuffer[vertexCount].color = color;
 	quadBuffer[vertexCount].texIndex = textureIndex;
 	vertexCount++;
 
-	quadBuffer[vertexCount].position = { position.x + size.x, position.y + size.y };
-	quadBuffer[vertexCount].texCoord = { 1.f,1.f };
+	quadBuffer[vertexCount].position = quad[2].position;
+	quadBuffer[vertexCount].texCoord = quad[2].texCoord;
 	quadBuffer[vertexCount].color = color;
 	quadBuffer[vertexCount].texIndex = textureIndex;
 	vertexCount++;
 
-	quadBuffer[vertexCount].position = { position.x, position.y + size.y };
-	quadBuffer[vertexCount].texCoord = { 0.f,1.f };
+	quadBuffer[vertexCount].position = quad[3].position;
+	quadBuffer[vertexCount].texCoord = quad[3].texCoord;
 	quadBuffer[vertexCount].color = color;
 	quadBuffer[vertexCount].texIndex = textureIndex;
 	vertexCount++;

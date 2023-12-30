@@ -13,7 +13,7 @@ celestia::Texture::~Texture()
 
 bool celestia::Texture::loadTexture(const char* filepath)
 {
-	pixels = std::make_unique<RawTexture>(Image::createTextureImage(filepath, &size));
+	pixels = std::make_unique<RawTexture>(Image::createTextureImage(filepath, size));
 	return pixels->imageView != nullptr;
 }
 

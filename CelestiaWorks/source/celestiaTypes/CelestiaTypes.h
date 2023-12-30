@@ -16,11 +16,22 @@ namespace celestia
 		uint32_t texIndex;
 	};
 
+	struct VertexPositions
+	{
+		Vec2 position;
+		Vec2 texCoord;
+	};
+
 	struct CELESTIA_WORKS Rect
 	{
 		Vec2i position;
-		int width;
-		int height;
+		Vec2i size;
+	};
+
+	struct CELESTIA_WORKS FloatRect
+	{
+		Vec2 position;
+		Vec2 size;
 	};
 
 	struct PUSH_CONSTANTS

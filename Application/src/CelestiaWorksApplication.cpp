@@ -8,7 +8,6 @@
 #include "frontend/sprite/Sprite.h"
 
 
-
 int main() {
 	bool running = true;
 
@@ -20,9 +19,10 @@ int main() {
 
 		window.setClearColor(color);
 
-		celestia::Texture textures[2];
+		celestia::Texture textures[3];
 		textures[0].loadTexture("../assets/test.png");
 		textures[1].loadTexture("../assets/TempAsset1.jpg");
+		textures[2].loadTexture("../assets/RatSpriteSheet.png");
 		
 		std::vector<celestia::Sprite> sprites;
 		
@@ -43,8 +43,19 @@ int main() {
 			}
 		}
 
+		celestia::Sprite testSprite({ 200.f,200.f }, { 50.f,50.f });
+		testSprite.setTexture(textures[2]);
+		testSprite.setTextureRectSize({ 32.f,32.f });
+
+		int currentTime = 0;
+
+		const int updateFrameNumber = 8;
+		int rectPositionX = 0;
+
 		while (running)
 		{
+			currentTime++;
+
 			if (!window.isOpen())
 			{
 				running = false;
@@ -57,6 +68,17 @@ int main() {
 			{
 				window.draw(currentSprite);
 			}
+
+			if (currentTime >= updateFrameNumber)
+			{
+				rectPositionX++;
+				rectPositionX %= 18;
+				currentTime = 0;
+				testSprite.setTextureRectPosition({ rectPositionX,0 });
+			}
+
+			window.draw(testSprite);
+
 
 			window.endRenderPass();
 

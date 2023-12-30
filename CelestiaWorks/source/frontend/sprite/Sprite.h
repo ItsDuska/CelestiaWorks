@@ -12,21 +12,28 @@ namespace celestia
 		CELESTIA_WORKS void setTexture(Texture& texture);
 		CELESTIA_WORKS const Texture* getTexture() const;
 
-		CELESTIA_WORKS void setTextureRect(Rect& rect);
-		CELESTIA_WORKS Rect getTextureRect() const;
+		CELESTIA_WORKS void setTextureRectPosition(const Vec2 position);
+		CELESTIA_WORKS Vec2 getTextureRectPosition() const;
 
-		CELESTIA_WORKS void setPosition(Vec2 newPosition);
+		CELESTIA_WORKS void setTextureRectSize(const Vec2 size);
+		CELESTIA_WORKS Vec2 getTextureRectSize() const;
+
+		CELESTIA_WORKS void setPosition(const Vec2 newPosition);
 		CELESTIA_WORKS Vec2 getPosition() const;
 
-		CELESTIA_WORKS void setSize(Vec2 newSize);
+		CELESTIA_WORKS void setSize(const Vec2 newSize);
 		CELESTIA_WORKS Vec2 getSize() const;
+	private:
+		void updateQuadPosition();
+		void updateQuadTexCoord();
 
+		friend class WindowHandle;
 	private:
 		Texture* texture;
-		Rect textureRect;
+		FloatRect textureRect;
+		FloatRect spriteRect;
 
-		Vec2 position;
-		Vec2 size;
+		VertexPositions quad[4];
 	};
 }
 
