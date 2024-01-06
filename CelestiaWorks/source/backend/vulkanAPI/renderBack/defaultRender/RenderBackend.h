@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "celestiaTypes/CelestiaVulkanTypes.h"
+#include <chrono>
 
 namespace celestia
 {
@@ -25,6 +26,7 @@ namespace celestia
 		void endRendering();
 		void setClearColor(Color& color);
 		void cleanUp();
+		void setFramerateLimit(const int frameRate);
 	private:
 		void resize();
 		void createCommandBuffers();
@@ -46,7 +48,17 @@ namespace celestia
 		bool rendering;
 		Vec4 clearColor;
 		bool hasBindedTEMP;
-		
 		PUSH_CONSTANTS constants;
+
+		std::chrono::system_clock::duration framerateLimit;
+
+		std::chrono::system_clock::time_point beginFrameTime;
+		std::chrono::system_clock::time_point endFrameTime;
+
+
+		//TEMP
+		unsigned frame_count_per_second = 0;
+		std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds> prev_time_in_seconds;
+		//TEMP
 	};
 }

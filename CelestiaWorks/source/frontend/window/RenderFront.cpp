@@ -43,3 +43,8 @@ void celestia::WindowHandle::setClearColor(Color& color)
 {
 	render->setClearColor(color);
 }
+
+void celestia::WindowHandle::setFrameRateLimit(const int frameRate)
+{
+	render->setFramerateLimit(frameRate);
+}

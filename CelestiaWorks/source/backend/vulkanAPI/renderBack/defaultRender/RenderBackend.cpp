@@ -9,8 +9,8 @@
 
 #include "backend/utils/Utils.h"
 #include "math/MatrixMath.h"
-#include <chrono>
 
+#include <thread>
 
 celestia::Render::Render(Window& window)
 	: window(window)
@@ -27,7 +27,6 @@ celestia::Render::Render(Window& window)
 	createCommandBuffers();
 	imageIndex = 0;
 
-
 	constants.projection = math::ortho(
 		0.f,
 		static_cast<float>(window.getWindowSize().x),
@@ -37,6 +36,13 @@ celestia::Render::Render(Window& window)
 		1.f
 	);
 
+	const int DEFAULT_FRAMERATE = 30;
+
+	setFramerateLimit(DEFAULT_FRAMERATE);
+
+	beginFrameTime = std::chrono::system_clock::now();
+	endFrameTime = beginFrameTime + framerateLimit;
+	std::chrono::time_point<std::chrono::system_clock,std::chrono::seconds> prev_time_in_seconds = std::chrono::time_point_cast<std::chrono::seconds>(beginFrameTime);
 }
 
 celestia::Render::~Render()
@@ -225,6 +231,21 @@ void celestia::Render::endRendering()
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
 	rendering = false;
+
+	//TEMP
+	auto time_in_seconds = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
+	++frame_count_per_second;
+	if (time_in_seconds > prev_time_in_seconds)
+	{
+		std::cerr << frame_count_per_second << " frames per second\n";
+		frame_count_per_second = 0;
+		prev_time_in_seconds = time_in_seconds;
+	}
+	//TEMP
+
+	std::this_thread::sleep_until(endFrameTime);
+	beginFrameTime = endFrameTime;
+	endFrameTime = beginFrameTime + framerateLimit;
 }
 
 void celestia::Render::setClearColor(celestia::Color& color)
@@ -237,6 +258,11 @@ void celestia::Render::cleanUp()
 	vkDeviceWaitIdle(Device::context.device);
 	vkFreeCommandBuffers(Device::context.device, Device::context.commandPool, MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
 	Device::context.deletionQueue.flush();
+}
+
+void celestia::Render::setFramerateLimit(const int frameRate)
+{
+	framerateLimit = std::chrono::round<std::chrono::system_clock::duration>(std::chrono::duration<double>{1. / frameRate});
 }
 
 void celestia::Render::resize()

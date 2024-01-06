@@ -2,18 +2,16 @@
 #include <vector>
 #include <stdexcept>
 
-#include <Windows.h>
-
 #include "frontend/window/RenderFront.h"
 #include "frontend/sprite/Sprite.h"
 
 
-int main() {
-	bool running = true;
-
+int main()
+{
 	try
 	{
 		celestia::WindowHandle window({ 800,800 }, "Among Us Gaming");
+		window.setFrameRateLimit(60);
 
 		celestia::Color color = { 128,128,51,255 };
 
@@ -52,15 +50,9 @@ int main() {
 		const int updateFrameNumber = 8;
 		int rectPositionX = 0;
 
-		while (running)
+		while (window.isOpen())
 		{
 			currentTime++;
-
-			if (!window.isOpen())
-			{
-				running = false;
-				std::cout << "CLOSING\n";
-			}
 
 			window.beginRenderPass();
 
@@ -82,7 +74,7 @@ int main() {
 
 			window.endRenderPass();
 
-			Sleep(10);
+			//Sleep(10);
 		}
 		
 	}
@@ -92,6 +84,8 @@ int main() {
 		return EXIT_FAILURE;
 	}
 	
+	std::cout << "CLOSING\n";
+
 	return EXIT_SUCCESS;
 }
 

@@ -7,7 +7,7 @@ namespace celestia
 {
 	class Window;
 
-	class BatchRender :public Render
+	class BatchRender : public Render
 	{
 	public:
 		BatchRender(Window& window);

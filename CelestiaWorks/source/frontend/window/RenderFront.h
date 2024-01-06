@@ -31,6 +31,7 @@ namespace celestia
 		CELESTIA_WORKS void endRenderPass() const;
 		CELESTIA_WORKS bool isOpen() const;
 		CELESTIA_WORKS void setClearColor(Color& color);
+		CELESTIA_WORKS void setFrameRateLimit(const int frameRate);
 
 	private:
 		std::unique_ptr<Window> window;
