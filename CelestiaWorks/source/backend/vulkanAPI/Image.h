@@ -1,6 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "celestiaTypes/CelestiaVulkanTypes.h"
+#include "CelestiaVulkanTypes.h"
+
 
 namespace celestia
 {
@@ -10,7 +11,7 @@ namespace celestia
 		Image();
 		~Image();
 
-		static RawTexture createTextureImage(const char* filepath, Vec2i& size);
+		static RawTexture createTextureImage(const char* filepath, Vec2i& size, bool isDefaultTexture = false);
 		static void deleteTextureImage(RawTexture& texture);
 	public:
 		RawTexture defaultTexture;
@@ -21,6 +22,7 @@ namespace celestia
 		static void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		static void copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u imageSize);
 		static VkImageView createImageView(VkImage image, VkFormat format);
+		
 		void createTextureSampler(); // Muuta ett‰ k‰ytet‰‰n pixel arvoja eik‰ 0-1 arvoja.
 	};
 

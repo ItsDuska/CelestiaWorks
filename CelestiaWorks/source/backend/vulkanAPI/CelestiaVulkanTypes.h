@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "celestiaTypes/CelestiaTypes.h"
+#include "System/CelestiaTypes.h"
 #include <vector>
 
 

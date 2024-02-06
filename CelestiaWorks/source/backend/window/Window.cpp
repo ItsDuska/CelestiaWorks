@@ -1,6 +1,7 @@
 #include "Window.h"
 #include <vector>
 #include <iostream>
+#include "SourceGraphics/Keyboard.h"
 
 
 namespace celestia
@@ -11,9 +12,33 @@ namespace celestia
 		{
 		case WM_ERASEBKGND:
 			return 1;
+		case WM_KILLFOCUS:
+			//focus = false;
+			break;
+		case WM_SETFOCUS:
+			//focus = true;
+			break;
 		case WM_SIZE:
 			resizeWindow(hWnd, WM_SIZE); 
 			break;
+		case WM_SYSKEYDOWN:
+		case WM_SYSKEYUP:
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+			/*
+			if (focus)
+			{
+				static bool keyDown, keyWasDown;
+				keyDown =    ((lParam & (1 << 31)) == 0); // magic
+				keyWasDown = ((lParam & (1 << 30)) != 0); // magic part 2
+				if (keyDown != keyWasDown)
+				{
+					keys[static_cast<uint8_t>(wParam)] = keyDown;
+				}
+			}
+			*/
+			break;
+
 		case WM_SIZING:
 			resizeWindow(hWnd, WM_SIZING);
 			break;
@@ -39,6 +64,9 @@ namespace celestia
 	{
 		windowSize = size;
 		resized = false;
+
+		//memset(keys, 0, 256 * sizeof(keys[0]));
+		//focus = true;
 
 		WNDCLASS wndClass = {};
 		wndClass.lpszClassName = CLASS_NAME;
@@ -83,6 +111,9 @@ namespace celestia
 		);
 		
 		ShowWindow(hWnd, SW_SHOW);
+
+		
+
 	}
 
 	Window::~Window()

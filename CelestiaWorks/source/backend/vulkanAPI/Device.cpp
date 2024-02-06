@@ -3,8 +3,8 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
+#include "config/VulkanConfig.h"
 
-#define ENABLE_VALIDATION_LAYER
 
 #ifdef ENABLE_VALIDATION_LAYER
 const bool VALIDATION_LAYERS = true;
@@ -26,7 +26,6 @@ const std::vector<const char*> deviceExtensions = {
 
 celestia::Device::Device(Window& window)
 {
-	std::cout << VALIDATION_LAYERS << "\n";
 	createInstance();
 	createDebugMessenger();
 	createSurface(window);
@@ -306,6 +305,7 @@ void celestia::Device::supportedExtensions()
 
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
+#ifdef ENABLE_VALIDATION_LAYER
 	std::cout << "Available extensions:\n";
 
 	for (const auto& extension : extensions)
@@ -314,6 +314,7 @@ void celestia::Device::supportedExtensions()
 	}
 
 	std::cout << "\n";
+#endif // ENABLE_VALIDATION_LAYER
 }
 
 std::vector<const char*> celestia::Device::getExtensions() // VK_EXT_DESCRIPTOR_INDEXING_EXTENSION

@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include "celestiaTypes/CelestiaTypes.h"
-
+#include "backend/vulkanAPI/CelestiaVulkanTypes.h"
 
 namespace celestia {
 	class Window
@@ -29,6 +28,8 @@ namespace celestia {
 		const wchar_t* CLASS_NAME;
 		Vec2i windowSize;
 		bool resized;
+		//static bool focus;
+		//static bool keys[256];
 	};
 
 }

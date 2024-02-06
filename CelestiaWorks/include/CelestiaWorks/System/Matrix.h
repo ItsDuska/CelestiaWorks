@@ -1,5 +1,5 @@
 #pragma once
-#include "celestiaTypes/Vector.h"
+#include "Vector.h"
 #include <cassert>
 #include <cstring>
 

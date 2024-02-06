@@ -2,8 +2,8 @@
 #include <vector>
 #include <stdexcept>
 
-#include "frontend/window/RenderFront.h"
-#include "frontend/sprite/Sprite.h"
+#include "CelestiaWorks/Graphics/WindowHandle.h"
+#include "CelestiaWorks/Graphics/Sprite.h"
 
 
 int main()

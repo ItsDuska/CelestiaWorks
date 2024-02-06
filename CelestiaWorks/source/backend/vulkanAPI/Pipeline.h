@@ -1,5 +1,5 @@
 #pragma once
-#include "celestiaTypes/CelestiaVulkanTypes.h"
+#include "CelestiaVulkanTypes.h"
 
 namespace celestia 
 {

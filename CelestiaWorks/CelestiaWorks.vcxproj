@@ -121,7 +121,7 @@
       <PreprocessorDefinitions>CELESTIA_WORKS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;$(SolutionDir)CelestiaWorks\include\CelestiaWorks</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +139,7 @@
       <PreprocessorDefinitions>CELESTIA_WORKS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;$(SolutionDir)CelestiaWorks\include\CelestiaWorks</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,9 +152,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.cpp" />
-    <ClCompile Include="source\frontend\sprite\Sprite.cpp" />
-    <ClCompile Include="source\frontend\texture\Texture.cpp" />
-    <ClCompile Include="source\frontend\window\RenderFront.cpp" />
+    <ClCompile Include="source\SourceGraphics\Sprite.cpp" />
+    <ClCompile Include="source\SourceGraphics\Texture.cpp" />
+    <ClCompile Include="source\SourceGraphics\WindowHandle.cpp" />
     <ClCompile Include="source\math\MatrixMath.cpp" />
     <ClCompile Include="source\math\VectorMath.cpp" />
     <ClCompile Include="source\backend\utils\Utils.cpp" />
@@ -171,18 +171,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h" />
-    <ClInclude Include="source\celestiaTypes\CelestiaTypes.h" />
-    <ClInclude Include="source\celestiaTypes\Matrix.h" />
-    <ClInclude Include="source\celestiaTypes\Vector.h" />
+    <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h" />
+    <ClInclude Include="include\CelestiaWorks\System\Matrix.h" />
+    <ClInclude Include="include\CelestiaWorks\System\Vector.h" />
     <ClInclude Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.h" />
-    <ClInclude Include="source\frontend\sprite\Sprite.h" />
-    <ClInclude Include="source\frontend\texture\Texture.h" />
-    <ClInclude Include="source\frontend\window\RenderFront.h" />
+    <ClInclude Include="source\SourceGraphics\Keyboard.h" />
+    <ClInclude Include="include\CelestiaWorks\Graphics\Sprite.h" />
+    <ClInclude Include="include\CelestiaWorks\Graphics\Texture.h" />
+    <ClInclude Include="include\CelestiaWorks\Graphics\WindowHandle.h" />
     <ClInclude Include="source\math\MatrixMath.h" />
     <ClInclude Include="source\math\VectorMath.h" />
     <ClInclude Include="source\backend\utils\Utils.h" />
     <ClInclude Include="source\backend\vulkanAPI\Buffer.h" />
-    <ClInclude Include="source\celestiaTypes\CelestiaVulkanTypes.h" />
+    <ClInclude Include="source\backend\vulkanAPI\CelestiaVulkanTypes.h" />
     <ClInclude Include="source\backend\vulkanAPI\CommandBuffer.h" />
     <ClInclude Include="source\backend\vulkanAPI\Descriptor.h" />
     <ClInclude Include="source\backend\vulkanAPI\Device.h" />

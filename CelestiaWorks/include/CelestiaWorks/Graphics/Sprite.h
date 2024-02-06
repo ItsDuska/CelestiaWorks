@@ -1,6 +1,6 @@
 #pragma once
-#include "celestiaTypes/CelestiaTypes.h"
-#include "frontend/texture/Texture.h"
+#include "../System/CelestiaTypes.h"
+#include "Texture.h"
 
 namespace celestia
 {

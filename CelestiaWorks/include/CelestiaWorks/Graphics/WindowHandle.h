@@ -1,5 +1,4 @@
 #pragma once
-
 #ifdef CELESTIA_WORKS_EXPORTS
 #define CELESTIA_WORKS __declspec(dllexport)
 #else
@@ -7,8 +6,7 @@
 #endif
 
 #include <memory>
-#include "celestiaTypes/CelestiaTypes.h"
-
+#include "../System/CelestiaTypes.h"
 
 namespace celestia
 {

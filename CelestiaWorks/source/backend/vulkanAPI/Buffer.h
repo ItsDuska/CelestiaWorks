@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "celestiaTypes/CelestiaVulkanTypes.h"
+#include "backend/vulkanAPI/CelestiaVulkanTypes.h"
 
 
 namespace celestia

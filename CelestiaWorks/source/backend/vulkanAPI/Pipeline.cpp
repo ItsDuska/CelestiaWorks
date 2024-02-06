@@ -4,15 +4,18 @@
 #include "ShaderObject.h"
 #include "Descriptor.h"
 #include "backend/utils/Utils.h"
-#include "celestiaTypes/CelestiaTypes.h"
-
+#include "System/CelestiaTypes.h"
+#include <filesystem>
 
 celestia::Pipeline::Pipeline(SwapChain& swapChain, Descriptor& descriptor)
 	: swapChain(swapChain),descriptor(descriptor)
 {
-	const char* defaultVertexShader = "../CelestiaWorks/shaders/vert.spv";
-	const char* defaultFragmentShader = "../CelestiaWorks/shaders/frag.spv";
+	const char* defaultVertexShader = "../CelestiaWorks/source/shaders/defaultRenderVert.spv";
+	const char* defaultFragmentShader = "../CelestiaWorks/source/shaders/defaultRenderFrag.spv";
 	
+	std::cout << std::filesystem::current_path() << "\n";
+
+
 	ShaderObject shader;
 	shader.loadShader(defaultVertexShader,ShaderType::VERTEX_SHADER);
 	shader.loadShader(defaultFragmentShader, ShaderType::FRAGMENT_SHADER);

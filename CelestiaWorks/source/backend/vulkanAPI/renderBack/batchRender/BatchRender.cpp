@@ -45,7 +45,6 @@ celestia::BatchRender::BatchRender(Window& window)
 //clean everything
 celestia::BatchRender::~BatchRender()
 {
-	std::cout << "BATCH DELETION!\n";
 	cleanUp();
 }
 

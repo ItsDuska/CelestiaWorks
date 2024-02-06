@@ -1,4 +1,4 @@
-#include "Sprite.h"
+#include "Graphics/Sprite.h"
 
 celestia::Sprite::Sprite(Vec2 position, Vec2 size)
 	: texture(nullptr), textureRect({})

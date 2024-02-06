@@ -39,7 +39,7 @@
     <ClCompile Include="source\backend\vulkanAPI\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\frontend\window\RenderFront.cpp">
+    <ClCompile Include="source\SourceGraphics\WindowHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\math\MatrixMath.cpp">
@@ -60,10 +60,10 @@
     <ClCompile Include="source\backend\vulkanAPI\Descriptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\frontend\texture\Texture.cpp">
+    <ClCompile Include="source\SourceGraphics\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\frontend\sprite\Sprite.cpp">
+    <ClCompile Include="source\SourceGraphics\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +71,7 @@
     <ClInclude Include="source\backend\window\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\celestiaTypes\CelestiaTypes.h">
+    <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\Device.h">
@@ -92,19 +92,19 @@
     <ClInclude Include="source\backend\vulkanAPI\ShaderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\celestiaTypes\CelestiaVulkanTypes.h">
+    <ClInclude Include="source\backend\vulkanAPI\CelestiaVulkanTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\frontend\window\RenderFront.h">
+    <ClInclude Include="include\CelestiaWorks\Graphics\WindowHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\celestiaTypes\Matrix.h">
+    <ClInclude Include="include\CelestiaWorks\System\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\celestiaTypes\Vector.h">
+    <ClInclude Include="include\CelestiaWorks\System\Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\math\MatrixMath.h">
@@ -125,13 +125,16 @@
     <ClInclude Include="source\backend\vulkanAPI\Descriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\frontend\texture\Texture.h">
+    <ClInclude Include="include\CelestiaWorks\Graphics\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\frontend\sprite\Sprite.h">
+    <ClInclude Include="include\CelestiaWorks\Graphics\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SourceGraphics\Keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

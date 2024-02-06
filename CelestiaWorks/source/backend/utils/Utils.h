@@ -2,7 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <array>
-#include "celestiaTypes/CelestiaTypes.h"
+#include "System/CelestiaTypes.h"
+
 
 struct VkVertexInputBindingDescription;
 struct VkVertexInputAttributeDescription;

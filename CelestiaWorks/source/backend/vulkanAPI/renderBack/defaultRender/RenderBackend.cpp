@@ -232,6 +232,7 @@ void celestia::Render::endRendering()
 
 	rendering = false;
 
+	/*
 	//TEMP
 	auto time_in_seconds = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 	++frame_count_per_second;
@@ -242,7 +243,7 @@ void celestia::Render::endRendering()
 		prev_time_in_seconds = time_in_seconds;
 	}
 	//TEMP
-
+	*/
 	std::this_thread::sleep_until(endFrameTime);
 	beginFrameTime = endFrameTime;
 	endFrameTime = beginFrameTime + framerateLimit;
@@ -267,7 +268,6 @@ void celestia::Render::setFramerateLimit(const int frameRate)
 
 void celestia::Render::resize()
 {
-	std::cout << "Creating SwapChain Again\n";
 	window.setFramebufferResized(false);
 	swapChain->recreateSwapChain();
 

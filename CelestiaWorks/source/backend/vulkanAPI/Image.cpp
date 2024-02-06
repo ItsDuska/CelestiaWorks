@@ -14,13 +14,13 @@ Kirjota t‰‰ uudelleen, jotta pystyisit luomaan uusia tekstuureja k‰ytt‰m‰ll‰ vai
 Myˆs mahdollisuus luoda black white 1x1 tekstuuri default tekstuuriks jos joku kuolee.
 */
 
-constexpr const char* TEMP_TEXTURE_PATH = "../assets/image02.png"; // TODO: poista t‰‰
+//constexpr const char* TEMP_TEXTURE_PATH = "../assets/Death_Effect1.png"; // TODO: poista t‰‰
 
 
 celestia::Image::Image()
 {
 	Vec2i temp;
-	defaultTexture = createTextureImage(TEMP_TEXTURE_PATH, temp);
+	defaultTexture = createTextureImage(nullptr, temp, true);
 	createTextureSampler();
 }
 
@@ -70,13 +70,27 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	vkBindImageMemory(Device::context.device, image.image, image.memory, 0);
 }
 
-celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Vec2i& size)
+celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Vec2i& size, bool isDefaultTexture)
 {
 	static int id = 0;
 
 	Vec2i texSize{};
 	int texChannels;
-	stbi_uc* pixels = stbi_load(filepath, &texSize.x, &texSize.y, &texChannels, STBI_rgb_alpha);
+
+	stbi_uc* pixels;
+	stbi_uc defaultPixels[4] = {255u,255u,255u,255u};
+
+	if (isDefaultTexture)
+	{
+		pixels = defaultPixels;
+		texSize.x = 1;
+		texSize.y = 1;
+	}
+	else
+	{
+		pixels = stbi_load(filepath, &texSize.x, &texSize.y, &texChannels, STBI_rgb_alpha);
+	}
+	
 	VkDeviceSize imageSize = static_cast<VkDeviceSize>(texSize.x) * texSize.y * 4;
 
 	if (!pixels)
@@ -94,8 +108,11 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Ve
 	memcpy(data, pixels, static_cast<size_t>(imageSize));
 	vkUnmapMemory(Device::context.device, stagingBuffer.memory);
 
-	stbi_image_free(pixels);
-
+	if (!isDefaultTexture)
+	{
+		stbi_image_free(pixels);
+	}
+	
 	RawTexture texture{};
 	texture.textureID = id;
 	id++;

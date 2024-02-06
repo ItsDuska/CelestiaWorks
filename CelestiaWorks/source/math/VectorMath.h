@@ -1,5 +1,5 @@
 #pragma once
-#include "celestiaTypes/Vector.h"
+#include "System/Vector.h"
 
 
 namespace celestia
