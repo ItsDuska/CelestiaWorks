@@ -4,7 +4,7 @@
 
 #define MAX_COLOR_VALUE 255.f;
 
-const std::vector<char> celestia::utils::readFile(const char* filename)
+const std::vector<uint32_t> celestia::utils::readFile(const char* filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -13,12 +13,13 @@ const std::vector<char> celestia::utils::readFile(const char* filename)
         std::string text = "Failed to open file " + std::string(filename) + "\n";
         throw std::runtime_error(text);
     }
+    const size_t fileSize = (const size_t)file.tellg(); 
+    const size_t bufferSize = fileSize / sizeof(uint32_t); 
 
-    const size_t fileSize = (const size_t)file.tellg();
-    std::vector<char> buffer(fileSize);
+    std::vector<uint32_t> buffer(bufferSize);
 
     file.seekg(0);
-    file.read(buffer.data(), fileSize);
+    file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
     file.close();
 
     return buffer;

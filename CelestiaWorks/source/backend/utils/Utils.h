@@ -12,7 +12,7 @@ namespace celestia
 {
 	namespace utils
 	{
-		const std::vector<char> readFile(const char* filename);
+		const std::vector<uint32_t> readFile(const char* filename);
 
 		VkVertexInputBindingDescription getBindingDescription();
 

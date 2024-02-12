@@ -23,7 +23,7 @@ namespace celestia
 		ShaderObject(const ShaderObject&) = delete;
 		ShaderObject& operator = (const ShaderObject&) = delete;
 
-		void loadShader(const char* filepath, ShaderType shader);
+		void loadShader(const char* filepath, ShaderType shader, bool isDefaultShader = false);
 
 		template<typename PushConstantStruct> void createPushConstants(int offset, ShaderType dataDestination)
 		{

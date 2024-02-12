@@ -32,7 +32,7 @@ int main()
 			for (int j = 0; j < 5; j++)
 			{
 				celestia::Vec2 position = { j * tempX, i * tempY };
-				celestia::Vec2 size = { 125.f,125.f };
+				celestia::Vec2 size = { 155.f,155.f };
 
 				celestia::Sprite sprite(position, size);
 				sprite.setTexture(textures[j % 2]);
