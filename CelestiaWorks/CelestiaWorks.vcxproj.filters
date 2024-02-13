@@ -66,6 +66,9 @@
     <ClCompile Include="source\SourceGraphics\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\SourceSystem\Keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\backend\window\Window.h">
@@ -134,7 +137,7 @@
     <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\SourceGraphics\Keyboard.h">
+    <ClInclude Include="include\CelestiaWorks\System\Keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

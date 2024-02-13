@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.cpp" />
+    <ClCompile Include="source\SourceSystem\Keyboard.cpp" />
     <ClCompile Include="source\SourceGraphics\Sprite.cpp" />
     <ClCompile Include="source\SourceGraphics\Texture.cpp" />
     <ClCompile Include="source\SourceGraphics\WindowHandle.cpp" />
@@ -170,12 +171,12 @@
     <ClCompile Include="source\backend\window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CelestiaWorks\System\Keyboard.h" />
     <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h" />
     <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h" />
     <ClInclude Include="include\CelestiaWorks\System\Matrix.h" />
     <ClInclude Include="include\CelestiaWorks\System\Vector.h" />
     <ClInclude Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.h" />
-    <ClInclude Include="source\SourceGraphics\Keyboard.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Sprite.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Texture.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\WindowHandle.h" />

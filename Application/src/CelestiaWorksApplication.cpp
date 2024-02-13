@@ -4,7 +4,7 @@
 
 #include "CelestiaWorks/Graphics/WindowHandle.h"
 #include "CelestiaWorks/Graphics/Sprite.h"
-
+#include "CelestiaWorks/System/Keyboard.h"
 
 int main()
 {
@@ -49,10 +49,16 @@ int main()
 
 		const int updateFrameNumber = 8;
 		int rectPositionX = 0;
-
+		
 		while (window.isOpen())
 		{
 			currentTime++;
+
+			if (celestia::Keyboard::isKeyPressed(celestia::Keyboard::Key::A))
+			{
+				std::cout << "A PRESSED OMG\n";
+			}
+
 
 			window.beginRenderPass();
 

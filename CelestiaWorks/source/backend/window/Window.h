@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include "backend/vulkanAPI/CelestiaVulkanTypes.h"
+//#include "System/Keyboard.h"
 
 namespace celestia {
 	class Window
@@ -19,6 +20,8 @@ namespace celestia {
 		bool isFramebufferResized() const;
 		void setFramebufferResized(bool resize);
 		void setWindowSize(Vec2i size);
+		static bool getKeyPressed(int key);
+
 	private:
 		static void resizeWindow(HWND hWnd, UINT uMsg);
 		static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -28,8 +31,8 @@ namespace celestia {
 		const wchar_t* CLASS_NAME;
 		Vec2i windowSize;
 		bool resized;
-		//static bool focus;
-		//static bool keys[256];
+		
+		
 	};
 
 }

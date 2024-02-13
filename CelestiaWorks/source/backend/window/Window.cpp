@@ -1,44 +1,61 @@
 #include "Window.h"
 #include <vector>
 #include <iostream>
-#include "SourceGraphics/Keyboard.h"
+//#include "SourceGraphics/Keyboard.h"
 
+//#define KEY_AMOUNT 256
 
 namespace celestia
 {
+	static bool focus = true;
+	//static bool keys[KEY_AMOUNT];
+
 	LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
+		//static bool keyDown, keyWasDown;
+
 		switch (uMsg)
 		{
 		case WM_ERASEBKGND:
 			return 1;
 		case WM_KILLFOCUS:
-			//focus = false;
+			focus = false;
 			break;
 		case WM_SETFOCUS:
-			//focus = true;
+			focus = true;
 			break;
 		case WM_SIZE:
 			resizeWindow(hWnd, WM_SIZE); 
 			break;
+		/*
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
 		case WM_KEYDOWN:
 		case WM_KEYUP:
-			/*
 			if (focus)
 			{
-				static bool keyDown, keyWasDown;
 				keyDown =    ((lParam & (1 << 31)) == 0); // magic
 				keyWasDown = ((lParam & (1 << 30)) != 0); // magic part 2
 				if (keyDown != keyWasDown)
 				{
-					keys[static_cast<uint8_t>(wParam)] = keyDown;
+					//keys[static_cast<uint8_t>(wParam)] = keyDown;
+					//std::cout << "KEY PRESSED: " << static_cast<uint8_t>(wParam) << " | " << wParam << "\n";
 				}
 			}
-			*/
 			break;
-
+		case WM_CHAR:
+			if(!focus)
+			{
+				break;
+			}
+			if (keyDown != keyWasDown)
+			{
+				keys[static_cast<uint8_t>(wParam)] = keyDown;
+				std::cout << "WM_CHAR KEY PRESSED: " << static_cast<uint8_t>(wParam) << " | " << static_cast<WCHAR>(wParam) << "\n";
+			}
+			//std::cout << "WM_CHAR PRESSED: " << static_cast<uint8_t>(wParam) << "\n";
+			break;
+		*/
 		case WM_SIZING:
 			resizeWindow(hWnd, WM_SIZING);
 			break;
@@ -111,9 +128,6 @@ namespace celestia
 		);
 		
 		ShowWindow(hWnd, SW_SHOW);
-
-		
-
 	}
 
 	Window::~Window()
@@ -167,6 +181,11 @@ namespace celestia
 	void Window::setWindowSize(Vec2i size)
 	{
 		windowSize = size;
+	}
+
+	bool Window::getKeyPressed(int key)
+	{
+		return ((GetKeyState(key) & 0x8000) && focus );
 	}
 
 	void Window::resizeWindow(HWND hWnd,UINT uMsg)
