@@ -1,4 +1,4 @@
-Silly 2D rendering engine like SFML made for fun.
+Silly 2D rendering framework like SFML made for fun.
 Currently including this project probably doesn't work since my folder structure and include paths are all messed up due to project not being fully ready yet. Once this project is in stable state where I think it could be used to writing games, I will change it so it could be used in projects.
 
 The performance will probably be horrible but this project is just for having fun and learning new things.
