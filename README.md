@@ -1,11 +1,20 @@
 Silly 2D rendering framework like SFML made for fun.
-Currently including this project probably doesn't work since my folder structure and include paths are all messed up due to project not being fully ready yet. Once this project is in stable state where I think it could be used to writing games, I will change it so it could be used in projects.
-
+Please don't expect this to work because my code is hot garbage.
 The performance will probably be horrible but this project is just for having fun and learning new things.
 
+**The list of things I want to add to this when I have the time for it:**
+  - Mouse support
+  - Text rendering
+  - RenderTextures
+  - Custom shader support
+  - Vertex arrays
+  - Music / sound system
+  - Camera system? (Maybe not)
+  - sprite rotations?
+  - optimations / whole rewrite
+  - Controller support?
 
-
-Celestia Works be like:
+**Celestia Works be like:**
 
 ![drawCallsBeLike](https://github.com/ItsDuska/CelestiaWorks/assets/89298953/c5180c1f-af51-4528-a84f-dfa329c910a6)
 
