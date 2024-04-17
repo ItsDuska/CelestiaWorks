@@ -1,13 +1,10 @@
 #pragma once
-#include <stdint.h>
 #include "Vector.h"
 #include "Matrix.h"
 
 
 namespace celestia
 {
-	typedef Vec<4, uint8_t> Color; // Maybe delete this?
-
 	struct CELESTIA_WORKS Vertex
 	{
 		Vec2 position;
@@ -32,11 +29,6 @@ namespace celestia
 	{
 		Vec2 position;
 		Vec2 size;
-	};
-
-	struct PUSH_CONSTANTS //TODO: Yeet this somewhere else.
-	{
-		alignas(16) Mat4 projection;
 	};
 }
 

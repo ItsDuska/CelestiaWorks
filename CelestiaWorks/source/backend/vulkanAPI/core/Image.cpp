@@ -100,52 +100,16 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Ve
 
 	size = texSize;
 
-	AllocatedBuffer stagingBuffer = Buffer::createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-	void* data;
-	vkMapMemory(Device::context.device, stagingBuffer.memory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(Device::context.device, stagingBuffer.memory);
-
-	if (!isDefaultTexture)
-	{
-		stbi_image_free(pixels);
-	}
-	
 	RawTexture texture{};
 	texture.textureID = id;
 	id++;
 
-	createImage(texSize,
-		VK_FORMAT_R8G8B8A8_SRGB,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		texture.allocatedImage
-	);
-
-	transitionImageLayout(texture.allocatedImage.image,
-		VK_FORMAT_R8G8B8A8_SRGB,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-	);
-
-	copyBufferToImage(stagingBuffer.buffer,
-		texture.allocatedImage.image,
-		{ static_cast<uint32_t>(texSize.x), static_cast<uint32_t>(texSize.y) }
-	);
-
-	transitionImageLayout(texture.allocatedImage.image,
-		VK_FORMAT_R8G8B8A8_SRGB,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-	);
-
-	vkDestroyBuffer(Device::context.device, stagingBuffer.buffer, nullptr);
-	vkFreeMemory(Device::context.device, stagingBuffer.memory, nullptr);
-
-	texture.imageView = createImageView(texture.allocatedImage.image, VK_FORMAT_R8G8B8A8_SRGB);
+	createTextureFromBuffer(pixels, imageSize, texSize, texture, VK_FORMAT_R8G8B8A8_SRGB);
+	
+	if (!isDefaultTexture)
+	{
+		stbi_image_free(pixels);
+	}
 
 	return texture;
 }
@@ -159,7 +123,48 @@ void celestia::Image::deleteTextureImage(RawTexture& texture)
 	vkFreeMemory(Device::context.device, texture.allocatedImage.memory, nullptr);
 }
 
-void celestia::Image::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+void celestia::Image::createTextureFromBuffer(const void* bufferptr, const VkDeviceSize& bufferSize,
+	const Vec2i& size, RawTexture& texture, VkFormat format)
+{
+	AllocatedBuffer stagingBuffer = Buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	void* data;
+	vkMapMemory(Device::context.device, stagingBuffer.memory, 0, bufferSize, 0, &data);
+	memcpy(data, bufferptr, static_cast<size_t>(bufferSize));
+	vkUnmapMemory(Device::context.device, stagingBuffer.memory);
+
+	createImage(size,
+		format,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		texture.allocatedImage
+	);
+
+	transitionImageLayout(texture.allocatedImage.image,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+	);
+
+	copyBufferToImage(stagingBuffer.buffer,
+		texture.allocatedImage.image,
+		{ static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y) }
+	);
+
+	transitionImageLayout(texture.allocatedImage.image,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+	);
+
+	vkDestroyBuffer(Device::context.device, stagingBuffer.buffer, nullptr);
+	vkFreeMemory(Device::context.device, stagingBuffer.memory, nullptr);
+
+	texture.imageView = createImageView(texture.allocatedImage.image, format);
+}
+
+
+void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
 	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(Device::context.commandPool, Device::context.device);
 

@@ -1,5 +1,5 @@
 #include "SwapChain.h"
-#include "backend/vulkanAPI/Device.h"
+#include "Device.h"
 #include "backend/window/window.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 

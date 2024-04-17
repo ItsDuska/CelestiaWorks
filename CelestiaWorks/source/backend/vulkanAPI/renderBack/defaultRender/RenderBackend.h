@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "backend/vulkanAPI/CelestiaVulkanTypes.h"
+#include "backend/vulkanAPI/core/CelestiaVulkanTypes.h"
 #include <chrono>
 
 namespace celestia
@@ -13,14 +13,16 @@ namespace celestia
 	class Image;
 	class Descriptor;
 
+
 	class Render
 	{
 	public:
 		Render(Window &window);
 		Render(const Render&) = delete;
 		Render& operator = (const Render&) = delete;
-		virtual ~Render();
+		~Render();
 
+		void drawNew(DrawInfo& info);
 		void draw(const Mesh& mesh,const int amountToDraw);
 		void beginRendering();
 		void endRendering();
@@ -31,7 +33,10 @@ namespace celestia
 		void resize();
 		void createCommandBuffers();
 
-	protected:
+	private:
+		friend class BatchSpriteRender;
+		friend class TextRender;
+		//friend class BatchTextRender;
 		Window& window;
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;

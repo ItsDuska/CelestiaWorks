@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include "backend/vulkanAPI/CelestiaVulkanTypes.h"
+#include "backend/vulkanAPI/core/CelestiaVulkanTypes.h"
 //#include "System/Keyboard.h"
 
 namespace celestia {

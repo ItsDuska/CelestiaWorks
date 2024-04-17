@@ -5,12 +5,19 @@
 
 namespace celestia
 {
-	enum class ShaderType
+	enum class ShaderFormat
 	{
 		VERTEX_SHADER,
 		FRAGMENT_SHADER,
 		COMPUTE_SHADER,
 		GEOMETRY_SHADER
+	};
+
+	enum class ShaderType
+	{
+		SPRITE_BATCH,
+		TEXT_BATCH,
+		CUSTOM
 	};
 
 	class Device;
@@ -23,9 +30,9 @@ namespace celestia
 		ShaderObject(const ShaderObject&) = delete;
 		ShaderObject& operator = (const ShaderObject&) = delete;
 
-		void loadShader(const char* filepath, ShaderType shader, bool isDefaultShader = false);
+		void loadShader(const char* filepath, ShaderFormat shader, ShaderType type, bool isDefaultShader = false);
 
-		template<typename PushConstantStruct> void createPushConstants(int offset, ShaderType dataDestination)
+		template<typename PushConstantStruct> void createPushConstants(int offset, ShaderFormat dataDestination)
 		{
 			pushConstants.offset = offset;
 			pushConstants.size = sizeof(PushConstantStruct);
@@ -40,6 +47,6 @@ namespace celestia
 		std::vector< VkPipelineShaderStageCreateInfo> infos;
 	private:
 		void createShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule);
-		VkShaderStageFlagBits convertToVkFlags(ShaderType type);
+		VkShaderStageFlagBits convertToVkFlags(ShaderFormat type);
 	};
 }

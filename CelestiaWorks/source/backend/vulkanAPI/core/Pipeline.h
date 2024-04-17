@@ -34,6 +34,13 @@ namespace celestia
 		VkPipelineLayout pipelineLayout;
 	};
 
+	struct PipelineOptions
+	{
+		bool blending;
+	};
+
+
+
 	class Pipeline
 	{
 	public:
@@ -42,7 +49,10 @@ namespace celestia
 		Pipeline& operator = (const Pipeline&) = delete;
 		~Pipeline();
 
-		void createPipeline(Material& material, ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors);
+		void createPipeline(Material& material, ShaderObject &shader,
+			DrawingMode drawMode,
+			VkDescriptorSetLayout* descriptors,
+			PipelineOptions& options);
 		Material *getDefaultMaterial();
 	private:
 		Material defaultMaterial;
@@ -59,8 +69,8 @@ namespace celestia
 		//VkPipelineDepthStencilStateCreateInfo depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp);
 		VkPipelineRasterizationStateCreateInfo createRasterizer(DrawingMode mode);
 		VkPipelineMultisampleStateCreateInfo createMultisampling();
-		VkPipelineColorBlendAttachmentState createColorBlendAttachment();
-		VkPipelineLayoutCreateInfo createLayoutInfo(ShaderObject& shader, Descriptor* descriptor);
+		VkPipelineColorBlendAttachmentState createColorBlendAttachment(bool blending);
+		VkPipelineLayoutCreateInfo createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors);
 	};
 
 }

@@ -2,9 +2,7 @@
 #include "backend/window/Window.h"
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
-
-#include "config/VulkanConfig.h"
-
+#include "backend/vulkanAPI/config/VulkanConfig.h"
 
 #ifdef ENABLE_VALIDATION_LAYER
 const bool VALIDATION_LAYERS = true;
@@ -245,7 +243,11 @@ void celestia::Device::createAllocator()
 	vmaCreateAllocator(&allocatorInfo, &context.allocator);
 }
 
-VkResult celestia::Device::createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+VkResult celestia::Device::createDebugUtilsMessengerEXT(
+	VkInstance instance,
+	const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+	const VkAllocationCallbacks* pAllocator,
+	VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 
@@ -259,9 +261,17 @@ VkResult celestia::Device::createDebugUtilsMessengerEXT(VkInstance instance, con
 	}
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL celestia::Device::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL celestia::Device::debugCallback(
+	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+	VkDebugUtilsMessageTypeFlagsEXT messageType,
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+	void* pUserData)
 {
-	std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, 6);
+	std::cout << "VALIDATION LAYER: ";
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	std::cerr << pCallbackData->pMessage << std::endl;
 	return VK_FALSE;
 }
 

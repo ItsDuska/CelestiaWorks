@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "backend/vulkanAPI/CelestiaVulkanTypes.h"
+#include "backend/vulkanAPI/core/CelestiaVulkanTypes.h"
 
 
 namespace celestia
@@ -16,6 +16,7 @@ namespace celestia
 
 		void updateBatchBuffer(AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const Vertex* srcdata);
 		static uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 
 	public:
 		//TEMP

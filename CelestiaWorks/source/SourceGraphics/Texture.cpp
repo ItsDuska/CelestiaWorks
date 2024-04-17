@@ -1,5 +1,5 @@
 #include "Graphics/Texture.h"
-#include "backend/vulkanAPI/Image.h"
+#include "backend/vulkanAPI/core/Image.h"
 
 
 celestia::Texture::Texture()

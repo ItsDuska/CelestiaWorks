@@ -1,6 +1,6 @@
 #include "Buffer.h"
 #include "CommandBuffer.h"
-#include "backend/vulkanAPI/Device.h"
+#include "backend/vulkanAPI/core/Device.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 
 
@@ -21,15 +21,17 @@ celestia::Buffer::Buffer()
     createMesh(mesh, defaultMesh);
     */
 
-    createUniformBuffers();
+    //createUniformBuffers();
 }
 
 celestia::Buffer::~Buffer()
 {
+    /*
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(Device::context.device, uniformBufferTemp[i].buffer, nullptr);
         vkFreeMemory(Device::context.device, uniformBufferTemp[i].memory, nullptr);
     }
+    */
 }
 
 celestia::AllocatedBuffer celestia::Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)

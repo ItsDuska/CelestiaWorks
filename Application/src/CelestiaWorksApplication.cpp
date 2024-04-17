@@ -1,10 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-
+#include <string>
+#include "CelestiaWorks/Graphics/Text.h"
 #include "CelestiaWorks/Graphics/WindowHandle.h"
 #include "CelestiaWorks/Graphics/Sprite.h"
 #include "CelestiaWorks/System/Keyboard.h"
+
 
 int main()
 {
@@ -12,6 +14,15 @@ int main()
 	{
 		celestia::WindowHandle window({ 800,800 }, "Among Us Gaming");
 		window.setFrameRateLimit(60);
+
+		celestia::Font font;
+		if (!font.loadFont("../assets/yoster.ttf", 32))
+		{
+			std::cout << "FAILED TO LOAD FONT FROM MAIN!\n";
+		}
+		// { 220,232,224,255 }
+		std::string stringText = "Tuukka my beloved";
+		celestia::Text text({ 100.f,400.f }, stringText, { 255,15,1,255 }, &font);
 
 		celestia::Color color = { 128,128,51,255 };
 
@@ -41,7 +52,7 @@ int main()
 			}
 		}
 
-		celestia::Sprite testSprite({ 200.f,200.f }, { 50.f,50.f });
+		celestia::Sprite testSprite({ 200.f,600.f }, { 50.f,50.f });
 		testSprite.setTexture(textures[2]);
 		testSprite.setTextureRectSize({ 32.f,32.f });
 
@@ -62,10 +73,12 @@ int main()
 
 			window.beginRenderPass();
 
+			
 			for (celestia::Sprite& currentSprite : sprites)
 			{
 				window.draw(currentSprite);
 			}
+			
 
 			if (currentTime >= updateFrameNumber)
 			{
@@ -76,7 +89,7 @@ int main()
 			}
 
 			window.draw(testSprite);
-
+			window.draw(text);
 
 			window.endRenderPass();
 
@@ -127,4 +140,12 @@ int main()
 	}
 
 	
+*/
+
+
+/*
+
+TODO: TEXT RENDERING!
+TEE TAPA LUODA STORAGE BUFFEREITA JA SÄILÖ NE ESIM RENDERI HOMMASSA TAI JOSSAIN MUUALLA.
+
 */

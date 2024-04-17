@@ -18,25 +18,25 @@
     <ClCompile Include="source\backend\window\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\Device.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\SwapChain.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\SwapChain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\backend\utils\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\Pipeline.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\Pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\ShaderObject.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\ShaderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\Buffer.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\SourceGraphics\WindowHandle.cpp">
@@ -51,13 +51,13 @@
     <ClCompile Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\CommandBuffer.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\CommandBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\Image.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\Descriptor.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\core\Descriptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\SourceGraphics\Texture.cpp">
@@ -69,6 +69,21 @@
     <ClCompile Include="source\SourceSystem\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\RendererHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\textRender\TextRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SourceGraphics\Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SourceGraphics\Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\backend\vulkanAPI\resources\FontReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\backend\window\Window.h">
@@ -77,28 +92,28 @@
     <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\Device.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\SwapChain.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\SwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\Pipeline.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\Pipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\utils\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\ShaderObject.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\ShaderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\CelestiaVulkanTypes.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\CelestiaVulkanTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\Buffer.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CelestiaWorks\Graphics\WindowHandle.h">
@@ -119,13 +134,13 @@
     <ClInclude Include="source\backend\vulkanAPI\renderBack\batchRender\BatchRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\Image.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\CommandBuffer.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\CommandBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\Descriptor.h">
+    <ClInclude Include="source\backend\vulkanAPI\core\Descriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CelestiaWorks\Graphics\Texture.h">
@@ -138,6 +153,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CelestiaWorks\System\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\RendererHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\textRender\TextRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\vulkanAPI\resources\FontReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

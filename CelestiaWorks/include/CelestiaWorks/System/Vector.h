@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 #ifdef CELESTIA_WORKS_EXPORTS
 #define CELESTIA_WORKS __declspec(dllexport)
 #else
@@ -327,5 +328,6 @@ namespace celestia
 	typedef Vec<3, unsigned int> Vec3u;
 	typedef Vec<4, unsigned int> Vec4u;
 
+	typedef Vec<4, uint8_t> Color;
 }
 

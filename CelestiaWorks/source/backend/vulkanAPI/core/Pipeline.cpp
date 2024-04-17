@@ -4,27 +4,35 @@
 #include "ShaderObject.h"
 #include "Descriptor.h"
 #include "backend/utils/Utils.h"
-#include "System/CelestiaTypes.h"
 
 celestia::Pipeline::Pipeline(SwapChain& swapChain, Descriptor& descriptor)
 	: swapChain(swapChain),descriptor(descriptor)
 {
 	ShaderObject shader;
-	shader.loadShader(nullptr,ShaderType::VERTEX_SHADER,true);
-	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER,true);
-	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
+	shader.loadShader(nullptr,ShaderFormat::VERTEX_SHADER,ShaderType::SPRITE_BATCH,true);
+	shader.loadShader(nullptr, ShaderFormat::FRAGMENT_SHADER, ShaderType::SPRITE_BATCH, true);
+	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderFormat::VERTEX_SHADER);
 
-	createPipeline(defaultMaterial, shader, DrawingMode::TRIANGLE, &descriptor);
+
+	PipelineOptions options{};
+	options.blending = false;
+
+
+	createPipeline(defaultMaterial, shader, DrawingMode::TRIANGLE, &descriptor.getDescriptorSetLayout(),options);
 }
 
 celestia::Pipeline::~Pipeline()
 {
-	vkDestroyPipeline(Device::context.device, defaultMaterial.pipeline, nullptr);
-	vkDestroyPipelineLayout(Device::context.device, defaultMaterial.layout, nullptr);
+	//vkDestroyPipeline(Device::context.device, defaultMaterial.pipeline, nullptr);
+	//vkDestroyPipelineLayout(Device::context.device, defaultMaterial.layout, nullptr);
 }
 
 //Use nullptr for descriptor if not using any uniform buffers or textures.
-void celestia::Pipeline::createPipeline(Material& material,ShaderObject &shader, DrawingMode drawMode, Descriptor* descriptors)
+void celestia::Pipeline::createPipeline(Material& material,
+	ShaderObject &shader,
+	DrawingMode drawMode,
+	VkDescriptorSetLayout* descriptors,
+	PipelineOptions& options)
 {
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = createLayoutInfo(shader, descriptors);
 
@@ -55,10 +63,17 @@ void celestia::Pipeline::createPipeline(Material& material,ShaderObject &shader,
 
 	builder.rasterizer = createRasterizer(drawMode);
 	builder.multisampling = createMultisampling();
-	builder.colorBlendAttachment = createColorBlendAttachment();
+	builder.colorBlendAttachment = createColorBlendAttachment(options.blending);
 	builder.pipelineLayout = material.layout;
 
 	material.pipeline = builder.buildPipeline(Device::context.device, swapChain.getRenderPass());
+
+
+	Device::context.deletionQueue.pushFunction([=]() {
+		vkDestroyPipeline(Device::context.device, material.pipeline, nullptr);
+		vkDestroyPipelineLayout(Device::context.device, material.layout, nullptr);
+		}
+	);
 }
 
 celestia::Material *celestia::Pipeline::getDefaultMaterial()
@@ -156,29 +171,37 @@ VkPipelineMultisampleStateCreateInfo celestia::Pipeline::createMultisampling()
 	return info;
 }
 
-VkPipelineColorBlendAttachmentState celestia::Pipeline::createColorBlendAttachment()
+VkPipelineColorBlendAttachmentState celestia::Pipeline::createColorBlendAttachment(bool blending)
 {
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
 		VK_COLOR_COMPONENT_G_BIT |
 		VK_COLOR_COMPONENT_B_BIT |
 		VK_COLOR_COMPONENT_A_BIT;
-	colorBlendAttachment.blendEnable = VK_FALSE;
+	colorBlendAttachment.blendEnable = blending;
+
+	//amogus?
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 	return colorBlendAttachment;
 }
 
-VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& shader, Descriptor* descriptor)
+VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors)
 {
 	VkPipelineLayoutCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	info.pNext = nullptr;
 	info.flags = 0;
 
-	if (descriptor != nullptr)
+	if (descriptors != nullptr)
 	{
 		info.setLayoutCount = 1; // TODO: descriptoreille funktio joka antaa niitten määrän.
-		info.pSetLayouts = &descriptor->getDescriptorSetLayout();
+		info.pSetLayouts = descriptors;
 	}
 	
 	info.pushConstantRangeCount = 1;
@@ -223,6 +246,7 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	pipelineInfo.renderPass = pass;
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+	
 
 	VkPipeline newPipeline;
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)

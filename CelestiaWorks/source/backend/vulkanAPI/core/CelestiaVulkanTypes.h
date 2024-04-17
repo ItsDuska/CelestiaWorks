@@ -1,4 +1,5 @@
 #pragma once
+#include "backend/vulkanAPI/config/VulkanConfig.h"
 #include <vulkan/vulkan.h>
 #include "System/CelestiaTypes.h"
 #include <vector>
@@ -11,7 +12,7 @@ namespace celestia
 		VkBuffer buffer;
 		VkDeviceMemory memory;
 	};
-
+	
 	struct RawMesh
 	{
 		std::vector<Vertex> vertices;
@@ -45,9 +46,24 @@ namespace celestia
 		uint32_t textureID;
 	};
 
+	struct DrawInfo
+	{
+		Material *material;
+		VkDescriptorSet* descriptors;
+		VkDescriptorSetLayout layout;
+		Mesh mesh;
+		int amountToDraw;
+	};
+
+
 	struct UniformBufferObject
 	{
 		alignas(16) Mat4 transform;
+	};
+
+	struct PUSH_CONSTANTS //TODO: To something to this weirdness...
+	{
+		alignas(16) Mat4 projection;
 	};
 
 }

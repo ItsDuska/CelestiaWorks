@@ -1,11 +1,11 @@
 #include "RenderBackend.h"
 #include "backend/window/Window.h"
-#include "backend/vulkanAPI/Device.h"
-#include "backend/vulkanAPI/SwapChain.h"
-#include "backend/vulkanAPI/Pipeline.h"
-#include "backend/vulkanAPI/Buffer.h"
-#include "backend/vulkanAPI/Image.h"
-#include "backend/vulkanAPI/Descriptor.h"
+#include "backend/vulkanAPI/core/Device.h"
+#include "backend/vulkanAPI/core/SwapChain.h"
+#include "backend/vulkanAPI/core/Pipeline.h"
+#include "backend/vulkanAPI/core/Buffer.h"
+#include "backend/vulkanAPI/core/Image.h"
+#include "backend/vulkanAPI/core/Descriptor.h"
 
 #include "backend/utils/Utils.h"
 #include "math/MatrixMath.h"
@@ -49,6 +49,48 @@ celestia::Render::~Render()
 {
 }
 
+void celestia::Render::drawNew(DrawInfo& info)
+{
+	if (!rendering)
+	{
+		std::cout << "BeginRenderPass was not called!\n";
+		return;
+	}
+
+	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, info.material->pipeline);
+
+	vkCmdBindDescriptorSets(commandBuffers[currentFrame],
+		VK_PIPELINE_BIND_POINT_GRAPHICS,
+		info.material->layout,
+		0, 1,
+		&info.descriptors[currentFrame],
+		0, nullptr
+	);
+	
+	//TODO: tee tää kivemmi.
+	//Mat4 model(1.f);
+	//UniformBufferObject uniform{};
+	//uniform.projection = projection;
+	//uniform.transform = model;
+
+	//memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
+
+	//TODO: add custom push Constants to this
+	vkCmdPushConstants(commandBuffers[currentFrame],
+		info.material->layout,
+		VK_SHADER_STAGE_VERTEX_BIT, 0,
+		sizeof(PUSH_CONSTANTS),
+		&constants
+	);
+
+	VkDeviceSize offset = 0;
+
+	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &info.mesh.vertexBuffer.buffer, &offset);
+	vkCmdBindIndexBuffer(commandBuffers[currentFrame], info.mesh.indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+
+	vkCmdDrawIndexed(commandBuffers[currentFrame], info.amountToDraw, 1, 0, 0, 0);
+}
+
 void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 {
 	if (!rendering)
@@ -56,7 +98,7 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 		std::cout << "BeginRenderPass was not called!\n";
 		return;
 	}
-	
+
 	if (!hasBindedTEMP)
 	{
 		vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultMaterial()->pipeline);
@@ -90,7 +132,7 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 	//model = math::translate(model, Vec3(-0.5f * _size.x, -0.5f * _size.y, 0.f));
 
 	//model = math::scale(model, _size);
-
+	
 
 	UniformBufferObject uniform{};
 	//uniform.projection = projection;
@@ -128,7 +170,6 @@ void celestia::Render::beginRendering()
 		std::cout << "BeginRenderPass was already called!\n";
 	}
 	
-
 	vkWaitForFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
 	VkResult result = vkAcquireNextImageKHR(Device::context.device, swapChain->getSwapchain(), UINT64_MAX,

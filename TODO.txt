@@ -93,3 +93,56 @@ otos 2:
 window.isOpen() 929 microseconds.
 window.beginRenderPass() 63 microseconds.
 25x window.draw() 1 microseconds.
+
+
+Mitä tarvitaan tekstin renderöintiin customina:
+	- Pipeline
+	- DescriptorSet
+	- PushConstants? periaatteessa ei
+	- Vertex- & IndexBuffers
+	- uniform buffers
+	
+	
+Säilö BatchSpriteRender classissa DrawInfo structi ja samoin textRender classissa. Jokaisessa renderissä on siis oma pipeline ja vertexArrayt
+
+
+Tosta mallia hieman:
+https://github.com/baeng72/Programming-an-RTS/blob/main/common/Platform/Vulkan/VulkanFont.cpp
+
+
+
+Käytä Transformation matriiseja tekstin piirtämiseen. Tarvitaan storage buffer, joka sisältää n määrän transformation matriiseja, jossa n on tekstien määrä.
+
+
+Vertex buffer esimerkki koodi:
+
+#version 450
+
+layout(set = 0, binding = 0) buffer TranslationBuffer {
+    vec3 translations[];
+};
+
+layout(location = 0) in vec3 inPosition;
+layout(location = 0) in int transformIndex;
+
+layout(location = 0) out vec3 fragColor;
+
+void main() {
+    // Otetaan translations -muuttujasta sijainti
+    vec3 translation = translations[transformIndex]; // Otetaan modulo
+
+    // Lisää sijainnin muutos vertexin sijaintiin
+    vec3 newPosition = inPosition + translation;
+
+    gl_Position = vec4(newPosition, 1.0);
+    fragColor = newPosition;
+}
+
+
+
+
+
+
+
+
+

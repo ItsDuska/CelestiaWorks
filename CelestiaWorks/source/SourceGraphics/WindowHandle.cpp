@@ -1,14 +1,17 @@
 #include "Graphics/WindowHandle.h"
 #include "backend/window/Window.h"
-#include "backend/vulkanAPI/renderBack/batchRender/BatchRender.h"
+#include "backend/vulkanAPI/renderBack/RendererHandler.h"
 #include "Graphics/Sprite.h"
+#include "Graphics/Text.h"
+#include "Graphics/Font.h"
+#include "backend/vulkanAPI/resources/FontReader.h"
 #include <iostream>
 
 
 celestia::WindowHandle::WindowHandle(const Vec2i size, const char* name)
 	: window{ std::make_unique<Window>(size, name) }
 {
-	render = std::make_unique<BatchRender>(*window);
+	render = std::make_unique<RendererHandler>(*window);
 }
 
 celestia::WindowHandle::~WindowHandle()
@@ -17,20 +20,23 @@ celestia::WindowHandle::~WindowHandle()
 
 void celestia::WindowHandle::draw(const Sprite& sprite) const
 {
-	render->drawQuad(sprite.quad, sprite.getTexture()->pixels.get());
+	render->drawSprite(sprite.quad, sprite.getTexture()->pixels.get());
+}
+
+void celestia::WindowHandle::draw(Text& text) const
+{
+	render->drawText(text.vertices,text.symbols.size(),text.position,*text.font->bitmapData, text.dirty,text.id);
+	text.disableDirtyFlag();
 }
 
 void celestia::WindowHandle::beginRenderPass() const
 {
-	render->beginBatch();
-	render->beginRendering();
+	render->beginRenderPass();
 }
 
 void celestia::WindowHandle::endRenderPass() const
 {
-	render->endBatch();
-	render->flush();
-	render->endRendering();
+	render->endRenderPass();
 }
 
 bool celestia::WindowHandle::isOpen() const
@@ -45,5 +51,5 @@ void celestia::WindowHandle::setClearColor(Color& color)
 
 void celestia::WindowHandle::setFrameRateLimit(const int frameRate)
 {
-	render->setFramerateLimit(frameRate);
+	render->setFrameRateLimit(frameRate);
 }

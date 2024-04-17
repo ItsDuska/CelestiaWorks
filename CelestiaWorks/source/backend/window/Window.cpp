@@ -82,16 +82,12 @@ namespace celestia
 		windowSize = size;
 		resized = false;
 
-		//memset(keys, 0, 256 * sizeof(keys[0]));
-		//focus = true;
-
 		WNDCLASS wndClass = {};
 		wndClass.lpszClassName = CLASS_NAME;
 		wndClass.hInstance = hInstance;
 		wndClass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
 		wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wndClass.lpfnWndProc = windowProc;
-
 		RegisterClass(&wndClass);
 		DWORD style = WS_THICKFRAME | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_MAXIMIZEBOX | WS_OVERLAPPED;
 
@@ -100,10 +96,8 @@ namespace celestia
 		rect.top = 250;
 		rect.right = rect.left + size.x;
 		rect.bottom = rect.top + size.y;
-
 		AdjustWindowRect(&rect, style, false);
 
-		
 		//Change name's type from const char* to const wchar_t*
 		//bruh this is goofy as hell...
 		const size_t nameLen = strlen(name) + 1;

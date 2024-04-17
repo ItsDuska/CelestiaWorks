@@ -1,15 +1,14 @@
 #include "BatchRender.h"
-#include "backend/vulkanAPI/Buffer.h"
-#include "backend/vulkanAPI/Descriptor.h"
-#include "backend/vulkanAPI/Image.h"
+#include "backend/vulkanAPI/core/Buffer.h"
+#include "backend/vulkanAPI/core/Descriptor.h"
+#include "backend/vulkanAPI/core/Image.h"
+#include "backend/vulkanAPI/core/Pipeline.h"
 
 #include <iostream>
 
-constexpr int MAX_VERTEX_COUNT = MAX_QUAD_COUNT * 4;
-constexpr int MAX_INDEX_COUNT = MAX_QUAD_COUNT * 6;
 
-celestia::BatchRender::BatchRender(Window& window)
-	: Render(window)
+celestia::BatchSpriteRender::BatchSpriteRender(Render& render)
+	: render(render)
 {
 	textureSlotIndex = 1;
 	indexCount = 0;
@@ -36,43 +35,47 @@ celestia::BatchRender::BatchRender(Window& window)
 		offset += 4;
 	}
 	
-	buffer->createMesh(tempMesh, mesh);
+	render.buffer->createMesh(tempMesh, info.mesh);
 	
-	textures[0] = image->defaultTexture.imageView;
-	//WHITE TEXTURE 1x1 tähä
+	textures[0] = render.image->defaultTexture.imageView;
+	info.material = render.pipeline->getDefaultMaterial();
+	info.descriptors = render.descriptor->getDefaultSpriteDescriptorSets();
 }
 
 //clean everything
-celestia::BatchRender::~BatchRender()
+celestia::BatchSpriteRender::~BatchSpriteRender()
 {
-	cleanUp();
+	//cleanUp();
 }
 
-void celestia::BatchRender::beginBatch()
+void celestia::BatchSpriteRender::beginBatch()
 {
 	indexCount = 0;
 	vertexCount = 0;
 }
 
-void celestia::BatchRender::endBatch()
+void celestia::BatchSpriteRender::endBatch()
 {
+	//vertex buffer updateing..
 	size_t size = vertexCount * sizeof(Vertex);
 
-	buffer->updateBatchBuffer(mesh.vertexBuffer, 0, size, quadBuffer.data());
+	render.buffer->updateBatchBuffer(info.mesh.vertexBuffer, 0, size, quadBuffer.data());
 }
 
 //the real draw command in nutshell...
-void celestia::BatchRender::flush()
+void celestia::BatchSpriteRender::flush()
 {
-	descriptor->updateDescriptorSetTextures(textures, image->textureSampler, 0, textureSlotIndex, currentFrame);
-	descriptor->updateAllDescriptorSets();
+	render.descriptor->updateDescriptorSetTextures(textures, render.image->textureSampler, 0, textureSlotIndex, render.currentFrame);
+	render.descriptor->updateAllDescriptorSets();
 
 	textureSlotIndex = 1;
 
-	draw(mesh,indexCount);
+	info.amountToDraw = indexCount;
+	//render.draw(info.mesh,indexCount);
+	render.drawNew(info);
 }
 
-void celestia::BatchRender::drawQuad(const Vec2& position, const Vec2& size, const Vec3& color)
+void celestia::BatchSpriteRender::drawQuad(const Vec2& position, const Vec2& size, const Vec3& color)
 {
 	if (indexCount >= MAX_INDEX_COUNT)
 	{
@@ -110,7 +113,7 @@ void celestia::BatchRender::drawQuad(const Vec2& position, const Vec2& size, con
 	indexCount += 6;
 }
 
-void celestia::BatchRender::drawQuad(const VertexPositions* quad, const RawTexture* texture)
+void celestia::BatchSpriteRender::drawQuad(const VertexPositions* quad, const RawTexture* texture)
 {
 	if (quad == nullptr)
 	{

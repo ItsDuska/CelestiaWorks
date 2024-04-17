@@ -7,11 +7,11 @@ namespace celestia
 {
 	class Window;
 
-	class BatchRender : public Render
+	class BatchSpriteRender
 	{
 	public:
-		BatchRender(Window& window);
-		~BatchRender();
+		BatchSpriteRender(Render& render);
+		~BatchSpriteRender();
 
 		void beginBatch();
 		void endBatch();
@@ -24,8 +24,10 @@ namespace celestia
 		void drawQuad(const VertexPositions* quad, const RawTexture* texture);
 
 	private:
-		std::vector<Vertex> quadBuffer;
-		Mesh mesh; 
+		Render& render;
+		DrawInfo info;
+
+		std::vector<Vertex> quadBuffer; 
 		int vertexCount;
 		int indexCount;
 		std::array<int, NUMBER_OF_TEXTURE_IN_SHADER> textureSlots;

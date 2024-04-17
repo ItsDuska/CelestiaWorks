@@ -11,9 +11,10 @@
 namespace celestia
 {
 	class Render;
-	class BatchRender;
+	class RendererHandler;
 	class Window;
 	class Sprite;
+	class Text;
 
 	class WindowHandle
 	{
@@ -25,6 +26,7 @@ namespace celestia
 
 	public:
 		CELESTIA_WORKS void draw(const Sprite& sprite) const;
+		CELESTIA_WORKS void draw(Text& text) const;
 		CELESTIA_WORKS void beginRenderPass() const;
 		CELESTIA_WORKS void endRenderPass() const;
 		CELESTIA_WORKS bool isOpen() const;
@@ -33,6 +35,6 @@ namespace celestia
 
 	private:
 		std::unique_ptr<Window> window;
-		std::unique_ptr<BatchRender> render;	
+		std::unique_ptr<RendererHandler> render;
 	};
 }
