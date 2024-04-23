@@ -8,7 +8,7 @@
 #include "backend/vulkanAPI/core/Device.h"
 
 celestia::TextRender::TextRender(Render& render)
-	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2)* MAX_TEXT_COUNT),idBuffer(MAX_TEXT_COUNT)
+	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2)* MAX_TEXT_COUNT)
 {
 	indexCount = 0;
 	vertexCount = 0;
@@ -16,6 +16,7 @@ celestia::TextRender::TextRender(Render& render)
 	currentTexturePtr = nullptr;
 	needsUpdate = false;
 	active = false;
+	defaultMaterial = {};
 
 	glyphBuffer.resize(MAX_VERTEX_COUNT);
 	transformationBuffer.resize(10);
@@ -57,11 +58,6 @@ celestia::TextRender::TextRender(Render& render)
 	descriptors->addBinding(1, DescriptorType::STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 	descriptors->build(info.descriptors, info.layout);
 
-	//descriptors->updateBuffer(storageBuffer[0].buffer, sizeof(Vec2) * 10, info.descriptors[0]);
-	//descriptors->updateBuffer(storageBuffer[1].buffer, sizeof(Vec2) * 10, info.descriptors[1]);
-
-	//descriptors->updateSets();
-
 	ShaderObject shader;
 	shader.loadShader(nullptr, ShaderFormat::VERTEX_SHADER, ShaderType::TEXT_BATCH, true);
 	shader.loadShader(nullptr, ShaderFormat::FRAGMENT_SHADER, ShaderType::TEXT_BATCH, true);
@@ -71,10 +67,6 @@ celestia::TextRender::TextRender(Render& render)
 	options.blending = true;
 
 	render.pipeline->createPipeline(*info.material, shader, DrawingMode::TRIANGLE, &info.layout,options);
-
-	//info.material = render.pipeline->getDefaultMaterial();
-	//info.descriptors = render.descriptor->getDefaultSpriteDescriptorSets();
-
 }
 
 celestia::TextRender::~TextRender()
@@ -109,8 +101,8 @@ void celestia::TextRender::end()
 	//}
 
 	//needsUpdate = false;
-
 	size_t transformationSize = transformationIndexCounter * sizeof(Vec2);
+	
 
 	void* data;
 	vkMapMemory(Device::context.device,
@@ -130,14 +122,7 @@ void celestia::TextRender::end()
 
 void celestia::TextRender::flush()
 {
-	//descriptors->updateBuffer(storageBuffer[render.currentFrame].buffer,bufferSize, info.descriptors[render.currentFrame]);
-	//descriptors->updateTexture(currentTexturePtr->imageView, render.image->textureSampler, info.descriptors[render.currentFrame]);
-	//descriptors->updateSets();
-	//if (indexCount != 0)
-	//{
 	info.amountToDraw = indexCount;
-	//}
-
 	render.drawNew(info);
 }
 
@@ -145,27 +130,20 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 {
 	if (!needsUpdate)
 	{
-		needsUpdate = dirty;
+		needsUpdate = dirty; // TODO: Finish this one.
 	}
-
-	//if (idBuffer[transformationIndexCounter] == id)
-	//{
-		//return;
-	//}
 
 	if (currentTexturePtr != &font.texture)
 	{
 		active = true;
 		currentTexturePtr = &font.texture;
-		descriptors->updateBuffer(storageBuffer[0].buffer, bufferSize, info.descriptors[0]);
-		descriptors->updateTexture(currentTexturePtr->imageView, render.image->textureSampler, info.descriptors[0]);
-		descriptors->updateSets();
 
-		descriptors->updateBuffer(storageBuffer[1].buffer, bufferSize, info.descriptors[1]);
-		descriptors->updateTexture(currentTexturePtr->imageView, render.image->textureSampler, info.descriptors[1]);
-		descriptors->updateSets();
-
-		//std::cout<< "hi!\n";
+		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			descriptors->updateBuffer(storageBuffer[i].buffer, bufferSize, info.descriptors[i]);
+			descriptors->updateTexture(currentTexturePtr->imageView, render.image->textureSampler, info.descriptors[i]);
+			descriptors->updateSets();
+		}
 	}
 
 	indexCount += size * 6;
@@ -179,10 +157,6 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 	}
 
 	transformationBuffer[transformationIndexCounter] = position;
-	idBuffer[transformationIndexCounter] = id;
-
-	//std::cout << "vertex amount: " << vertices.size() << "\n";
-	//std::cout << "vertexCount: " << vertexCount << "\n";
 
 	for (const Vertex& vertex : vertices)
 	{
@@ -190,8 +164,6 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 		glyphBuffer[vertexCount].texIndex = transformationIndexCounter;
 		vertexCount++;
 	}
-
-	//std::cout << "vertexCount: " << vertexCount << "\n";
 
 	transformationIndexCounter++;
 }

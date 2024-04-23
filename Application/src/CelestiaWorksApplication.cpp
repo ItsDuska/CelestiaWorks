@@ -8,6 +8,14 @@
 #include "CelestiaWorks/System/Keyboard.h"
 
 
+/*
+STATIC PATH
+C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\release static\vs2015-2022\win64
+DYNAMIC PATH:
+C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\release dll\win64
+*/
+
+
 int main()
 {
 	try
@@ -21,8 +29,9 @@ int main()
 			std::cout << "FAILED TO LOAD FONT FROM MAIN!\n";
 		}
 		// { 220,232,224,255 }
-		std::string stringText = "Tuukka my beloved";
-		celestia::Text text({ 100.f,400.f }, stringText, { 255,15,1,255 }, &font);
+		celestia::Text text({ 100.f,700.f }, "Tuukka my beloved", {255,15,1,255}, &font);
+		celestia::Text text1({ 650.f,100.f }, "amogus", { 255,15,1,255 }, &font);
+		
 
 		celestia::Color color = { 128,128,51,255 };
 
@@ -38,9 +47,10 @@ int main()
 		float tempX = 800.f / 5;
 		float tempY = 800.f / 5;
 
-		for (int i = 0; i < 5; i++)
+		
+		for (int i = 0; i < 3; i++)
 		{
-			for (int j = 0; j < 5; j++)
+			for (int j = 0; j < 3; j++)
 			{
 				celestia::Vec2 position = { j * tempX, i * tempY };
 				celestia::Vec2 size = { 155.f,155.f };
@@ -51,7 +61,7 @@ int main()
 				sprites.push_back(sprite);
 			}
 		}
-
+		
 		celestia::Sprite testSprite({ 200.f,600.f }, { 50.f,50.f });
 		testSprite.setTexture(textures[2]);
 		testSprite.setTextureRectSize({ 32.f,32.f });
@@ -88,8 +98,10 @@ int main()
 				testSprite.setTextureRectPosition({ rectPositionX,0 });
 			}
 
-			window.draw(testSprite);
 			window.draw(text);
+
+			window.draw(testSprite);
+			window.draw(text1);	
 
 			window.endRenderPass();
 

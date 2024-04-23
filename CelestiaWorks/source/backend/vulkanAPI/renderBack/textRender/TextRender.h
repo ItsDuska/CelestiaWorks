@@ -33,7 +33,7 @@ namespace celestia
 
 		std::vector<Vec2> transformationBuffer;
 		int transformationIndexCounter;
-		std::vector<int> idBuffer;
+		//std::vector<int> idBuffer;
 
 		std::vector<Vertex> glyphBuffer;
 		int vertexCount;

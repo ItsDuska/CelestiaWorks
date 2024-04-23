@@ -9,7 +9,7 @@ namespace celestia
 	class Text
 	{
 	public:
-		CELESTIA_WORKS Text(const Vec2 position, const std::string& symbols,const Color color, Font* font);
+		CELESTIA_WORKS Text(const Vec2 position, const char* symbols,const Color color, Font* font);
 		CELESTIA_WORKS Text(const Text&) = delete;
 		CELESTIA_WORKS Text& operator = (const Text&) = delete;
 		//CELESTIA_WORKS ~Text();

@@ -4,6 +4,8 @@
 #include FT_FREETYPE_H
 #include <iostream>
 
+//#define CELESTIA_FULL_RELEASE
+
 std::unique_ptr<celestia::Font_t> celestia::FontReader::createFont(const char* filepath, uint8_t fontSize)
 {
     if (filepath == nullptr)

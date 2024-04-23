@@ -1,12 +1,10 @@
 #include "Graphics/Text.h"
 #include "backend/vulkanAPI/resources/FontReader.h"
 
-celestia::Text::Text(const Vec2 position, const std::string& symbols, const Color color, Font* font)
+celestia::Text::Text(const Vec2 position, const char* symbols, const Color color, Font* font)
 	: position(position),color(color),font(font),dirty(true)
 {
-	std::string tempText = "tuukka gamings";
-
-	this->symbols = tempText;
+	this->symbols = symbols;
 	static int textID = 1;
 	id = textID;
 	id++;
@@ -35,12 +33,12 @@ void celestia::Text::updatePosition()
 		const float xpos = x + character.bearing.x * scale;
 		const float ypos = (size.y - character.bearing.y) * scale;
 
-		float w = (float)character.size.x * scale;
-		float hraw = (float)character.size.y;
+		float w = static_cast<float>(character.size.x * scale);
+		float hraw = static_cast<float>(character.size.y);
 		float h = hraw * scale;
-		float u0 = (float)character.offset * font->bitmapData->invBmpWidth;
+		float u0 = static_cast<float>(character.offset) * font->bitmapData->invBmpWidth;
 		float v = (hraw) / font->bitmapData->bmpHeigth;
-		float u1 = (float)(character.offset + character.size.x) * font->bitmapData->invBmpWidth;
+		float u1 = static_cast<float>((character.offset + character.size.x)) * font->bitmapData->invBmpWidth;
 
 		const int offset = i * 4;
 
@@ -52,8 +50,6 @@ void celestia::Text::updatePosition()
 		x += (character.advance >> 6) * scale;
 
 	}
-
-	//
 }
 
 celestia::Vec2 celestia::Text::getTextSize()

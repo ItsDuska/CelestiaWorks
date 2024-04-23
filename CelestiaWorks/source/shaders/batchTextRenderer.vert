@@ -19,8 +19,8 @@ layout (push_constant) uniform pushValues {
 
 void main()
 {
-
-    vec2 translation = transformBuffer.transforms[texIndex];
+    uint index = texIndex;
+    vec2 translation = transformBuffer.transforms[index];
 
     // Lisää sijainnin muutos vertexin sijaintiin
     vec2 newPosition = position + translation;
