@@ -1,7 +1,9 @@
-## Silly 2D rendering framework like SFML made for fun.
-Please don't expect this to work because my code is hot garbage.
-The performance will probably be horrible but this project is just for having fun and learning new things.
+## CelestiaWorks: A 2D Rendering Framework Using Vulkan
+CelestiaWorks is a 2D rendering framework inspired by SFML, designed purely for fun and learning. Built using the Vulkan API, this framework implements modern rendering techniques like bindless textures and a sprite batching system to improve performance when drawing multiple images. While it's not meant to be production-ready, and the code quality might not be the best, CelestiaWorks serves as a personal project for exploring new technologies and gaining experience in Vulkan development.
 
+Disclaimer: This project is not guaranteed to work flawlessly. The performance may vary, and there are no promises of optimization, as this is more of a learning experiment rather than a polished product.
+
+----
 ### **The list of things I want to add to this when I have the time for it:**
   - Mouse support
   - Text rendering
