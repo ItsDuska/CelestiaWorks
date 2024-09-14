@@ -180,7 +180,6 @@ VkPipelineColorBlendAttachmentState celestia::Pipeline::createColorBlendAttachme
 		VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = blending;
 
-	//amogus?
 	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
 	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
 	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;

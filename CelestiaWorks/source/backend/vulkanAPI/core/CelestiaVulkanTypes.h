@@ -66,4 +66,10 @@ namespace celestia
 		alignas(16) Mat4 projection;
 	};
 
+	struct Vec2Aligned
+	{
+		Vec2 vec;
+		float padding[2]; // To align to 16 bytes
+	};
+
 }

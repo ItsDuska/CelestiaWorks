@@ -8,7 +8,7 @@
 #include "backend/vulkanAPI/core/Device.h"
 
 celestia::TextRender::TextRender(Render& render)
-	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2)* MAX_TEXT_COUNT)
+	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2Aligned)* MAX_TEXT_COUNT)
 {
 	indexCount = 0;
 	vertexCount = 0;
@@ -101,8 +101,8 @@ void celestia::TextRender::end()
 	//}
 
 	//needsUpdate = false;
-	size_t transformationSize = transformationIndexCounter * sizeof(Vec2);
-	
+	 
+	size_t transformationSize = transformationIndexCounter * sizeof(Vec2Aligned);
 
 	void* data;
 	vkMapMemory(Device::context.device,
@@ -114,7 +114,6 @@ void celestia::TextRender::end()
 	);
 	std::memcpy(data, transformationBuffer.data(), transformationSize);
 	vkUnmapMemory(Device::context.device, storageBuffer[render.currentFrame].memory);
-
 
 	size_t vertexSize = vertexCount * sizeof(Vertex);
 	render.buffer->updateBatchBuffer(info.mesh.vertexBuffer, 0, vertexSize, glyphBuffer.data());
@@ -133,6 +132,7 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 		needsUpdate = dirty; // TODO: Finish this one.
 	}
 
+	
 	if (currentTexturePtr != &font.texture)
 	{
 		active = true;
@@ -145,6 +145,7 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 			descriptors->updateSets();
 		}
 	}
+	
 
 	indexCount += size * 6;
 
@@ -156,7 +157,7 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 		indexCount += size * 6;
 	}
 
-	transformationBuffer[transformationIndexCounter] = position;
+	transformationBuffer[transformationIndexCounter].vec = position;
 
 	for (const Vertex& vertex : vertices)
 	{

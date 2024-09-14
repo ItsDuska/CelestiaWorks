@@ -31,7 +31,7 @@ namespace celestia
 		AllocatedBuffer storageBuffer[MAX_FRAMES_IN_FLIGHT];
 		const VkDeviceSize bufferSize;
 
-		std::vector<Vec2> transformationBuffer;
+		std::vector<Vec2Aligned> transformationBuffer;
 		int transformationIndexCounter;
 		//std::vector<int> idBuffer;
 

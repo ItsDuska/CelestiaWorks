@@ -8,7 +8,6 @@ layout (location = 3) in uint texIndex;
 layout (location = 0) out vec2 fragTexCoord;
 layout (location = 1) out vec3 outColor;
 
-
 layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
 	vec2 transforms[];
 } transformBuffer;
