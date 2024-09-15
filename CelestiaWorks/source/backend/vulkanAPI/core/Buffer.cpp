@@ -46,7 +46,7 @@ celestia::AllocatedBuffer celestia::Buffer::createBuffer(VkDeviceSize size, VkBu
 
     if (vkCreateBuffer(Device::context.device, &bufferInfo, nullptr, &buffer.buffer) != VK_SUCCESS)
     {
-	    throw std::runtime_error("Failed to create vertex buffer!");
+	    throw std::runtime_error("Failed to create buffer!");
     }
 
     VkMemoryRequirements memRequirments;
@@ -59,7 +59,7 @@ celestia::AllocatedBuffer celestia::Buffer::createBuffer(VkDeviceSize size, VkBu
 
     if (vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &buffer.memory) != VK_SUCCESS)
     {
-	    throw std::runtime_error("failed to allocate vertex buffer memory");
+	    throw std::runtime_error("failed to allocate buffer memory");
     }
 
     vkBindBufferMemory(Device::context.device, buffer.buffer, buffer.memory, 0);

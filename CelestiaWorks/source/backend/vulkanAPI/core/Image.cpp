@@ -8,6 +8,10 @@
 #include "CommandBuffer.h"
 
 
+
+
+
+
 /*
 TODO:
 Kirjota t‰‰ uudelleen, jotta pystyisit luomaan uusia tekstuureja k‰ytt‰m‰ll‰ vain tekstuurin path sijaintia.
@@ -117,13 +121,15 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath,Ve
 void celestia::Image::deleteTextureImage(RawTexture& texture)
 {
 	vkDeviceWaitIdle(Device::context.device);
+#ifdef ENABLE_VALIDATION_LAYER
 	std::cout << "Deleting Texture by id of: " << texture.textureID << "!\n";
+#endif
 	vkDestroyImageView(Device::context.device, texture.imageView, nullptr);
 	vkDestroyImage(Device::context.device, texture.allocatedImage.image, nullptr);
 	vkFreeMemory(Device::context.device, texture.allocatedImage.memory, nullptr);
 }
 
-void celestia::Image::createTextureFromBuffer(const void* bufferptr, const VkDeviceSize& bufferSize,
+void celestia::Image::createTextureFromBuffer(const void* bufferPtr, const VkDeviceSize& bufferSize,
 	const Vec2i& size, RawTexture& texture, VkFormat format)
 {
 	AllocatedBuffer stagingBuffer = Buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -131,7 +137,7 @@ void celestia::Image::createTextureFromBuffer(const void* bufferptr, const VkDev
 
 	void* data;
 	vkMapMemory(Device::context.device, stagingBuffer.memory, 0, bufferSize, 0, &data);
-	memcpy(data, bufferptr, static_cast<size_t>(bufferSize));
+	memcpy(data, bufferPtr, static_cast<size_t>(bufferSize));
 	vkUnmapMemory(Device::context.device, stagingBuffer.memory);
 
 	createImage(size,

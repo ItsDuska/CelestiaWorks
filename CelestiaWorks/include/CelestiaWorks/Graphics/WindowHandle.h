@@ -32,6 +32,7 @@ namespace celestia
 		CELESTIA_WORKS bool isOpen() const;
 		CELESTIA_WORKS void setClearColor(Color& color);
 		CELESTIA_WORKS void setFrameRateLimit(const int frameRate);
+		CELESTIA_WORKS void createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
 
 	private:
 		std::unique_ptr<Window> window;

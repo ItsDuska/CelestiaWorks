@@ -25,6 +25,10 @@ namespace celestia
 		void setClearColor(Color& color);
 		void setFrameRateLimit(const int frameRate);
 
+
+		//TEXT RENDERING
+		void createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
+
 	private:
 		std::unique_ptr<Render> coreRenderer; //t‰t‰ heitell‰‰n molemmille render classeille
 

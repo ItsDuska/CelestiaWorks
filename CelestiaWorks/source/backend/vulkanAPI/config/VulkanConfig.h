@@ -11,4 +11,4 @@ constexpr int MAX_QUAD_COUNT = 110;
 
 constexpr int MAX_VERTEX_COUNT = MAX_QUAD_COUNT * 4;
 constexpr int MAX_INDEX_COUNT = MAX_QUAD_COUNT * 6;
-constexpr int MAX_TEXT_COUNT = 10;
+//constexpr int MAX_TEXT_COUNT = 10;

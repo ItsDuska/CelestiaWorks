@@ -8,7 +8,7 @@
 #include "CelestiaWorks/System/Keyboard.h"
 
 
-/*
+/* En en‰‰ muista mit‰ varten t‰‰ on guh? En edes uskalla poistaa t‰t‰ joten t‰‰ pysyy nyt t‰‰ll‰.
 STATIC PATH
 C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\release static\vs2015-2022\win64
 DYNAMIC PATH:
@@ -22,6 +22,8 @@ int main()
 	{
 		celestia::WindowHandle window({ 800,800 }, "Among Us Gaming");
 		window.setFrameRateLimit(60);
+
+		window.createTextRenderer(10, 400);
 
 		celestia::Font font;
 		if (!font.loadFont("../assets/yoster.ttf", 32))

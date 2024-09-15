@@ -10,7 +10,7 @@ namespace celestia
 	class TextRender
 	{
 	public:
-		TextRender(Render& render);
+		TextRender(Render& render, uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
 		~TextRender();
 		void begin();
 		void end();
@@ -42,6 +42,9 @@ namespace celestia
 		bool needsUpdate;
 		bool active;
 
+		const uint32_t MAX_TEXT_COUNT;
+		const uint32_t MAX_VERTEX_COUNT_PER_BATCH;
+		const uint32_t MAX_INDEX_COUNT_PER_BATCH;
 
 	};
 }

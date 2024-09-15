@@ -123,6 +123,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;$(SolutionDir)CelestiaWorks\include\CelestiaWorks;C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +144,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.243.0\Include;$(SolutionDir)CelestiaWorks\source;$(SolutionDir)CelestiaWorks\shaders;$(SolutionDir)dependencies;$(SolutionDir)CelestiaWorks\include\CelestiaWorks;C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

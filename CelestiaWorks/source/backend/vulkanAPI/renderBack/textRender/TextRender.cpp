@@ -7,8 +7,12 @@
 #include "backend/vulkanAPI/resources/FontReader.h"
 #include "backend/vulkanAPI/core/Device.h"
 
-celestia::TextRender::TextRender(Render& render)
-	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2Aligned)* MAX_TEXT_COUNT)
+celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32_t maxCharsPerBatch)
+	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2Aligned)* maxTextObjects),
+	set(),
+	MAX_TEXT_COUNT(maxTextObjects),
+	MAX_VERTEX_COUNT_PER_BATCH(maxCharsPerBatch*4u),
+	MAX_INDEX_COUNT_PER_BATCH(maxCharsPerBatch * 4u*6u)
 {
 	indexCount = 0;
 	vertexCount = 0;
@@ -18,7 +22,7 @@ celestia::TextRender::TextRender(Render& render)
 	active = false;
 	defaultMaterial = {};
 
-	glyphBuffer.resize(MAX_VERTEX_COUNT);
+	glyphBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
 	transformationBuffer.resize(10);
 
 	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
@@ -29,12 +33,12 @@ celestia::TextRender::TextRender(Render& render)
 	}
 	
 	RawMesh tempMesh;
-	tempMesh.vertices.resize(MAX_VERTEX_COUNT);
-	tempMesh.indices.resize(MAX_INDEX_COUNT);
+	tempMesh.vertices.resize(MAX_VERTEX_COUNT_PER_BATCH);
+	tempMesh.indices.resize(MAX_INDEX_COUNT_PER_BATCH);
 
 
 	int offset = 0;
-	for (int i = 0; i < MAX_INDEX_COUNT; i += 6)
+	for (int i = 0; i < MAX_INDEX_COUNT_PER_BATCH; i += 6)
 	{
 		tempMesh.indices[static_cast<size_t>(i + 0)] = offset;
 		tempMesh.indices[static_cast<size_t>(i + 1)] = 1 + offset;
@@ -149,7 +153,7 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 
 	indexCount += size * 6;
 
-	if (indexCount >= MAX_INDEX_COUNT)
+	if (indexCount >= MAX_INDEX_COUNT_PER_BATCH)
 	{
 		end();
 		flush();
@@ -164,6 +168,11 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 		glyphBuffer[vertexCount] = vertex;
 		glyphBuffer[vertexCount].texIndex = transformationIndexCounter;
 		vertexCount++;
+	}
+
+	if (transformationIndexCounter == MAX_TEXT_COUNT - 1u)
+	{
+		return;
 	}
 
 	transformationIndexCounter++;

@@ -53,3 +53,8 @@ void celestia::WindowHandle::setFrameRateLimit(const int frameRate)
 {
 	render->setFrameRateLimit(frameRate);
 }
+
+void celestia::WindowHandle::createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch)
+{
+	render->createTextRenderer(maxTextObjects, maxCharsPerBatch);
+}

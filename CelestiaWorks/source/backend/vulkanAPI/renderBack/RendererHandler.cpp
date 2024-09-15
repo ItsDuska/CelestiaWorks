@@ -6,7 +6,6 @@ celestia::RendererHandler::RendererHandler(Window& window)
 {
 	coreRenderer = std::make_unique<Render>(window);
 	batchSpriteRenderer = std::make_unique<BatchSpriteRender>(*coreRenderer);
-	batchTextRenderer = std::make_unique<TextRender>(*coreRenderer);
 }
 
 celestia::RendererHandler::~RendererHandler()
@@ -27,14 +26,19 @@ void celestia::RendererHandler::drawQuad(const Vec2& position, const Vec2& size,
 //TODO:
 void celestia::RendererHandler::drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty,const int id)
 {
-	batchTextRenderer->drawText(vertices, size, position, font, dirty,id);
-	//batchTextRenderer->draw(text.data, text.position, text.size, text.font);
+	if (batchTextRenderer)
+	{
+		batchTextRenderer->drawText(vertices, size, position, font, dirty, id);
+	}
 }
 
 void celestia::RendererHandler::beginRenderPass() const
 {
 	batchSpriteRenderer->beginBatch();
-	batchTextRenderer->begin();
+	if (batchTextRenderer)
+	{
+		batchTextRenderer->begin();
+	}
 	coreRenderer->beginRendering();
 }
 
@@ -43,10 +47,13 @@ void celestia::RendererHandler::endRenderPass() const
 	batchSpriteRenderer->endBatch();
 	batchSpriteRenderer->flush();
 
-	if (batchTextRenderer->isActive())
+	if (batchTextRenderer)
 	{
-		batchTextRenderer->end();
-		batchTextRenderer->flush();
+		if (batchTextRenderer->isActive())
+		{
+			batchTextRenderer->end();
+			batchTextRenderer->flush();
+		}
 	}
 	
 	coreRenderer->endRendering();
@@ -61,4 +68,9 @@ void celestia::RendererHandler::setClearColor(Color& color)
 void celestia::RendererHandler::setFrameRateLimit(const int frameRate)
 {
 	coreRenderer->setFramerateLimit(frameRate);
+}
+
+void celestia::RendererHandler::createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch)
+{
+	batchTextRenderer = std::make_unique<TextRender>(*coreRenderer,maxTextObjects,maxCharsPerBatch);
 }
