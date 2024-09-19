@@ -51,7 +51,7 @@ namespace celestia
 		Material *material;
 		VkDescriptorSet* descriptors;
 		VkDescriptorSetLayout layout;
-		Mesh mesh;
+		Mesh* mesh;
 		int amountToDraw;
 	};
 

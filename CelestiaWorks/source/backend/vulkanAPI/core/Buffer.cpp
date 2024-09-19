@@ -67,12 +67,14 @@ celestia::AllocatedBuffer celestia::Buffer::createBuffer(VkDeviceSize size, VkBu
     return buffer;
 }
 
-void celestia::Buffer::createMesh(RawMesh& rawMesh, Mesh& mesh)
+celestia::Mesh* celestia::Buffer::createMesh(RawMesh& rawMesh)
 {
-    mesh.indexBufferSize = static_cast<uint32_t>(rawMesh.indices.size());
-    mesh.indexBuffer = createIndexBuffer(rawMesh);
-    mesh.vertexBufferSize = static_cast<uint32_t>(rawMesh.vertices.size());
-    mesh.vertexBuffer = createVertexBuffer(rawMesh);
+    Mesh* mesh = new Mesh;
+    mesh->indexBufferSize = static_cast<uint32_t>(rawMesh.indices.size());
+    mesh->indexBuffer = createIndexBuffer(rawMesh);
+    mesh->vertexBufferSize = static_cast<uint32_t>(rawMesh.vertices.size());
+    mesh->vertexBuffer = createVertexBuffer(rawMesh);
+    return mesh;
 }
 
 void celestia::Buffer::updateBatchBuffer(AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const Vertex* srcData)

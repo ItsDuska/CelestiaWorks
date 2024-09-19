@@ -12,7 +12,7 @@ namespace celestia
 		~Buffer();
 
 		static AllocatedBuffer createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-		void createMesh(RawMesh& rawMesh, Mesh& mesh);
+		Mesh* createMesh(RawMesh& rawMesh);
 
 		void updateBatchBuffer(AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const Vertex* srcdata);
 		static uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);

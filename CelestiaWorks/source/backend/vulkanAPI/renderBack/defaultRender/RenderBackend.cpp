@@ -85,8 +85,8 @@ void celestia::Render::drawNew(DrawInfo& info)
 
 	VkDeviceSize offset = 0;
 
-	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &info.mesh.vertexBuffer.buffer, &offset);
-	vkCmdBindIndexBuffer(commandBuffers[currentFrame], info.mesh.indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &info.mesh->vertexBuffer.buffer, &offset);
+	vkCmdBindIndexBuffer(commandBuffers[currentFrame], info.mesh->indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
 	vkCmdDrawIndexed(commandBuffers[currentFrame], info.amountToDraw, 1, 0, 0, 0);
 }

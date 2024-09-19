@@ -54,7 +54,7 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	info.descriptors = set;
 	info.material = &defaultMaterial;
 
-	render.buffer->createMesh(tempMesh, info.mesh);
+	info.mesh = render.buffer->createMesh(tempMesh);
 	
 	descriptors->createDescriptor();
 	
@@ -75,6 +75,8 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 
 celestia::TextRender::~TextRender()
 {
+	delete info.mesh;
+
 	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
 		vkDestroyBuffer(Device::context.device, storageBuffer[i].buffer, nullptr);
@@ -120,7 +122,7 @@ void celestia::TextRender::end()
 	vkUnmapMemory(Device::context.device, storageBuffer[render.currentFrame].memory);
 
 	size_t vertexSize = vertexCount * sizeof(Vertex);
-	render.buffer->updateBatchBuffer(info.mesh.vertexBuffer, 0, vertexSize, glyphBuffer.data());
+	render.buffer->updateBatchBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
 }
 
 void celestia::TextRender::flush()

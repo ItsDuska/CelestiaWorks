@@ -13,6 +13,7 @@ const bool VALIDATION_LAYERS = false;
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation",
+
 };
 
 const std::vector<const char*> deviceExtensions = {
@@ -288,7 +289,7 @@ bool celestia::Device::supportLayers()
 		bool layerFound = false;
 
 		for (const auto& layerPropeties : availableLayers)
-		{
+		{	
 			if (strcmp(layerName, layerPropeties.layerName) == 0)
 			{
 				layerFound = true;
