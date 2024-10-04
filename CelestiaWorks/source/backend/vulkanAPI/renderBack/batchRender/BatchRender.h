@@ -10,7 +10,7 @@ namespace celestia
 	class BatchSpriteRender
 	{
 	public:
-		BatchSpriteRender(Render& render);
+		BatchSpriteRender(Render& render, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
 		~BatchSpriteRender();
 
 		void beginBatch();
@@ -33,5 +33,17 @@ namespace celestia
 		std::array<int, NUMBER_OF_TEXTURE_IN_SHADER> textureSlots;
 		VkImageView textures[NUMBER_OF_TEXTURE_IN_SHADER]{};
 		int textureSlotIndex;
+
+
+		// CONFIGURABLE STUFF || en kirjottanu varmaa tota oikein :D
+
+		const uint32_t MAX_TEXTURES_IN_SHADER;
+		const uint32_t MAX_QUAD_COUNT;
+		const uint32_t MAX_VERTEX_COUNT_PER_BATCH;
+		const uint32_t MAX_INDEX_COUNT_PER_BATCH;
+
 	};
+
+
+	
 }

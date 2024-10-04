@@ -8,10 +8,10 @@
 #include <iostream>
 
 
-celestia::WindowHandle::WindowHandle(const Vec2i size, const char* name)
+celestia::WindowHandle::WindowHandle(const Vec2i size, const char* name, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 	: window{ std::make_unique<Window>(size, name) }
 {
-	render = std::make_unique<RendererHandler>(*window);
+	render = std::make_unique<RendererHandler>(*window, maxTexturesInShader, maxQuadsPerBatch);
 }
 
 celestia::WindowHandle::~WindowHandle()

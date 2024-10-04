@@ -13,7 +13,7 @@ namespace celestia
 	class RendererHandler
 	{
 	public:
-		RendererHandler(Window& window);
+		RendererHandler(Window& window, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
 		~RendererHandler();
 
 		void drawSprite(const VertexPositions* quad, const RawTexture* texture);

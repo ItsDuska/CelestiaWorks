@@ -7,22 +7,26 @@
 #include <iostream>
 
 
-celestia::BatchSpriteRender::BatchSpriteRender(Render& render)
-	: render(render)
+celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
+	: render(render),
+	MAX_TEXTURES_IN_SHADER(maxTexturesInShader),
+	MAX_QUAD_COUNT(maxQuadsPerBatch),
+	MAX_VERTEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u),
+	MAX_INDEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u * 6u)
 {
 	textureSlotIndex = 1;
 	indexCount = 0;
 	vertexCount = 0;
 	textureSlots = {};
 
-	quadBuffer.resize(MAX_VERTEX_COUNT);
+	quadBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
 
 	RawMesh tempMesh;
-	tempMesh.vertices.resize(MAX_VERTEX_COUNT);
-	tempMesh.indices.resize(MAX_INDEX_COUNT);
+	tempMesh.vertices.resize(MAX_VERTEX_COUNT_PER_BATCH);
+	tempMesh.indices.resize(MAX_INDEX_COUNT_PER_BATCH);
 
 	uint32_t offset = 0;
-	for (int i = 0; i < MAX_INDEX_COUNT; i += 6)
+	for (int i = 0; i < MAX_VERTEX_COUNT_PER_BATCH; i += 6)
 	{
 		tempMesh.indices[static_cast<size_t>(i + 0)] =     offset;
 		tempMesh.indices[static_cast<size_t>(i + 1)] = 1 + offset;
@@ -59,7 +63,6 @@ void celestia::BatchSpriteRender::endBatch()
 {
 	//vertex buffer updateing..
 	size_t size = vertexCount * sizeof(Vertex);
-
 	render.buffer->updateBatchBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
 }
 
@@ -70,15 +73,13 @@ void celestia::BatchSpriteRender::flush()
 	render.descriptor->updateAllDescriptorSets();
 
 	textureSlotIndex = 1;
-
 	info.amountToDraw = indexCount;
-	//render.draw(info.mesh,indexCount);
 	render.drawNew(info);
 }
 
 void celestia::BatchSpriteRender::drawQuad(const Vec2& position, const Vec2& size, const Vec3& color)
 {
-	if (indexCount >= MAX_INDEX_COUNT)
+	if (indexCount >= MAX_VERTEX_COUNT_PER_BATCH)
 	{
 		endBatch();
 		flush();
@@ -121,7 +122,7 @@ void celestia::BatchSpriteRender::drawQuad(const VertexPositions* quad, const Ra
 		return;
 	}
 
-	if (indexCount >= MAX_INDEX_COUNT || textureSlotIndex >= NUMBER_OF_TEXTURE_IN_SHADER)
+	if (indexCount >= MAX_INDEX_COUNT_PER_BATCH || textureSlotIndex >= NUMBER_OF_TEXTURE_IN_SHADER)
 	{
 		endBatch();
 		flush();

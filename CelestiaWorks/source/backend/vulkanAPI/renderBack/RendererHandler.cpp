@@ -2,10 +2,10 @@
 #include "backend/window/Window.h"
 #include "backend/vulkanAPI/renderBack/RendererHandler.h"
 
-celestia::RendererHandler::RendererHandler(Window& window)
+celestia::RendererHandler::RendererHandler(Window& window, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 {
 	coreRenderer = std::make_unique<Render>(window);
-	batchSpriteRenderer = std::make_unique<BatchSpriteRender>(*coreRenderer);
+	batchSpriteRenderer = std::make_unique<BatchSpriteRender>(*coreRenderer, maxTexturesInShader, maxQuadsPerBatch);
 }
 
 celestia::RendererHandler::~RendererHandler()
@@ -47,13 +47,10 @@ void celestia::RendererHandler::endRenderPass() const
 	batchSpriteRenderer->endBatch();
 	batchSpriteRenderer->flush();
 
-	if (batchTextRenderer)
+	if (batchTextRenderer && batchTextRenderer->isActive())
 	{
-		if (batchTextRenderer->isActive())
-		{
-			batchTextRenderer->end();
-			batchTextRenderer->flush();
-		}
+		batchTextRenderer->end();
+		batchTextRenderer->flush();
 	}
 	
 	coreRenderer->endRendering();

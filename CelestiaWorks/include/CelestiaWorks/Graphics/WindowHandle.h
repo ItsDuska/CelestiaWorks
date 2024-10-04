@@ -19,7 +19,7 @@ namespace celestia
 	class WindowHandle
 	{
 	public:
-		CELESTIA_WORKS WindowHandle(const Vec2i size, const char* name);
+		CELESTIA_WORKS WindowHandle(const Vec2i size, const char* name, uint32_t maxTexturesInShader = 5u, uint32_t maxQuadsPerBatch = 100);
 		CELESTIA_WORKS WindowHandle(const WindowHandle&) = delete;
 		CELESTIA_WORKS WindowHandle& operator = (const WindowHandle&) = delete;
 		CELESTIA_WORKS ~WindowHandle();

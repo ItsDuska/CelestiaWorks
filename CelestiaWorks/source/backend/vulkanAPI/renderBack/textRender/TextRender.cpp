@@ -1,14 +1,17 @@
 #include "TextRender.h"
 #include "backend/vulkanAPI/core/Buffer.h"
-//#include "backend/vulkanAPI/core/Descriptor.h"
 #include "backend/vulkanAPI/core/Image.h"
 #include "backend/vulkanAPI/core/Pipeline.h"
 #include "backend/vulkanAPI/core/ShaderObject.h"
 #include "backend/vulkanAPI/resources/FontReader.h"
 #include "backend/vulkanAPI/core/Device.h"
 
+#define MAIN_BUFFER 0
+
 celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32_t maxCharsPerBatch)
-	: render(render), descriptors(std::make_unique<DescriptorFactory>()),bufferSize(sizeof(Vec2Aligned)* maxTextObjects),
+	: render(render),
+	descriptors(std::make_unique<DescriptorFactory>()),
+	bufferSize(sizeof(Vec2Aligned)* maxTextObjects),
 	set(),
 	MAX_TEXT_COUNT(maxTextObjects),
 	MAX_VERTEX_COUNT_PER_BATCH(maxCharsPerBatch*4u),
@@ -21,7 +24,10 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	needsUpdate = false;
 	active = false;
 	defaultMaterial = {};
+	//lastIndexInMap = 0;
 
+	//fontTypeBuffers[MAIN_BUFFER].glyphBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
+	
 	glyphBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
 	transformationBuffer.resize(10);
 
@@ -67,10 +73,19 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	shader.loadShader(nullptr, ShaderFormat::FRAGMENT_SHADER, ShaderType::TEXT_BATCH, true);
 	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderFormat::VERTEX_SHADER);
 
+
 	PipelineOptions options{};
 	options.blending = true;
 
 	render.pipeline->createPipeline(*info.material, shader, DrawingMode::TRIANGLE, &info.layout,options);
+	
+
+	//Init main buffer
+	//fontTypeBuffers[MAIN_BUFFER].indexCount = 0;
+	//fontTypeBuffers[MAIN_BUFFER].vertexCount = 0;
+	//fontTypeBuffers[MAIN_BUFFER].mesh = info.mesh;
+
+
 }
 
 celestia::TextRender::~TextRender()
@@ -137,10 +152,22 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 	{
 		needsUpdate = dirty; // TODO: Finish this one.
 	}
-
 	
+
+	// TODO: Tee tämä hassu hassu loppuun myös.
 	if (currentTexturePtr != &font.texture)
 	{
+		/*
+		const auto& index = fontTypeBufferMapKeys.find(font.texture.textureID);
+		if (index == fontTypeBufferMapKeys.end())
+		{
+			// didn't find the item
+			fontTypeBufferMapKeys[font.texture.textureID] = lastIndexInMap;
+			lastIndexInMap++;
+		}
+		*/
+
+
 		active = true;
 		currentTexturePtr = &font.texture;
 
@@ -152,7 +179,6 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 		}
 	}
 	
-
 	indexCount += size * 6;
 
 	if (indexCount >= MAX_INDEX_COUNT_PER_BATCH)
