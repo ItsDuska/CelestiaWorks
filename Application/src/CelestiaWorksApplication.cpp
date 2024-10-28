@@ -31,9 +31,8 @@ int main()
 			std::cout << "FAILED TO LOAD FONT FROM MAIN!\n";
 		}
 		
-		celestia::Text text({ 100.f,700.f }, "jospa toimis nyt??    guhhhh..", {255,0,0,255}, &font);
-		celestia::Text text1({ 650.f,100.f }, "toinen amogus teksti", { 255,15,1,255 }, &font);
-		
+		celestia::Text text({ 100.f,400.f }, "jospa toimis nyt??    guhhhh..", {255,0,0,255}, &font);
+		celestia::Text text1({ 400.f,100.f }, "toinen amogus teksti", { 255,15,1,255 }, &font);
 
 		celestia::Color color = { 128,128,51,255 };
 
@@ -85,13 +84,11 @@ int main()
 
 			window.beginRenderPass();
 
-			
 			for (celestia::Sprite& currentSprite : sprites)
 			{
 				window.draw(currentSprite);
 			}
 			
-
 			if (currentTime >= updateFrameNumber)
 			{
 				rectPositionX++;

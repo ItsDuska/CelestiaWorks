@@ -16,13 +16,12 @@ KIRJOTA TÄÄ KAIKKI UUDESTAAN, JOTTA PYSTYISI LUOMAAN MITÄ TAHANSA HELPOSTI!
 
 namespace celestia
 {
-	class Buffer;
 	class Image;
 
 	class Descriptor
 	{
 	public:
-		Descriptor(Buffer& buffer, Image& image);
+		Descriptor(Image& image);
 		~Descriptor();
 
 		VkDescriptorSetLayout& getDescriptorSetLayout() { return globalSetLayout; }
@@ -52,7 +51,6 @@ namespace celestia
 		VkDescriptorImageInfo imageInfo[NUMBER_OF_TEXTURE_IN_SHADER];
 		std::vector<VkWriteDescriptorSet> writes;
 
-		Buffer& buffer;
 		Image& image;
 	};
 

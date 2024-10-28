@@ -65,7 +65,7 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = Buffer::findMemoryType(memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = buffer::findMemoryType(memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &image.memory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate image memory!");
@@ -132,7 +132,7 @@ void celestia::Image::deleteTextureImage(RawTexture& texture)
 void celestia::Image::createTextureFromBuffer(const void* bufferPtr, const VkDeviceSize& bufferSize,
 	const Vec2i& size, RawTexture& texture, VkFormat format)
 {
-	AllocatedBuffer stagingBuffer = Buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+	AllocatedBuffer stagingBuffer = buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	void* data;

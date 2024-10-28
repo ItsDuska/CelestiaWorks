@@ -39,7 +39,8 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 		offset += 4;
 	}
 	
-	info.mesh = render.buffer->createMesh(tempMesh);
+	//info.mesh = render.buffer->createMesh(tempMesh);
+	info.mesh = buffer::createMesh(tempMesh);
 	
 	textures[0] = render.image->defaultTexture.imageView;
 	info.material = render.pipeline->getDefaultMaterial();
@@ -63,7 +64,7 @@ void celestia::BatchSpriteRender::endBatch()
 {
 	//vertex buffer updateing..
 	size_t size = vertexCount * sizeof(Vertex);
-	render.buffer->updateBatchBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
+	buffer::updateBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
 }
 
 //the real draw command in nutshell...

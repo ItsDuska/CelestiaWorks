@@ -5,8 +5,8 @@
 #include <array>
 
 
-celestia::Descriptor::Descriptor(Buffer& buffer,Image& image)
-	: buffer{buffer}, image{image}
+celestia::Descriptor::Descriptor(Image& image)
+	: image{image}
 {
 	//writes.resize(MAX_WRITES);
 	writes.resize(1);

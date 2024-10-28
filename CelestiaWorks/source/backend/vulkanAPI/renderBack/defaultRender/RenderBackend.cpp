@@ -17,9 +17,8 @@ celestia::Render::Render(Window& window)
 {
 	device = std::make_unique<Device>(window);
 	swapChain = std::make_unique<SwapChain>(*device, window);
-	buffer = std::make_unique<Buffer>();
 	image = std::make_unique<Image>();
-	descriptor = std::make_unique<Descriptor>(*buffer, *image);
+	descriptor = std::make_unique<Descriptor>(*image);
 	pipeline = std::make_unique<Pipeline>(*swapChain,*descriptor);
 	rendering = false;
 	clearColor = { 0.f,0.f,0.f,1.f };
@@ -138,7 +137,7 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 	//uniform.projection = projection;
 	uniform.transform = model;
 
-	memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
+	//memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
 
 	vkCmdPushConstants(commandBuffers[currentFrame],
 		pipeline->getDefaultMaterial()->layout,

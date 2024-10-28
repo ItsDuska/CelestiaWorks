@@ -8,7 +8,6 @@ namespace celestia
 	class Device;
 	class SwapChain;
 	class Pipeline;
-	class Buffer;
 	class Window;
 	class Image;
 	class Descriptor;
@@ -40,7 +39,6 @@ namespace celestia
 		Window& window;
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;
-		std::unique_ptr<Buffer> buffer;
 		std::unique_ptr<Image> image;
 		std::unique_ptr<Descriptor> descriptor;
 

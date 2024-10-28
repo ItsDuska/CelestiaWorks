@@ -84,6 +84,12 @@
     <ClCompile Include="source\backend\vulkanAPI\resources\FontReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\SourceGraphics\VertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\backend\vulkanAPI\resources\VertexBufferImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\backend\window\Window.h">
@@ -168,6 +174,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\resources\FontReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\VertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\vulkanAPI\resources\VertexBufferImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

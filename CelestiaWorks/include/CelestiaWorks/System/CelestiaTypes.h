@@ -9,7 +9,7 @@ namespace celestia
 	{
 		Vec2 position;
 		Vec2 texCoord;
-		Vec3 color;
+		Vec3 color; // TODO: add support for alpha value.
 		uint32_t texIndex;
 	};
 
