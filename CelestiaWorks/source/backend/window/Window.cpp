@@ -10,6 +10,29 @@ namespace celestia
 	static bool focus = true;
 	//static bool keys[KEY_AMOUNT];
 
+	struct InternalMouseStorage
+	{
+		bool buttons[10]; // mouse buttons. Each one has 2 states. Down or released
+		signed char scrollCount; // How much the scrollwheel has spun. Zero is default state.
+	};
+
+	static InternalMouseStorage internalMouseStorage{};
+
+
+	enum ButtonInternal
+	{
+		RIGHT_CLICK_DOWN,
+		RIGHT_CLICK_RELEASED,
+		LEFT_CLICK_DOWN,
+		LEFT_CLICK_RELEASED,
+		MIDDLE_CLICK_DOWN,
+		MIDDLE_CLICK_RELEASED,
+		SIDE_BUTTON_ONE_DOWN,
+		SIDE_BUTTON_ONE_RELEASED,
+		SIDE_BUTTON_TWO_DOWN,
+		SIDE_BUTTON_TWO_RELEASED
+	};
+
 	LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		//static bool keyDown, keyWasDown;
@@ -27,10 +50,58 @@ namespace celestia
 		case WM_SIZE:
 			resizeWindow(hWnd, WM_SIZE); 
 			break;
+
+		case WM_XBUTTONDOWN:
+			if (HIWORD(wParam) == XBUTTON1)
+			{
+				internalMouseStorage.buttons[ButtonInternal::SIDE_BUTTON_ONE_DOWN] = true;
+			}
+			else if (HIWORD(wParam) == XBUTTON2)
+			{
+				internalMouseStorage.buttons[ButtonInternal::SIDE_BUTTON_TWO_DOWN] = true;
+			}
+			return 0;
+
+		case WM_XBUTTONUP:
+			if (HIWORD(wParam) == XBUTTON1)
+			{
+				internalMouseStorage.buttons[ButtonInternal::SIDE_BUTTON_ONE_RELEASED] = true;
+			}
+			else if (HIWORD(wParam) == XBUTTON2)
+			{
+				internalMouseStorage.buttons[ButtonInternal::SIDE_BUTTON_TWO_RELEASED] = true;
+			}
+			return 0;
+
+
+		case WM_MBUTTONDOWN:
+			internalMouseStorage.buttons[ButtonInternal::MIDDLE_CLICK_DOWN] = true;
+			
+			return 0;
+
+		case WM_MBUTTONUP:
+			internalMouseStorage.buttons[ButtonInternal::MIDDLE_CLICK_RELEASED] = true;
+			return 0;
+
+		case WM_LBUTTONDOWN:
+			internalMouseStorage.buttons[ButtonInternal::LEFT_CLICK_DOWN] = true;
+			return 0;
+		case WM_LBUTTONUP:
+			internalMouseStorage.buttons[ButtonInternal::LEFT_CLICK_RELEASED] = true;
+			return 0;
+		case WM_RBUTTONDOWN:
+			internalMouseStorage.buttons[ButtonInternal::RIGHT_CLICK_DOWN] = true;
+			return 0;
+		case WM_RBUTTONUP:
+			internalMouseStorage.buttons[ButtonInternal::RIGHT_CLICK_RELEASED] = true;
+			return 0;
+		case WM_MOUSEWHEEL:
+			internalMouseStorage.scrollCount = GET_WHEEL_DELTA_WPARAM(wParam);
+			return 0;
 		/*
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
-		case WM_KEYDOWN:
+		case WM_KEYDOWN:s
 		case WM_KEYUP:
 			if (focus)
 			{
@@ -101,8 +172,7 @@ namespace celestia
 		//Change name's type from const char* to const wchar_t*
 		//bruh this is goofy as hell...
 		const size_t nameLen = strlen(name) + 1;
-		std::vector<wchar_t> vec;
-		vec.resize(nameLen);
+		std::vector<wchar_t> vec(nameLen);
 		int needed = MultiByteToWideChar(CP_UTF8, 0, name, (int)nameLen, &vec[0], (int)nameLen);
 		const wchar_t* nameWide = &vec[0];
 
@@ -146,8 +216,9 @@ namespace celestia
 
 	bool Window::processMessages()
 	{
+		std::memset(&internalMouseStorage, 0, sizeof(InternalMouseStorage));
 		MSG msg{};
-		
+
 		while (PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
@@ -177,9 +248,26 @@ namespace celestia
 		windowSize = size;
 	}
 
+	Vec2i Window::screenSpaceToWindowSpace(Vec2i& position) const
+	{
+		POINT point = { position.x,position.y };
+		ScreenToClient(this->hWnd, &point);
+		return Vec2i(point.x,point.y);
+	}
+
 	bool Window::getKeyPressed(int key)
 	{
 		return ((GetKeyState(key) & 0x8000) && focus );
+	}
+
+	bool Window::mouseButton(signed char buttonIndex, signed char type)
+	{
+		return internalMouseStorage.buttons[buttonIndex * 2 + type];
+	}
+
+	signed char Window::mouseWheel()
+	{
+		return internalMouseStorage.scrollCount;
 	}
 
 	void Window::resizeWindow(HWND hWnd,UINT uMsg)

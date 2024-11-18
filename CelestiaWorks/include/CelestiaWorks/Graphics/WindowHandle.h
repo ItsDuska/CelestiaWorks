@@ -34,6 +34,8 @@ namespace celestia
 		CELESTIA_WORKS void setFrameRateLimit(const int frameRate);
 		CELESTIA_WORKS void createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
 
+		CELESTIA_WORKS Vec2i screenSpaceToWindowSpace(Vec2i& position);
+
 	private:
 		std::unique_ptr<Window> window;
 		std::unique_ptr<RendererHandler> render;

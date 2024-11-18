@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include "backend/vulkanAPI/core/CelestiaVulkanTypes.h"
-//#include "System/Keyboard.h"
 
 namespace celestia {
 	class Window
@@ -20,7 +19,12 @@ namespace celestia {
 		bool isFramebufferResized() const;
 		void setFramebufferResized(bool resize);
 		void setWindowSize(Vec2i size);
+		Vec2i screenSpaceToWindowSpace(Vec2i& position) const;
+
 		static bool getKeyPressed(int key);
+		// type means if we are asking for button up or down event.
+		static bool mouseButton(signed char buttonIndex, signed char type); 
+		static signed char mouseWheel();
 
 	private:
 		static void resizeWindow(HWND hWnd, UINT uMsg);

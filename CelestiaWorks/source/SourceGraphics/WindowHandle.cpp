@@ -65,3 +65,8 @@ void celestia::WindowHandle::createTextRenderer(uint32_t maxTextObjects, uint32_
 {
 	render->createTextRenderer(maxTextObjects, maxCharsPerBatch);
 }
+
+CELESTIA_WORKS celestia::Vec2i celestia::WindowHandle::screenSpaceToWindowSpace(Vec2i& position)
+{
+	return window->screenSpaceToWindowSpace(position);
+}
