@@ -15,6 +15,7 @@ namespace celestia
 	class Window;
 	class Sprite;
 	class Text;
+	class VertexBuffer;
 
 	class WindowHandle
 	{
@@ -27,6 +28,7 @@ namespace celestia
 	public:
 		CELESTIA_WORKS void draw(const Sprite& sprite) const;
 		CELESTIA_WORKS void draw(Text& text) const;
+		CELESTIA_WORKS void draw(VertexBuffer& buffer) const;
 		CELESTIA_WORKS void beginRenderPass() const;
 		CELESTIA_WORKS void endRenderPass() const;
 		CELESTIA_WORKS bool isOpen() const;

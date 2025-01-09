@@ -167,6 +167,7 @@ void celestia::Render::beginRendering()
 	if (rendering)
 	{
 		std::cout << "BeginRenderPass was already called!\n";
+		return;
 	}
 	
 	vkWaitForFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);

@@ -1,10 +1,10 @@
+#include "vulkan/vulkan.h"
 #include "Utils.h"
 #include <fstream>
-#include "vulkan/vulkan.h"
 
 #define MAX_COLOR_VALUE 255.f;
 
-const std::vector<uint32_t> celestia::utils::readFile(const char* filename)
+const std::vector<uint32_t> celestia::utils::readFileAsU32(const char* filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -25,15 +25,7 @@ const std::vector<uint32_t> celestia::utils::readFile(const char* filename)
     return buffer;
 }
 
-VkVertexInputBindingDescription celestia::utils::getBindingDescription()
-{
-    VkVertexInputBindingDescription bindingDescription{};
-    bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex);
-    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    return bindingDescription;
-}
-
+// TODO: rewrite this to add custom way to modify vertex attributes in the future. Maybe return std::vector?
 std::array<VkVertexInputAttributeDescription, 4> celestia::utils::getAttributeDescription()
 {
     std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
@@ -73,4 +65,28 @@ celestia::Vec4 celestia::utils::normalizeColor(Color& color)
     return newColor;
 }
 
+VkVertexInputBindingDescription celestia::utils::createBindingDescription(uint32_t binding, uint32_t stride, VkVertexInputRate inputRate)
+{
+    VkVertexInputBindingDescription bindingDescription{};
+    bindingDescription.binding = binding;
+    bindingDescription.stride = stride;
+    bindingDescription.inputRate = inputRate;
+    return bindingDescription;
+}
 
+
+void celestia::utils::CustomVertexInputAttributeDescriptionFactory::pushDescription(uint32_t binding, VkFormat format, uint32_t offset)
+{
+    uint32_t location = descriptionList.size();
+    descriptionList.emplace_back(location, binding, format, offset);
+}
+
+int celestia::utils::CustomVertexInputAttributeDescriptionFactory::getSize()
+{
+    return descriptionList.size();
+}
+
+VkVertexInputAttributeDescription* celestia::utils::CustomVertexInputAttributeDescriptionFactory::rawData()
+{
+    return descriptionList.data();
+}

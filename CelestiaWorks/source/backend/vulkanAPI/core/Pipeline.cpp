@@ -27,6 +27,10 @@ celestia::Pipeline::~Pipeline()
 	//vkDestroyPipelineLayout(Device::context.device, defaultMaterial.layout, nullptr);
 }
 
+
+// TODO: Tee t‰st‰ template functio. template <typename Vertex_t> 
+// T‰m‰n avulla voidaan m‰‰ritell‰ custom vertex type.
+// 
 //Use nullptr for descriptor if not using any uniform buffers or textures.
 void celestia::Pipeline::createPipeline(Material& material,
 	ShaderObject &shader,
@@ -41,16 +45,23 @@ void celestia::Pipeline::createPipeline(Material& material,
 		throw std::runtime_error("Failed to create pipeline layout!");
 	}
 
-	auto bindingDescription = utils::getBindingDescription();
-	auto attributeDescriptions = utils::getAttributeDescription();
+	//auto bindingDescription = utils::getBindingDescription();
+	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
+	
+	//auto attributeDescriptions = utils::getAttributeDescription();
+	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(Vertex, texIndex));
 
 	VkPipelineVertexInputStateCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	info.pNext = nullptr;
 	info.vertexBindingDescriptionCount = 1;
 	info.pVertexBindingDescriptions = &bindingDescription;
-	info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-	info.pVertexAttributeDescriptions = attributeDescriptions.data();
+	info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.getSize());
+	info.pVertexAttributeDescriptions = attributeDescriptions.rawData();
 
 	builder.shaderStages = shader.getInfos();
 	builder.vertexInputInfo = info;
@@ -105,6 +116,7 @@ VkPipelineInputAssemblyStateCreateInfo celestia::Pipeline::createInputAssembly(D
 	return info;
 }
 
+// TODO: make this editable
 VkViewport celestia::Pipeline::createViewport()
 {
 	VkViewport viewport{};
@@ -117,6 +129,7 @@ VkViewport celestia::Pipeline::createViewport()
 	return viewport;
 }
 
+// TODO: make this editable
 VkRect2D celestia::Pipeline::createScissors()
 {
 	VkRect2D scissor{};

@@ -1,25 +1,13 @@
 #include "Image.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+
 #include <iostream>
 
 #include "Device.h"
 #include "Buffer.h"
 #include "CommandBuffer.h"
 
-
-
-
-
-
-/*
-TODO:
-Kirjota tää uudelleen, jotta pystyisit luomaan uusia tekstuureja käyttämällä vain tekstuurin path sijaintia.
-Myös mahdollisuus luoda black white 1x1 tekstuuri default tekstuuriks jos joku kuolee.
-*/
-
-//constexpr const char* TEMP_TEXTURE_PATH = "../assets/Death_Effect1.png"; // TODO: poista tää
-
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 celestia::Image::Image()
 {
@@ -67,8 +55,9 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = buffer::findMemoryType(memRequirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &image.memory) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate image memory!");
+	if (vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &image.memory) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to allocate image memory!\n");
 	}
 
 	vkBindImageMemory(Device::context.device, image.image, image.memory, 0);

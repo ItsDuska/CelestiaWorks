@@ -5,6 +5,7 @@
 #include "Graphics/Text.h"
 #include "Graphics/Font.h"
 #include "backend/vulkanAPI/resources/FontReader.h"
+#include "Graphics/VertexBuffer.h"
 #include <iostream>
 
 
@@ -34,6 +35,10 @@ void celestia::WindowHandle::draw(Text& text) const
 {
 	render->drawText(text.vertices,text.symbols.size(),text.position,*text.font->bitmapData, text.dirty,text.id);
 	text.disableDirtyFlag();
+}
+
+void celestia::WindowHandle::draw(VertexBuffer& buffer) const
+{
 }
 
 void celestia::WindowHandle::beginRenderPass() const

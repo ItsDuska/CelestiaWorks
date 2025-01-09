@@ -7,7 +7,7 @@
 #endif
 
 #include "System/CelestiaTypes.h"
-
+#include "backend/vulkanAPI/resources/VertexBufferInfo.h"
 
 /*
 * 
@@ -21,6 +21,7 @@ namespace celestia
 	class VertexBufferImpl
 	{
 	public:
+
 		// Use custom vertex format
 		template<typename Vertex_t>
 		void create(Vertex_t* vertices, size_t size)
@@ -41,9 +42,20 @@ namespace celestia
 		template<typename Vertex_t>
 		void update(size_t offset, Vertex_t* vertices, size_t size);
 
+
+		void setUsage(Usage usage);
+		void setDrawType(DrawType type);
+
+
+		void freeBuffers();
+
 	private:
 
 		AllocatedBuffer vertexBuffer;
+		AllocatedBuffer indexBuffer;
+
+		Usage currentUsage;
+		DrawType type;
 	};
 }
 

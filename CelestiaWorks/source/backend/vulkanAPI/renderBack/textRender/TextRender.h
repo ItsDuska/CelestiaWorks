@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <stack>
 
-
 /*
 * What to do:
 * When text draw is called. Add the item to the n.th buffer. We should 
@@ -17,18 +16,11 @@
 * 
 *	Use stack as an indicator for that to draw in this frame. If we use new font, 
 *	 then add it to the stack. At the end of the frame, we pop the stack clean.
-*	
-* 
+*	 
 */
-
-
-
-
-
 
 namespace celestia
 {
-
 	constexpr uint32_t MAX_FONT_BUFFERS = 3u;
 
 	struct TextBuffer_t // keksi parempi nimi

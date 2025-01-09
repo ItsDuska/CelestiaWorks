@@ -36,6 +36,11 @@ celestia::AllocatedBuffer celestia::buffer::createBuffer(VkDeviceSize size, VkBu
     return buffer;
 }
 
+/* Todo:
+* Tee ehkä kuston Vertex tai mesh class, jonka avulla voimme helpommin määritellä jokaisen data tyypin koon
+* tiedetyillä funktioilla kuten "this->getDataSize();"
+*/
+
 celestia::Mesh* celestia::buffer::createMesh(RawMesh& rawMesh)
 {
     Mesh* mesh = new Mesh;
