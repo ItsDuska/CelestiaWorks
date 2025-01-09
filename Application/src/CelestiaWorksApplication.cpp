@@ -6,6 +6,7 @@
 #include "CelestiaWorks/Graphics/WindowHandle.h"
 #include "CelestiaWorks/Graphics/Sprite.h"
 #include "CelestiaWorks/System/Keyboard.h"
+#include "CelestiaWorks/System/Mouse.h"
 
 
 /* En en‰‰ muista mit‰ varten t‰‰ on guh? En edes uskalla poistaa t‰t‰ joten t‰‰ pysyy nyt t‰‰ll‰.
@@ -72,6 +73,8 @@ int main()
 		const int updateFrameNumber = 8;
 		int rectPositionX = 0;
 		
+		celestia::Vec2i mousePos;
+
 		while (window.isOpen())
 		{
 			currentTime++;
@@ -81,6 +84,9 @@ int main()
 				std::cout << "A PRESSED OMG\n";
 			}
 
+			mousePos = celestia::Mouse::mousePosition();
+			mousePos = window.screenSpaceToWindowSpace(mousePos);
+			std::cout << "x: " << mousePos.x << " y: " << mousePos.y << "\n";
 
 			window.beginRenderPass();
 
