@@ -239,7 +239,7 @@ void celestia::ShaderObject::loadShader(const char* filepath, ShaderFormat shade
 	}
 	else
 	{
-		byteCode = utils::readFile(filepath);
+		byteCode = utils::readFileAsU32(filepath);
 	}
 
 	VkShaderModuleCreateInfo createInfo{};
