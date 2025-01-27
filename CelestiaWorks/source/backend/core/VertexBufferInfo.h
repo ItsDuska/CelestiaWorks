@@ -3,6 +3,11 @@
 
 namespace celestia
 {
+
+	// NOTE: ÄLÄ KÄYTÄ USE VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 
+	// datan säilömiseen. Sitä on vain 256 MB + se on hidasta.
+	// Sallitaan sen käyttä, mutta ei suositella.
+
 	enum class Usage : unsigned char
 	{
 		STATIC, // Almost never changes || USE VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
@@ -13,10 +18,10 @@ namespace celestia
 
 	enum class DrawType : unsigned char
 	{
-		QUAD, // 4 vert
-		TRIANGLE, // 3 vert
+		DOTS = 1, // 1 vert? miksi tälle ois tarvetta?? se kirjaimellisesti piirtää yhden pixelin :cold:
 		LINES, // 2 vert
-		DOTS, // 1 vert? miksi tälle ois tarvetta?? se kirjaimellisesti piirtää yhden pixelin :cold:
+		TRIANGLE, // 3 vert
+		QUAD, // 4 vert
 	};
 
 }

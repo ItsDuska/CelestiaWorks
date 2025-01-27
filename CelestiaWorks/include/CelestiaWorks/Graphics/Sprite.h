@@ -1,10 +1,13 @@
 #pragma once
 #include "../System/CelestiaTypes.h"
 #include "Texture.h"
+#include "Drawable.h"
 
 namespace celestia
 {
-	class Sprite
+
+
+	class Sprite : public Drawable
 	{
 	public:
 		CELESTIA_WORKS Sprite(Vec2 position, Vec2 size);
@@ -23,11 +26,15 @@ namespace celestia
 
 		CELESTIA_WORKS void setSize(const Vec2 newSize);
 		CELESTIA_WORKS Vec2 getSize() const;
+
+		const VertexPositions* getQuad() const;
 	private:
+		CELESTIA_WORKS void draw(const RendererHandler& renderer) const override;
+
 		void updateQuadPosition();
 		void updateQuadTexCoord();
 
-		friend class WindowHandle;
+		//friend class WindowHandle;
 	private:
 		Texture* texture;
 		FloatRect textureRect;

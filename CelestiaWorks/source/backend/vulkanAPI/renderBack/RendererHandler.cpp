@@ -1,6 +1,10 @@
 #include "RendererHandler.h"
+#include "backend/vulkanAPI/renderBack/batchRender/BatchRender.h"
+#include "backend/vulkanAPI/renderBack/textRender/TextRender.h"
+
 #include "backend/window/Window.h"
 #include "backend/vulkanAPI/renderBack/RendererHandler.h"
+#include "Graphics/Drawable.h"
 
 celestia::RendererHandler::RendererHandler(Window& window, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 {
@@ -13,7 +17,12 @@ celestia::RendererHandler::~RendererHandler()
 	coreRenderer->cleanUp();
 }
 
-void celestia::RendererHandler::drawSprite(const VertexPositions* quad, const RawTexture* texture)
+void celestia::RendererHandler::draw(const Drawable& drawable) const
+{
+	drawable.draw(*this);
+}
+
+void celestia::RendererHandler::drawSprite(const VertexPositions* quad, const RawTexture* texture) const
 {
 	batchSpriteRenderer->drawQuad(quad, texture);
 }
@@ -24,7 +33,7 @@ void celestia::RendererHandler::drawQuad(const Vec2& position, const Vec2& size,
 }
 
 //TODO:
-void celestia::RendererHandler::drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty,const int id)
+void celestia::RendererHandler::drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty,const int id) const
 {
 	if (batchTextRenderer)
 	{

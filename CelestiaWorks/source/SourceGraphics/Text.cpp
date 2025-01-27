@@ -1,5 +1,6 @@
 #include "Graphics/Text.h"
 #include "backend/vulkanAPI/resources/FontReader.h"
+#include "backend/vulkanAPI/renderBack/RendererHandler.h"
 
 celestia::Text::Text(const Vec2 position, const char* symbols, const Color color, Font* font)
 	: position(position),color(color),font(font),dirty(true)
@@ -14,6 +15,12 @@ celestia::Text::Text(const Vec2 position, const char* symbols, const Color color
 celestia::Font* celestia::Text::getFont()
 {
 	return font;
+}
+
+void celestia::Text::draw(const RendererHandler& renderer) const
+{
+	renderer.drawText(vertices, symbols.size(), position, *font->bitmapData, dirty, id);
+	//disableDirtyFlag();
 }
 
 void celestia::Text::updatePosition()

@@ -7,7 +7,8 @@
 
 #include "System/CelestiaTypes.h"
 #include <memory>
-#include "backend/vulkanAPI/resources/VertexBufferInfo.h"
+#include "backend/core/VertexBufferInfo.h"
+#include "Drawable.h"
 
 namespace celestia
 {
@@ -21,7 +22,7 @@ namespace celestia
 	* Bufferi p‰ivitet‰‰n vain kun sit‰ kutsutaan p‰vitys funktiossa, muuten ei koskaan.
 	*/
 
-	class VertexBuffer
+	class VertexBuffer : public Drawable
 	{
 	public:
 		/// Tells the vulkan api how often the data will change.
@@ -61,9 +62,13 @@ namespace celestia
 
 		void setDrawType(DrawType type);
 
+		void draw(const RendererHandler& renderer) const override;
+
 	private:
 
 		size_t size;
+		Usage usage;
+		DrawType type;
 		
 		std::unique_ptr<VertexBufferImpl> bufferImpl;
 	};

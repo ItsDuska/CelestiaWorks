@@ -3,10 +3,11 @@
 #include <string>
 #include <vector>
 #include "../System/CelestiaTypes.h"
+#include "Drawable.h"
 
 namespace celestia
 {
-	class Text
+	class Text : public Drawable
 	{
 	public:
 		CELESTIA_WORKS Text(const Vec2 position, const char* symbols,const Color color, Font* font);
@@ -15,7 +16,11 @@ namespace celestia
 		//CELESTIA_WORKS ~Text();
 
 		CELESTIA_WORKS Font* getFont();
+
+		
 	private:
+		void draw(const RendererHandler& renderer) const override;
+
 		void updatePosition();
 
 		Vec2 getTextSize();
@@ -23,6 +28,8 @@ namespace celestia
 		//CELESTIA_WORKS setText(const std::string& text);
 
 		void disableDirtyFlag();
+
+
 
 	private:
 		Vec2 position; 
@@ -35,7 +42,7 @@ namespace celestia
 		
 		std::vector<Vertex> vertices;
 
-		friend class WindowHandle;
+		//friend class WindowHandle;
 		//unsigned int characterSize; //????
 	};
 

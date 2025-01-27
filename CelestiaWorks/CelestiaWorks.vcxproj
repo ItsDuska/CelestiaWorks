@@ -185,11 +185,13 @@
     <ClCompile Include="source\backend\vulkanAPI\resources\VertexBufferImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CelestiaWorks\Graphics\Drawable.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Font.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Text.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\VertexBuffer.h" />
     <ClInclude Include="include\CelestiaWorks\System\Keyboard.h" />
     <ClInclude Include="include\CelestiaWorks\System\Mouse.h" />
+    <ClInclude Include="source\backend\core\IndexBufferGenerator.h" />
     <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h" />
     <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h" />
     <ClInclude Include="include\CelestiaWorks\System\Matrix.h" />

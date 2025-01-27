@@ -16,6 +16,8 @@ namespace celestia
 
 		CELESTIA_WORKS bool loadTexture(const char* filepath);
 		CELESTIA_WORKS Vec2i getSize() const;
+
+		const RawTexture* getRawTexturePtr() const;
 	private:
 		Vec2i size;
 		std::unique_ptr<RawTexture> pixels;

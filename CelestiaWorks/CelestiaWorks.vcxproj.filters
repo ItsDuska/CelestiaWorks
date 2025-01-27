@@ -188,6 +188,12 @@
     <ClInclude Include="include\CelestiaWorks\System\Mouse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\backend\core\IndexBufferGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\Drawable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\temp.vert" />

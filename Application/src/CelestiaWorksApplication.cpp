@@ -49,7 +49,6 @@ int main()
 		float tempX = 800.f / 5;
 		float tempY = 800.f / 5;
 
-		
 		for (int i = 0; i < 3; i++)
 		{
 			for (int j = 0; j < 3; j++)
@@ -86,7 +85,7 @@ int main()
 
 			mousePos = celestia::Mouse::mousePosition();
 			mousePos = window.screenSpaceToWindowSpace(mousePos);
-			std::cout << "x: " << mousePos.x << " y: " << mousePos.y << "\n";
+			//std::cout << "x: " << mousePos.x << " y: " << mousePos.y << "\n";
 
 			window.beginRenderPass();
 

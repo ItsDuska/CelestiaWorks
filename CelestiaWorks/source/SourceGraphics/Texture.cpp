@@ -22,3 +22,8 @@ celestia::Vec2i celestia::Texture::getSize() const
 {
 	return size;
 }
+
+const celestia::RawTexture* celestia::Texture::getRawTexturePtr() const
+{
+	return pixels.get();
+}

@@ -1,4 +1,5 @@
 #include "Graphics/Sprite.h"
+#include "backend/vulkanAPI/renderBack/RendererHandler.h"
 
 celestia::Sprite::Sprite(Vec2 position, Vec2 size)
 	: texture(nullptr), textureRect({})
@@ -63,6 +64,16 @@ void celestia::Sprite::setSize(const Vec2 newSize)
 celestia::Vec2 celestia::Sprite::getSize() const
 {
 	return spriteRect.size;
+}
+
+const celestia::VertexPositions* celestia::Sprite::getQuad() const
+{
+	return quad;
+}
+
+void celestia::Sprite::draw(const RendererHandler& renderer) const
+{
+	renderer.drawSprite(quad, texture->getRawTexturePtr());
 }
 
 void celestia::Sprite::updateQuadPosition()

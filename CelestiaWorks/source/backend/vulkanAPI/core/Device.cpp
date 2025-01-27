@@ -23,6 +23,7 @@ const std::vector<const char*> deviceExtensions = {
 };
 
 
+
 celestia::Device::Device(Window& window)
 {
 	createInstance();
@@ -502,3 +503,5 @@ void celestia::DeletionQueue::flush()
 
 	deletors.clear();
 }
+
+

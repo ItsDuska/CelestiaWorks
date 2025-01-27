@@ -26,19 +26,9 @@ celestia::WindowHandle::~WindowHandle()
 {
 }
 
-void celestia::WindowHandle::draw(const Sprite& sprite) const
+CELESTIA_WORKS void celestia::WindowHandle::draw(const Drawable& drawable) const
 {
-	render->drawSprite(sprite.quad, sprite.getTexture()->pixels.get());
-}
-
-void celestia::WindowHandle::draw(Text& text) const
-{
-	render->drawText(text.vertices,text.symbols.size(),text.position,*text.font->bitmapData, text.dirty,text.id);
-	text.disableDirtyFlag();
-}
-
-void celestia::WindowHandle::draw(VertexBuffer& buffer) const
-{
+	return render->draw(drawable);
 }
 
 void celestia::WindowHandle::beginRenderPass() const

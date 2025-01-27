@@ -1,7 +1,10 @@
 #pragma once
+#include "System/CelestiaTypes.h"
+#include <vector>
 #include <memory>
-#include "backend/vulkanAPI/renderBack/batchRender/BatchRender.h"
-#include "backend/vulkanAPI/renderBack/textRender/TextRender.h"
+
+//#include "backend/vulkanAPI/renderBack/batchRender/BatchRender.h"
+//#include "backend/vulkanAPI/renderBack/textRender/TextRender.h"
 
 
 namespace celestia
@@ -9,6 +12,12 @@ namespace celestia
 	class TextRender;
 	class Window;
 	class Text;
+	class Drawable;
+	class Render;
+	class BatchSpriteRender;
+	class TextRender;
+	struct RawTexture;
+	struct Font_t;
 
 	class RendererHandler
 	{
@@ -16,9 +25,10 @@ namespace celestia
 		RendererHandler(Window& window, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
 		~RendererHandler();
 
-		void drawSprite(const VertexPositions* quad, const RawTexture* texture);
+		void draw(const Drawable& drawable) const;
+		void drawSprite(const VertexPositions* quad, const RawTexture* texture) const;
 		void drawQuad(const Vec2& position, const Vec2& size, const Vec3& color) const;
-		void drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty, const int id);
+		void drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty, const int id) const;
 
 		void beginRenderPass() const;
 		void endRenderPass() const;

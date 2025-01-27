@@ -1,44 +1,57 @@
 #include "VertexBufferImpl.h"
 #include "backend/vulkanAPI/core/Device.h"
 #include "backend/vulkanAPI/core/Buffer.h"
+#include "backend/core/IndexBufferGenerator.h"
 
 
-void celestia::VertexBufferImpl::create(Vertex* vertices, size_t size)
+static VkBufferUsageFlags CelestiaUsageToVk(celestia::Usage usage)
 {
-	this->vertexBuffer = buffer::createVertexBuffer(vertices, size);
-
-	const size_t bufferSize = 6 * (size / sizeof(Vertex));
-	std::vector<uint16_t> indices(bufferSize);
-	uint16_t offset = 0;
-
-	for (int i = 0; i < bufferSize; i += 6)
+	switch (usage)
 	{
-		indices[static_cast<size_t>(i + 0)] = offset;
-		indices[static_cast<size_t>(i + 1)] = 1u + offset;
-		indices[static_cast<size_t>(i + 2)] = 2u + offset;
-
-		indices[static_cast<size_t>(i + 3)] = 2u + offset;
-		indices[static_cast<size_t>(i + 4)] = 3u + offset;
-		indices[static_cast<size_t>(i + 5)] = offset;
-
-		offset += 4;
+	case celestia::Usage::STATIC:
+		return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	case celestia::Usage::STATIC_INDEXED:
+		return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	case celestia::Usage::STREAM:
+		return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	case celestia::Usage::STREAM_INDEXED:
+		return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	default:
+		throw std::invalid_argument("Unsupported Usage");
 	}
-	
-	this->indexBuffer = buffer::createIndexBuffer(indices.data(), bufferSize * sizeof(uint16_t));
 }
 
-void celestia::VertexBufferImpl::setUsage(Usage usage)
+
+celestia::VertexBufferImpl::VertexBufferImpl()
 {
-	this->currentUsage = usage;
+	// a bit goofy xd.
+	vertexBuffer.buffer = nullptr;
+	vertexBuffer.memory = nullptr;
+	indexBuffer.buffer = nullptr;
+	indexBuffer.memory = nullptr;
 }
 
-void celestia::VertexBufferImpl::setDrawType(DrawType type)
+void celestia::VertexBufferImpl::create(Vertex* vertices, size_t vertexCount, DrawType drawType, Usage usage)
 {
-	this->type = type;
+	const size_t vertexBufferMemorySize = vertexCount * sizeof(Vertex);
+	this->vertexBuffer = buffer::createVertexBuffer(vertices, vertexBufferMemorySize,CelestiaUsageToVk(usage));
+
+	if (usage == Usage::STATIC_INDEXED || usage == Usage::STREAM_INDEXED)
+	{
+		// WE HAVE ARE USING INDEX BUFFERS.
+		std::vector<uint16_t> indicies = createIndexBufferForDrawType(vertexCount, drawType);
+
+		const size_t indexBufferMemorySize = indicies.size() * sizeof(uint16_t);
+		this->indexBuffer = buffer::createIndexBuffer(indicies.data(), indexBufferMemorySize);
+	}
 }
 
-void celestia::VertexBufferImpl::freeBuffers()
+
+void celestia::VertexBufferImpl::freeBuffers() const
 {
 	vkDestroyBuffer(Device::context.device, vertexBuffer.buffer, nullptr);
-	vkDestroyBuffer(Device::context.device, indexBuffer.buffer, nullptr);
+	if (indexBuffer.buffer != nullptr)
+	{
+		vkDestroyBuffer(Device::context.device, indexBuffer.buffer, nullptr);
+	}
 }

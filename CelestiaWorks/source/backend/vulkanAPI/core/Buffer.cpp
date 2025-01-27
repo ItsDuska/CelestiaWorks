@@ -84,7 +84,7 @@ uint32_t celestia::buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyF
     throw std::runtime_error("Failed to find suitable memory type!");
 }
 
-celestia::AllocatedBuffer celestia::buffer::createVertexBuffer(void* vertices, size_t bufferSize)
+celestia::AllocatedBuffer celestia::buffer::createVertexBuffer(void* vertices, size_t bufferSize, VkBufferUsageFlags flag)
 {
     AllocatedBuffer stagingBuffer = createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -97,7 +97,7 @@ celestia::AllocatedBuffer celestia::buffer::createVertexBuffer(void* vertices, s
 
     AllocatedBuffer vertexBuffer = createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT |
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        flag);
 
     copyBuffer(stagingBuffer.buffer, vertexBuffer.buffer, bufferSize, 0, 0);
 
