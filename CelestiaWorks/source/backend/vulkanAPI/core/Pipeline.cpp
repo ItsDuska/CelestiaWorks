@@ -15,7 +15,7 @@ celestia::Pipeline::Pipeline(SwapChain& swapChain, Descriptor& descriptor)
 
 
 	PipelineOptions options{};
-	options.blending = false;
+	options.blending = true;
 
 
 	createPipeline(defaultMaterial, shader, DrawingMode::TRIANGLE, &descriptor.getDescriptorSetLayout(),options);
@@ -193,8 +193,8 @@ VkPipelineColorBlendAttachmentState celestia::Pipeline::createColorBlendAttachme
 		VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = blending;
 
-	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA; //VK_BLEND_FACTOR_ONE;
+	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA; //VK_BLEND_FACTOR_DST_ALPHA;
 	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
 	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
