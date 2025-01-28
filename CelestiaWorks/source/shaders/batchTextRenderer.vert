@@ -21,7 +21,6 @@ void main()
     uint index = texIndex;
     vec2 translation = transformBuffer.transforms[index];
 
-    // Lisää sijainnin muutos vertexin sijaintiin
     vec2 newPosition = position + translation;
 
     gl_Position = pushConstants.projection * vec4(newPosition.xy, 0.0, 1.0);
