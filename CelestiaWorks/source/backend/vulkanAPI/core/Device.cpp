@@ -4,12 +4,6 @@
 #include "vk_mem_alloc.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 
-#ifdef ENABLE_VALIDATION_LAYER
-const bool VALIDATION_LAYERS = true;
-#else
-const bool VALIDATION_LAYERS = false;
-#endif 
-
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation",
@@ -27,7 +21,9 @@ const std::vector<const char*> deviceExtensions = {
 celestia::Device::Device(Window& window)
 {
 	createInstance();
+#ifdef ENABLE_VALIDATION_LAYER
 	createDebugMessenger();
+#endif // ENABLE_VALIDATION_LAYER
 	createSurface(window);
 	createDevice();
 	createCommandPool();
@@ -41,10 +37,11 @@ celestia::Device::~Device()
 	vkDestroyCommandPool(context.device, context.commandPool, nullptr);
 	vkDestroyDevice(context.device, nullptr);
 
-	if (VALIDATION_LAYERS)
-	{
-		destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-	}
+#ifdef ENABLE_VALIDATION_LAYER
+	destroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+#endif // ENABLE_VALIDATION_LAYER
+
+
 
 	vkDestroySurfaceKHR(instance, context.surface, nullptr);
 	vkDestroyInstance(instance, nullptr);
@@ -67,10 +64,12 @@ void celestia::Device::destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebu
 
 void celestia::Device::createInstance()
 {
-	if (VALIDATION_LAYERS && !supportLayers())
+#ifdef ENABLE_VALIDATION_LAYER
+	if (!supportLayers())
 	{
 		throw std::runtime_error("Validation layers requested, but not available.\n");
 	}
+#endif // ENABLE_VALIDATION_LAYER
 
 	supportedExtensions();
 
@@ -91,20 +90,18 @@ void celestia::Device::createInstance()
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-	if (VALIDATION_LAYERS)
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+	
+#ifdef ENABLE_VALIDATION_LAYER
+	createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+	createInfo.ppEnabledLayerNames = validationLayers.data();
 
-		populateDebugMessengerCreateInfo(debugCreateInfo);
-		
-		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)& debugCreateInfo;
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-		createInfo.pNext = nullptr;
-	}
+	populateDebugMessengerCreateInfo(debugCreateInfo);
+
+	createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+#else
+	createInfo.enabledLayerCount = 0;
+	createInfo.pNext = nullptr;
+#endif
 
 	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
 	{
@@ -128,11 +125,6 @@ void celestia::Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCre
 
 void celestia::Device::createDebugMessenger()
 {
-	if (!VALIDATION_LAYERS)
-	{
-		return;
-	}
-
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);
 
@@ -192,16 +184,13 @@ void celestia::Device::createDevice()
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-	if (VALIDATION_LAYERS)
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-	}
-
+#ifdef ENABLE_VALIDATION_LAYER
+	createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+	createInfo.ppEnabledLayerNames = validationLayers.data();
+#else
+	createInfo.enabledLayerCount = 0;
+	
+#endif
 	VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
 	descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
 	descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
@@ -338,10 +327,9 @@ std::vector<const char*> celestia::Device::getExtensions() // VK_EXT_DESCRIPTOR_
 
 	};
 
-	if (VALIDATION_LAYERS)
-	{
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
+#ifdef ENABLE_VALIDATION_LAYER
+	extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
 
 	return extensions;
 }

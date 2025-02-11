@@ -9,29 +9,22 @@ celestia::Pipeline::Pipeline(SwapChain& swapChain, Descriptor& descriptor)
 	: swapChain(swapChain),descriptor(descriptor)
 {
 	ShaderObject shader;
-	shader.loadShader(nullptr,ShaderFormat::VERTEX_SHADER,ShaderType::SPRITE_BATCH,true);
-	shader.loadShader(nullptr, ShaderFormat::FRAGMENT_SHADER, ShaderType::SPRITE_BATCH, true);
-	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderFormat::VERTEX_SHADER);
-
+	shader.loadShader(nullptr,ShaderType::VERTEX_SHADER,RenderGroup::SPRITE_BATCH,true);
+	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::SPRITE_BATCH, true);
+	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
 	PipelineOptions options{};
 	options.blending = true;
 
-
 	createPipeline(defaultMaterial, shader, DrawingMode::TRIANGLE, &descriptor.getDescriptorSetLayout(),options);
 }
-
-celestia::Pipeline::~Pipeline()
-{
-	//vkDestroyPipeline(Device::context.device, defaultMaterial.pipeline, nullptr);
-	//vkDestroyPipelineLayout(Device::context.device, defaultMaterial.layout, nullptr);
-}
-
 
 // TODO: Tee t‰st‰ template functio. template <typename Vertex_t> 
 // T‰m‰n avulla voidaan m‰‰ritell‰ custom vertex type.
 // 
 //Use nullptr for descriptor if not using any uniform buffers or textures.
+// T‰st‰ pit‰‰ tulla myˆs funktio jota voidaan k‰ytt‰‰ kaikkialla muualla
+
 void celestia::Pipeline::createPipeline(Material& material,
 	ShaderObject &shader,
 	DrawingMode drawMode,
@@ -44,11 +37,8 @@ void celestia::Pipeline::createPipeline(Material& material,
 	{
 		throw std::runtime_error("Failed to create pipeline layout!");
 	}
-
-	//auto bindingDescription = utils::getBindingDescription();
 	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
-	
-	//auto attributeDescriptions = utils::getAttributeDescription();
+
 	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
 	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
 	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
@@ -87,6 +77,8 @@ void celestia::Pipeline::createPipeline(Material& material,
 	);
 }
 
+
+// NOTE: Do we really need a default pipeline since we could just save it in the renderer, no in the pipeline class.
 celestia::Material *celestia::Pipeline::getDefaultMaterial()
 {
 	return &defaultMaterial;
@@ -259,7 +251,6 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 	
-
 	VkPipeline newPipeline;
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)
 	{

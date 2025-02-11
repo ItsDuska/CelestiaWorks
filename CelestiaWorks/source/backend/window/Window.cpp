@@ -1,14 +1,10 @@
 #include "Window.h"
 #include <vector>
 #include <iostream>
-//#include "SourceGraphics/Keyboard.h"
-
-//#define KEY_AMOUNT 256
 
 namespace celestia
 {
 	static bool focus = true;
-	//static bool keys[KEY_AMOUNT];
 
 	struct InternalMouseStorage
 	{
@@ -35,8 +31,6 @@ namespace celestia
 
 	LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		//static bool keyDown, keyWasDown;
-
 		switch (uMsg)
 		{
 		case WM_ERASEBKGND:
@@ -98,35 +92,6 @@ namespace celestia
 		case WM_MOUSEWHEEL:
 			internalMouseStorage.scrollCount = GET_WHEEL_DELTA_WPARAM(wParam);
 			return 0;
-		/*
-		case WM_SYSKEYDOWN:
-		case WM_SYSKEYUP:
-		case WM_KEYDOWN:s
-		case WM_KEYUP:
-			if (focus)
-			{
-				keyDown =    ((lParam & (1 << 31)) == 0); // magic
-				keyWasDown = ((lParam & (1 << 30)) != 0); // magic part 2
-				if (keyDown != keyWasDown)
-				{
-					//keys[static_cast<uint8_t>(wParam)] = keyDown;
-					//std::cout << "KEY PRESSED: " << static_cast<uint8_t>(wParam) << " | " << wParam << "\n";
-				}
-			}
-			break;
-		case WM_CHAR:
-			if(!focus)
-			{
-				break;
-			}
-			if (keyDown != keyWasDown)
-			{
-				keys[static_cast<uint8_t>(wParam)] = keyDown;
-				std::cout << "WM_CHAR KEY PRESSED: " << static_cast<uint8_t>(wParam) << " | " << static_cast<WCHAR>(wParam) << "\n";
-			}
-			//std::cout << "WM_CHAR PRESSED: " << static_cast<uint8_t>(wParam) << "\n";
-			break;
-		*/
 		case WM_SIZING:
 			resizeWindow(hWnd, WM_SIZING);
 			break;
@@ -276,7 +241,7 @@ namespace celestia
 
 		if (!windowPtr)
 		{
-			std::cout << "SHART?????\n";
+			std::cout << "Window's pointer is wrong?????\n";
 			return;
 		}
 

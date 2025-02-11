@@ -22,6 +22,7 @@ namespace celestia {
 		Vec2i screenSpaceToWindowSpace(Vec2i& position) const;
 
 		static bool getKeyPressed(int key);
+
 		// type means if we are asking for button up or down event.
 		static bool mouseButton(signed char buttonIndex, signed char type); 
 		static signed char mouseWheel();

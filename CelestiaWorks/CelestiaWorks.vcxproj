@@ -157,6 +157,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\SourceGraphics\ShaderProgram.cpp" />
+    <ClCompile Include="source\SourceGraphics\ShaderProgramImpl.cpp" />
     <ClCompile Include="source\SourceSystem\Mouse.cpp" />
     <ClCompile Include="source\SourceGraphics\Font.cpp" />
     <ClCompile Include="source\SourceGraphics\Text.cpp" />
@@ -187,6 +189,8 @@
   <ItemGroup>
     <ClInclude Include="include\CelestiaWorks\Graphics\Drawable.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Font.h" />
+    <ClInclude Include="include\CelestiaWorks\Graphics\ShaderProgram.h" />
+    <ClInclude Include="include\CelestiaWorks\Graphics\ShaderTypes.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Text.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\VertexBuffer.h" />
     <ClInclude Include="include\CelestiaWorks\System\Keyboard.h" />
@@ -218,6 +222,7 @@
     <ClInclude Include="source\backend\window\Window.h" />
     <ClInclude Include="source\backend\vulkanAPI\renderBack\textRender\TextRender.h" />
     <ClInclude Include="source\backend\vulkanAPI\resources\VertexBufferImpl.h" />
+    <ClInclude Include="source\SourceGraphics\ShaderProgramImpl.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\temp.frag" />

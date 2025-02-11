@@ -60,7 +60,6 @@ namespace celestia
 		~Device();
 		Device(const Device&) = delete;
 		Device& operator = (const Device&) = delete;
-		void print() { std::cout << "lol\n"; };
 
 		SwapChainSupportDetails getSwapChainSupport();
 		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);

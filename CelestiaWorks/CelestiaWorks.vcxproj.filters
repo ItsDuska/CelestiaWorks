@@ -93,6 +93,12 @@
     <ClCompile Include="source\SourceSystem\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\SourceGraphics\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SourceGraphics\ShaderProgramImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\backend\window\Window.h">
@@ -192,6 +198,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CelestiaWorks\Graphics\Drawable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\ShaderTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SourceGraphics\ShaderProgramImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

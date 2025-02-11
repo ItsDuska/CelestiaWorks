@@ -24,9 +24,6 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	needsUpdate = false;
 	active = false;
 	defaultMaterial = {};
-	//lastIndexInMap = 0;
-
-	//fontTypeBuffers[MAIN_BUFFER].glyphBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
 	
 	glyphBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
 	transformationBuffer.resize(10);
@@ -59,34 +56,22 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 
 	info.descriptors = set;
 	info.material = &defaultMaterial;
-
-	//info.mesh = render.buffer->createMesh(tempMesh);
 	info.mesh = buffer::createMesh(tempMesh);
 	
 	descriptors->createDescriptor();
-	
 	descriptors->addBinding(0, DescriptorType::IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
 	descriptors->addBinding(1, DescriptorType::STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 	descriptors->build(info.descriptors, info.layout);
 
 	ShaderObject shader;
-	shader.loadShader(nullptr, ShaderFormat::VERTEX_SHADER, ShaderType::TEXT_BATCH, true);
-	shader.loadShader(nullptr, ShaderFormat::FRAGMENT_SHADER, ShaderType::TEXT_BATCH, true);
-	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderFormat::VERTEX_SHADER);
-
+	shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::TEXT_BATCH, true);
+	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::TEXT_BATCH, true);
+	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
 	PipelineOptions options{};
 	options.blending = true;
 
-	render.pipeline->createPipeline(*info.material, shader, DrawingMode::TRIANGLE, &info.layout,options);
-	
-
-	//Init main buffer
-	//fontTypeBuffers[MAIN_BUFFER].indexCount = 0;
-	//fontTypeBuffers[MAIN_BUFFER].vertexCount = 0;
-	//fontTypeBuffers[MAIN_BUFFER].mesh = info.mesh;
-
-
+	render.pipeline->createPipeline(*info.material, shader, DrawingMode::TRIANGLE, &info.layout,options); 
 }
 
 celestia::TextRender::~TextRender()

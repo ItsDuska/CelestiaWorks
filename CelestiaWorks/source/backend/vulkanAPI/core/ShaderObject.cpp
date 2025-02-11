@@ -17,12 +17,12 @@ celestia::ShaderObject::~ShaderObject()
 	shaderModules.clear();
 }
 
-
-static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderFormat shader,celestia::ShaderType type)
+// Behold, the goofiest way to store default shaders!
+static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderType shader,celestia::RenderGroup type)
 {
-	if (shader == celestia::ShaderFormat::VERTEX_SHADER)
+	if (shader == celestia::ShaderType::VERTEX_SHADER)
 	{
-		if (type == celestia::ShaderType::TEXT_BATCH)
+		if (type == celestia::RenderGroup::TEXT_BATCH)
 		{
 			const std::vector<uint32_t> vertexBinaryText = {
 	0x07230203,0x00010000,0x0008000b,0x00000040,0x00000000,0x00020011,0x00000001,0x0006000b,
@@ -148,7 +148,7 @@ static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderFormat shad
 		return vertexBinary;
 	}
 
-	if (type == celestia::ShaderType::TEXT_BATCH)
+	if (type == celestia::RenderGroup::TEXT_BATCH)
 	{
 		
 		const std::vector<uint32_t> fragmentBinaryText = {
@@ -228,7 +228,7 @@ static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderFormat shad
 }
 
 
-void celestia::ShaderObject::loadShader(const char* filepath, ShaderFormat shader, ShaderType type, bool isDefaultShader)
+void celestia::ShaderObject::loadShader(const char* filepath, ShaderType shader, RenderGroup type, bool isDefaultShader)
 {
 	std::vector<uint32_t> byteCode;
 
@@ -278,17 +278,17 @@ void celestia::ShaderObject::createShaderStageCreateInfo(VkShaderStageFlagBits s
 	infos.push_back(createInfo);
 }
 
-VkShaderStageFlagBits celestia::ShaderObject::convertToVkFlags(ShaderFormat type)
+VkShaderStageFlagBits celestia::ShaderObject::convertToVkFlags(ShaderType type)
 {
 	switch (type)
 	{
-	case celestia::ShaderFormat::VERTEX_SHADER:
+	case celestia::ShaderType::VERTEX_SHADER:
 		return VK_SHADER_STAGE_VERTEX_BIT;
-	case celestia::ShaderFormat::FRAGMENT_SHADER:
+	case celestia::ShaderType::FRAGMENT_SHADER:
 		return VK_SHADER_STAGE_FRAGMENT_BIT;
-	case celestia::ShaderFormat::COMPUTE_SHADER:
+	case celestia::ShaderType::COMPUTE_SHADER:
 		return VK_SHADER_STAGE_COMPUTE_BIT;
-	case celestia::ShaderFormat::GEOMETRY_SHADER:
+	case celestia::ShaderType::GEOMETRY_SHADER:
 		return VK_SHADER_STAGE_GEOMETRY_BIT;
 	default:
 		break;
