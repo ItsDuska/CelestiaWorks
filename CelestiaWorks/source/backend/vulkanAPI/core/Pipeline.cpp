@@ -5,19 +5,6 @@
 #include "Descriptor.h"
 #include "backend/utils/Utils.h"
 
-celestia::Pipeline::Pipeline(SwapChain& swapChain, Descriptor& descriptor)
-	: swapChain(swapChain),descriptor(descriptor)
-{
-	ShaderObject shader;
-	shader.loadShader(nullptr,ShaderType::VERTEX_SHADER,RenderGroup::SPRITE_BATCH,true);
-	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::SPRITE_BATCH, true);
-	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
-
-	PipelineOptions options{};
-	options.blending = true;
-
-	createPipeline(defaultMaterial, shader, DrawingMode::TRIANGLE, &descriptor.getDescriptorSetLayout(),options);
-}
 
 // TODO: Tee t‰st‰ template functio. template <typename Vertex_t> 
 // T‰m‰n avulla voidaan m‰‰ritell‰ custom vertex type.
@@ -25,49 +12,24 @@ celestia::Pipeline::Pipeline(SwapChain& swapChain, Descriptor& descriptor)
 //Use nullptr for descriptor if not using any uniform buffers or textures.
 // T‰st‰ pit‰‰ tulla myˆs funktio jota voidaan k‰ytt‰‰ kaikkialla muualla
 
-void celestia::Pipeline::createPipeline(Material& material,
-	ShaderObject &shader,
+const celestia::Material celestia::Pipeline::createPipeline(ShaderObject& shader,
 	DrawingMode drawMode,
 	VkDescriptorSetLayout* descriptors,
-	PipelineOptions& options)
+	VkRenderPass renderpass)
 {
+	Material material{};
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = createLayoutInfo(shader, descriptors);
 
 	if (vkCreatePipelineLayout(Device::context.device, &pipelineLayoutInfo, nullptr, &material.layout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout!");
 	}
-	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
-
-	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(Vertex, texIndex));
-
-	VkPipelineVertexInputStateCreateInfo info{};
-	info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	info.pNext = nullptr;
-	info.vertexBindingDescriptionCount = 1;
-	info.pVertexBindingDescriptions = &bindingDescription;
-	info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.getSize());
-	info.pVertexAttributeDescriptions = attributeDescriptions.rawData();
 
 	builder.shaderStages = shader.getInfos();
-	builder.vertexInputInfo = info;
-	builder.inputAssembly = createInputAssembly(drawMode);
-	builder.viewport = createViewport();
-	builder.scissor = createScissors();
-
-	//builder.depthStencil = depthStencilCreateInfo(true, true, VK_COMPARE_OP_LESS); // VK_COMPARE_OP_LESS_OR_EQUAL
-	//pipelineBuilder.dynamicInfo = createDynamicState();
-
-	builder.rasterizer = createRasterizer(drawMode);
-	builder.multisampling = createMultisampling();
-	builder.colorBlendAttachment = createColorBlendAttachment(options.blending);
 	builder.pipelineLayout = material.layout;
 
-	material.pipeline = builder.buildPipeline(Device::context.device, swapChain.getRenderPass());
+	material.pipeline = builder.buildPipeline(Device::context.device, renderpass);
 
 
 	Device::context.deletionQueue.pushFunction([=]() {
@@ -75,16 +37,10 @@ void celestia::Pipeline::createPipeline(Material& material,
 		vkDestroyPipelineLayout(Device::context.device, material.layout, nullptr);
 		}
 	);
+	return material;
 }
 
-
-// NOTE: Do we really need a default pipeline since we could just save it in the renderer, no in the pipeline class.
-celestia::Material *celestia::Pipeline::getDefaultMaterial()
-{
-	return &defaultMaterial;
-}
-
-VkPipelineInputAssemblyStateCreateInfo celestia::Pipeline::createInputAssembly(DrawingMode mode)
+void celestia::Pipeline::createInputAssembly(DrawingMode mode)
 {
 	VkPipelineInputAssemblyStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -105,32 +61,33 @@ VkPipelineInputAssemblyStateCreateInfo celestia::Pipeline::createInputAssembly(D
 		break;
 	}
 
-	return info;
+	builder.inputAssembly = info;
 }
 
-// TODO: make this editable
-VkViewport celestia::Pipeline::createViewport()
+void celestia::Pipeline::createViewport(Vec2 position, Vec2 dimensions)
 {
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(swapChain.extent.width);
-	viewport.height = static_cast<float>(swapChain.extent.height);
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-	return viewport;
+	VkViewport result{};
+	result.x = position.x;
+	result.y = position.y;
+	result.width = dimensions.x;
+	result.height = dimensions.y;
+
+	result.minDepth = 0.0f;
+	result.maxDepth = 1.0f;
+
+	builder.viewport = result;
 }
 
-// TODO: make this editable
-VkRect2D celestia::Pipeline::createScissors()
+void celestia::Pipeline::createScissors(Vec2i offset, VkExtent2D extent)
 {
 	VkRect2D scissor{};
-	scissor.offset = { 0,0 };
-	scissor.extent = swapChain.extent;
-	return scissor;
+	scissor.offset = { offset.x, offset.y };
+	scissor.extent = extent;
+
+	builder.scissor = scissor;
 }
 
-VkPipelineRasterizationStateCreateInfo celestia::Pipeline::createRasterizer(DrawingMode mode)
+void celestia::Pipeline::createRasterizer(DrawingMode mode)
 {
 	VkPipelineRasterizationStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -159,10 +116,10 @@ VkPipelineRasterizationStateCreateInfo celestia::Pipeline::createRasterizer(Draw
 		break;
 	}
 
-	return info;
+	builder.rasterizer = info;
 }
 
-VkPipelineMultisampleStateCreateInfo celestia::Pipeline::createMultisampling()
+void celestia::Pipeline::createMultisampling()
 {
 	VkPipelineMultisampleStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -173,10 +130,10 @@ VkPipelineMultisampleStateCreateInfo celestia::Pipeline::createMultisampling()
 	info.alphaToCoverageEnable = VK_FALSE;
 	info.alphaToOneEnable = VK_FALSE;
 
-	return info;
+	builder.multisampling = info;
 }
 
-VkPipelineColorBlendAttachmentState celestia::Pipeline::createColorBlendAttachment(bool blending)
+void celestia::Pipeline::createColorBlendAttachment(bool blending)
 {
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
@@ -192,7 +149,23 @@ VkPipelineColorBlendAttachmentState celestia::Pipeline::createColorBlendAttachme
 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-	return colorBlendAttachment;
+	builder.colorBlendAttachment = colorBlendAttachment;
+}
+
+void celestia::Pipeline::createVertexInputStateCreateInfo(
+	utils::CustomVertexInputAttributeDescriptionFactory& attributeDescriptions,
+	const VkVertexInputBindingDescription& bindingDescription,
+	uint32_t count)
+{
+	VkPipelineVertexInputStateCreateInfo info{};
+	info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	info.pNext = nullptr;
+	info.vertexBindingDescriptionCount = count;
+	info.pVertexBindingDescriptions = &bindingDescription;
+	info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.getSize());
+	info.pVertexAttributeDescriptions = attributeDescriptions.rawData();
+
+	builder.vertexInputInfo = info;
 }
 
 VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors)
@@ -212,6 +185,7 @@ VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& sh
 	info.pPushConstantRanges = &shader.getPushConstant();
 	return info;
 }
+
 
 VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass pass)
 {

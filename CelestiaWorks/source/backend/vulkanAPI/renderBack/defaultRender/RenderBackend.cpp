@@ -18,8 +18,6 @@ celestia::Render::Render(Window& window)
 	device = std::make_unique<Device>(window);
 	swapChain = std::make_unique<SwapChain>(*device, window);
 	image = std::make_unique<Image>();
-	descriptor = std::make_unique<Descriptor>(*image);
-	pipeline = std::make_unique<Pipeline>(*swapChain,*descriptor);
 	rendering = false;
 	clearColor = { 0.f,0.f,0.f,1.f };
 	hasBindedTEMP = false;
@@ -56,11 +54,11 @@ void celestia::Render::drawNew(DrawInfo& info)
 		return;
 	}
 
-	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, info.material->pipeline);
+	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.pipeline);
 
 	vkCmdBindDescriptorSets(commandBuffers[currentFrame],
 		VK_PIPELINE_BIND_POINT_GRAPHICS,
-		info.material->layout,
+		info.material.layout,
 		0, 1,
 		&info.descriptors[currentFrame],
 		0, nullptr
@@ -76,7 +74,7 @@ void celestia::Render::drawNew(DrawInfo& info)
 
 	//TODO: add custom push Constants to this
 	vkCmdPushConstants(commandBuffers[currentFrame],
-		info.material->layout,
+		info.material.layout,
 		VK_SHADER_STAGE_VERTEX_BIT, 0,
 		sizeof(PUSH_CONSTANTS),
 		&constants
@@ -100,8 +98,9 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 
 	if (!hasBindedTEMP)
 	{
-		vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultMaterial()->pipeline);
+		//vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultMaterial()->pipeline);
 
+		/*
 		vkCmdBindDescriptorSets(commandBuffers[currentFrame],
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
 			pipeline->getDefaultMaterial()->layout,
@@ -109,7 +108,9 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 			&descriptor->getDescriptorSet(currentFrame),
 			0, nullptr
 		);
+		*/
 	}
+	
 	
 	//static auto startTime = std::chrono::high_resolution_clock::now();
 	//auto currentTime = std::chrono::high_resolution_clock::now();
@@ -139,12 +140,12 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 
 	//memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
 
-	vkCmdPushConstants(commandBuffers[currentFrame],
-		pipeline->getDefaultMaterial()->layout,
-		VK_SHADER_STAGE_VERTEX_BIT, 0,
-		sizeof(PUSH_CONSTANTS),
-		&constants
-	);
+	//vkCmdPushConstants(commandBuffers[currentFrame],
+		//pipeline.getDefaultMaterial()->layout,
+		//VK_SHADER_STAGE_VERTEX_BIT, 0,
+		//sizeof(PUSH_CONSTANTS),
+		//&constants
+	//);
 
 	if (!hasBindedTEMP)
 	{

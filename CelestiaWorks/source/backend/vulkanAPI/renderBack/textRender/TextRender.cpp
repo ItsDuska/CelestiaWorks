@@ -5,6 +5,7 @@
 #include "backend/vulkanAPI/core/ShaderObject.h"
 #include "backend/vulkanAPI/resources/FontReader.h"
 #include "backend/vulkanAPI/core/Device.h"
+#include "backend/vulkanAPI/core/SwapChain.h"
 
 #define MAIN_BUFFER 0
 
@@ -55,7 +56,7 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	}
 
 	info.descriptors = set;
-	info.material = &defaultMaterial;
+	//info.material = &defaultMaterial;
 	info.mesh = buffer::createMesh(tempMesh);
 	
 	descriptors->createDescriptor();
@@ -71,7 +72,24 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	PipelineOptions options{};
 	options.blending = true;
 
-	render.pipeline->createPipeline(*info.material, shader, DrawingMode::TRIANGLE, &info.layout,options); 
+	Pipeline pipeline;
+	pipeline.createColorBlendAttachment(options.blending);
+	pipeline.createInputAssembly(DrawingMode::TRIANGLE);
+	pipeline.createMultisampling();
+	pipeline.createRasterizer(DrawingMode::TRIANGLE);
+	pipeline.createScissors({ 0,0 }, render.swapChain->extent);
+	pipeline.createViewport({ 0,0 }, { static_cast<float>(render.swapChain->extent.width),static_cast<float>(render.swapChain->extent.height) });
+
+	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
+	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(Vertex, texIndex));
+
+	pipeline.createVertexInputStateCreateInfo(attributeDescriptions, bindingDescription, 1);
+
+	info.material = pipeline.createPipeline(shader, DrawingMode::TRIANGLE, &info.layout, render.swapChain->getRenderPass());
 }
 
 celestia::TextRender::~TextRender()
@@ -159,8 +177,12 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 
 		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			descriptors->updateBuffer(storageBuffer[i].buffer, bufferSize, info.descriptors[i]);
-			descriptors->updateTexture(currentTexturePtr->imageView, render.image->textureSampler, info.descriptors[i]);
+			//descriptors->updateBuffer(storageBuffer[i].buffer, bufferSize, info.descriptors[i]);
+			//descriptors->updateTexture(currentTexturePtr->imageView, render.image->textureSampler, info.descriptors[i]);
+			//descriptors->updateSets();
+
+			descriptors->updateTexture(&currentTexturePtr->imageView, render.image->textureSampler, 0, 1, info.descriptors[i]);
+			descriptors->updateBuffer(&storageBuffer[i].buffer, bufferSize, 1, 1, info.descriptors[i]);
 			descriptors->updateSets();
 		}
 	}

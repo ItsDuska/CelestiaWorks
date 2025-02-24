@@ -1,12 +1,14 @@
 #pragma once
 #include "CelestiaVulkanTypes.h"
+#include "backend/utils/Utils.h"
+
 
 namespace celestia 
 {
 	class SwapChain;
 	class ShaderObject;
 	class Descriptor;
-
+	
 	enum class DrawingMode
 	{
 		TRIANGLE,
@@ -39,37 +41,39 @@ namespace celestia
 		bool blending;
 	};
 
-
-
 	class Pipeline
 	{
 	public:
-		Pipeline(SwapChain& swapChain,Descriptor& descriptor);
+		Pipeline() = default;
 		Pipeline(const Pipeline&) = delete;
 		Pipeline& operator = (const Pipeline&) = delete;
-		~Pipeline();
+		~Pipeline() = default;
 
-		void createPipeline(Material& material, ShaderObject &shader,
+		const Material createPipeline(ShaderObject& shader,
 			DrawingMode drawMode,
 			VkDescriptorSetLayout* descriptors,
-			PipelineOptions& options);
-		Material *getDefaultMaterial();
+			VkRenderPass renderpass);
+		//Material *getDefaultMaterial();
 	private:
-		Material defaultMaterial;
+		//Material defaultMaterial;
 
 		BuildPipeline builder;
 
-		SwapChain& swapChain;
-		Descriptor& descriptor;
-	private:
-		VkPipelineInputAssemblyStateCreateInfo createInputAssembly(DrawingMode mode);
-		VkViewport createViewport();
-		VkRect2D createScissors();
+	public:
+		void createInputAssembly(DrawingMode mode);
+		void createViewport(Vec2 position, Vec2 dimensions);
+		void createScissors(Vec2i offset, VkExtent2D extent);
 		//VkPipelineDynamicStateCreateInfo createDynamicState();
 		//VkPipelineDepthStencilStateCreateInfo depthStencilCreateInfo(bool bDepthTest, bool bDepthWrite, VkCompareOp compareOp);
-		VkPipelineRasterizationStateCreateInfo createRasterizer(DrawingMode mode);
-		VkPipelineMultisampleStateCreateInfo createMultisampling();
-		VkPipelineColorBlendAttachmentState createColorBlendAttachment(bool blending);
+		void createRasterizer(DrawingMode mode);
+		void createMultisampling();
+		void createColorBlendAttachment(bool blending);
+		void createVertexInputStateCreateInfo(
+			utils::CustomVertexInputAttributeDescriptionFactory& attributeDescriptions,
+			const VkVertexInputBindingDescription& bindingDescription,
+			uint32_t count
+		);
+	private:
 		VkPipelineLayoutCreateInfo createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors);
 	};
 

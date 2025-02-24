@@ -48,7 +48,7 @@ namespace celestia
 
 	struct DrawInfo
 	{
-		Material *material;
+		Material material;
 		VkDescriptorSet* descriptors;
 		VkDescriptorSetLayout layout;
 		Mesh* mesh;

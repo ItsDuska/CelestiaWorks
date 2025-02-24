@@ -8,52 +8,9 @@ constexpr int MAX_WRITES = 2;
 constexpr int TEXTURE_INDEX = 0;
 constexpr int UNIFORM_BUFFER_INDEX = 1;
 
-/*
-TODO:
-KIRJOTA TÄÄ KAIKKI UUDESTAAN, JOTTA PYSTYISI LUOMAAN MITÄ TAHANSA HELPOSTI!
-*/
-
 
 namespace celestia
 {
-	class Image;
-
-	class Descriptor
-	{
-	public:
-		Descriptor(Image& image);
-		~Descriptor();
-
-		VkDescriptorSetLayout& getDescriptorSetLayout() { return globalSetLayout; }
-
-		VkDescriptorPool& getDescriptorPool() { return descriptorPool; }
-
-		VkDescriptorSet& getDescriptorSet(int currentFrame);
-		VkDescriptorSet* getDefaultSpriteDescriptorSets();
-
-		void updateDescriptorSetTextures(const VkImageView* view, const VkSampler sampler,
-			const int bindingSlot, const int count, const int currentFrame);
-
-		void uppdateDescriporSetUniformBuffers(const VkBuffer* buffer,const VkDeviceSize size,
-			const int bindingSlot,const int count, const int currentFrame);
-
-		void updateAllDescriptorSets();
-	private:
-		void createDescriptors();
-	private:
-
-		VkDescriptorSetLayout globalSetLayout;
-		VkDescriptorPool descriptorPool;
-
-		VkDescriptorSet descriptorSets[MAX_FRAMES_IN_FLIGHT];
-
-		VkDescriptorBufferInfo bufferInfo[NUMBER_OF_UNIFORM_BUFFERS];
-		VkDescriptorImageInfo imageInfo[NUMBER_OF_TEXTURE_IN_SHADER];
-		std::vector<VkWriteDescriptorSet> writes;
-
-		Image& image;
-	};
-
 
 	enum class DescriptorType
 	{
@@ -69,6 +26,8 @@ namespace celestia
 		VkDescriptorSetLayout layout;
 	};
 
+
+	
 
 	class DescriptorFactory
 	{
@@ -86,12 +45,14 @@ namespace celestia
 		
 		DescriptorFactory();
 		void createDescriptor();
-		void addBinding(uint32_t binding, DescriptorType type, VkShaderStageFlagBits shader,uint32_t descriptorCount = 1);
+		void addBinding(uint32_t binding, DescriptorType type, VkShaderStageFlagBits shader,uint32_t descriptorCount = 1, uint32_t bufferInfoSize = 1);
 		void build(VkDescriptorSet* descriptorSet, VkDescriptorSetLayout& descriptorLayout);
 
 
-		void updateTexture(const VkImageView& view, VkSampler& sampler, VkDescriptorSet& descriptorSet);
-		void updateBuffer(VkBuffer& buffer, const VkDeviceSize size, VkDescriptorSet& descriptorSet);
+		void updateTexture(const VkImageView* view, const VkSampler sampler,
+			const int bindingSlot, const int count, VkDescriptorSet set);
+
+		void updateBuffer(VkBuffer* buffer, const VkDeviceSize size, const int bindingSlot, const int count, VkDescriptorSet set);
 		void updateSets();
 
 	private:
@@ -100,6 +61,7 @@ namespace celestia
 	private:
 		std::vector<VkDescriptorSetLayoutBinding> descriptorBindings;
 		uint32_t bindingCount;
+		uint32_t bindlessBindPosition; 
 
 		std::vector<VkDescriptorPoolSize> poolSizes;
 		VkDescriptorPool descriptorPool;
@@ -109,8 +71,8 @@ namespace celestia
 		//uint32_t bufferCount;
 		//uint32_t imageCount;
 
-		VkDescriptorBufferInfo bufferInfo;
-		VkDescriptorImageInfo imageInfo;
+		std::vector<VkDescriptorBufferInfo> bufferInfo;
+		std::vector<VkDescriptorImageInfo> imageInfo;
 
 		//VkDescriptorSetLayoutBindingFlagsCreateInfo bindlesInfo; // TODO: tee tää loppuun.
 	};

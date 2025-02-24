@@ -35,14 +35,10 @@ namespace celestia
 	private:
 		friend class BatchSpriteRender;
 		friend class TextRender;
-		//friend class BatchTextRender;
 		Window& window;
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;
 		std::unique_ptr<Image> image;
-		std::unique_ptr<Descriptor> descriptor;
-
-		std::unique_ptr<Pipeline> pipeline;
 
 		std::vector<VkCommandBuffer> commandBuffers;
 

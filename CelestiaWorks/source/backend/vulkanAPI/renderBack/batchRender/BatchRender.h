@@ -6,6 +6,7 @@
 namespace celestia
 {
 	class Window;
+	class DescriptorFactory;
 
 	class BatchSpriteRender
 	{
@@ -32,6 +33,8 @@ namespace celestia
 		int indexCount;
 		std::array<int, NUMBER_OF_TEXTURE_IN_SHADER> textureSlots;
 		VkImageView textures[NUMBER_OF_TEXTURE_IN_SHADER]{};
+		std::unique_ptr<DescriptorFactory> descriptors;
+		VkDescriptorSet set[MAX_FRAMES_IN_FLIGHT]; // bit goofy but we go with this one for now... :p
 		int textureSlotIndex;
 
 
