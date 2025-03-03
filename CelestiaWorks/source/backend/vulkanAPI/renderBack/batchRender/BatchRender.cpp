@@ -47,10 +47,8 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	info.descriptors = set;
 
 	textures[0] = render.image->defaultTexture.imageView;
-
-	descriptors->createDescriptor();
 	descriptors->addBinding(0, DescriptorType::BINDLESS_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_IN_SHADER, MAX_TEXTURES_IN_SHADER);
-	descriptors->build(info.descriptors, info.layout);
+	descriptors->build(info.descriptors, info.layout); // INFO.DESCRIPTORS ON NULL?
 
 	ShaderObject shader;
 	shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::SPRITE_BATCH, true);
@@ -58,7 +56,7 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
 	PipelineOptions options{};
-	options.blending = false;
+	options.blending = true;
 
 	Pipeline pipeline;
 	pipeline.createColorBlendAttachment(options.blending);

@@ -50,7 +50,7 @@ void celestia::Render::drawNew(DrawInfo& info)
 {
 	if (!rendering)
 	{
-		std::cout << "BeginRenderPass was not called!\n";
+		std::cerr << "BeginRenderPass was not called!\n";
 		return;
 	}
 
@@ -92,7 +92,7 @@ void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
 {
 	if (!rendering)
 	{
-		std::cout << "BeginRenderPass was not called!\n";
+		std::cerr << "BeginRenderPass was not called!\n";
 		return;
 	}
 
@@ -167,7 +167,7 @@ void celestia::Render::beginRendering()
 {
 	if (rendering)
 	{
-		std::cout << "BeginRenderPass was already called!\n";
+		std::cerr << "BeginRenderPass was already called!\n";
 		return;
 	}
 	
@@ -218,7 +218,7 @@ void celestia::Render::endRendering()
 {
 	if (!rendering)
 	{
-		std::cout << "BeginRenderPass was not called!\n";
+		std::cerr << "BeginRenderPass was not called!\n";
 		return;
 	}
 

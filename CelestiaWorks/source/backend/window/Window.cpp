@@ -134,12 +134,11 @@ namespace celestia
 		rect.bottom = rect.top + size.y;
 		AdjustWindowRect(&rect, style, false);
 
-		//Change name's type from const char* to const wchar_t*
-		//bruh this is goofy as hell...
-		const size_t nameLen = strlen(name) + 1;
-		std::vector<wchar_t> vec(nameLen);
-		int needed = MultiByteToWideChar(CP_UTF8, 0, name, (int)nameLen, &vec[0], (int)nameLen);
-		const wchar_t* nameWide = &vec[0];
+// Convert const char* to const wchar_t* for Unicode compatibility
+const size_t nameLen = strlen(name) + 1;
+std::vector<wchar_t> vec(nameLen);
+MultiByteToWideChar(CP_UTF8, 0, name, (int)nameLen, &vec[0], (int)nameLen);
+const wchar_t* nameWide = &vec[0];
 
 		hWnd = CreateWindowEx(
 			0,

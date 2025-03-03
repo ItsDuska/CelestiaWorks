@@ -78,7 +78,12 @@ VkVertexInputBindingDescription celestia::utils::createBindingDescription(uint32
 void celestia::utils::CustomVertexInputAttributeDescriptionFactory::pushDescription(uint32_t binding, VkFormat format, uint32_t offset)
 {
     uint32_t location = descriptionList.size();
-    descriptionList.emplace_back(location, binding, format, offset);
+    VkVertexInputAttributeDescription description{};
+    description.location = location;
+    description.binding = binding;
+    description.format = format;
+    description.offset = offset;
+    descriptionList.push_back(description);
 }
 
 int celestia::utils::CustomVertexInputAttributeDescriptionFactory::getSize()

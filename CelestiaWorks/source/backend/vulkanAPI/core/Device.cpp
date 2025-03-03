@@ -4,6 +4,7 @@
 #include "vk_mem_alloc.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 
+//#define ENABLE_VALIDATION_LAYER // FORCE VALIDATION LAYER FOR RELEASE MODE DEBUGGING
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation",

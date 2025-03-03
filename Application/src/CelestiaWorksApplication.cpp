@@ -102,10 +102,10 @@ int main()
 				testSprite.setTextureRectPosition({ rectPositionX,0 });
 			}
 
-			//window.draw(text);
+			window.draw(text);
 
 			window.draw(testSprite);
-			//window.draw(text1);	
+			window.draw(text1);	
 
 			window.endRenderPass();
 

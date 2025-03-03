@@ -1,12 +1,10 @@
 ## CelestiaWorks: A 2D Rendering Framework Using Vulkan
-CelestiaWorks is a 2D rendering framework inspired by SFML, designed purely for fun and learning. Built using the Vulkan API, this framework implements modern rendering techniques like bindless textures and a sprite batching system to improve performance when drawing multiple images. While it's not meant to be production-ready, and the code quality might not be the best, CelestiaWorks serves as a personal project for exploring new technologies and gaining experience in Vulkan development.
+CelestiaWorks is a 2D rendering framework inspired by SFML, designed purely for fun and learning. Built using the Vulkan API, this framework implements modern rendering techniques like bindless textures and a sprite batching system to improve performance when drawing multiple images. The project is currently only compatible with Windows operating systems. While it's not meant to be production-ready, and the code quality might not be the best, CelestiaWorks serves as a personal project for exploring new technologies and gaining experience in Vulkan development.
 
 Disclaimer: This project is not guaranteed to work flawlessly. The performance may vary, and there are no promises of optimization, as this is more of a learning experiment rather than a polished product.
 
 ----
 ### **The list of things I want to add to this when I have the time for it:**
-  - Mouse support
-  - Text rendering
   - RenderTextures
   - Custom shader support
   - Vertex arrays
@@ -19,20 +17,32 @@ Disclaimer: This project is not guaranteed to work flawlessly. The performance m
 -------
 
 ### How to Link CelestiaWorks in Your Project
-#### 1. Download and Extract the Latest Version
 
-Go to the GitHub Releases page and download the latest release of CelestiaWorks. Then unzip the downloaded file.
+#### 1. Obtaining CelestiaWorks
 
-#### 2. Folder Structure
+You have two options to get CelestiaWorks:
 
-Once extracted, the following folders will be available:
+**Option A: Download Pre-built Binaries**
+- Go to the GitHub Releases page and download the latest release of CelestiaWorks
+- Unzip the downloaded file to your desired location
 
-- bin/: Contains the .dll file for the library.
-- lib/: Contains the .lib file for linking the library.
-- include/: Contains all the header files necessary for using the library.
-  - include/Graphics/: Contains headers for working with sprites, textures, and window handling.
-  - include/System/: Contains headers for vectors, matrices, keyboard input, squares, and vertex shapes.
-- example/: Contains a short example that demonstrates how the library works and walks through almost every feature currently available.
+**Option B: Build From Source**
+- Follow the "Building from Source with CMake" instructions below to compile the library yourself
+- This gives you the most up-to-date version and lets you customize the build
+
+#### 2. Understanding the Library Structure
+
+The CelestiaWorks library consists of:
+
+- **Binary files**:
+- The CelestiaWorks.dll file (runtime library)
+- The CelestiaWorks.lib file (import library for linking)
+
+- **Header files**:
+- CelestiaWorks/Graphics/: Headers for sprites, textures, and window management
+- CelestiaWorks/System/: Headers for vectors, matrices, input handling, and basic shapes
+
+> Note: When building from source, these files will be in the build/bin/Release directory (DLL) and build/lib/Release directory (LIB), with headers in the original source tree.
 
 #### 3. Link the Library
 
@@ -50,6 +60,58 @@ To use the CelestiaWorks library in your C++ project, follow these steps:
 
 Check the example/ folder for a short working example that demonstrates how to use the library. The example goes through nearly every feature available, including setting up a window, creating sprites and handling input.
 
+
+### Building from Source with CMake
+
+If you prefer to build CelestiaWorks from source using CMake, follow these instructions.
+
+#### Prerequisites
+
+- CMake 3.15 or higher
+- Visual Studio 2019 or 2022 with C++17 support
+- Vulkan SDK installed
+- Git (for cloning the repository)
+
+#### 1. Clone the Repository
+
+```
+git clone https://github.com/ItsDuska/CelestiaWorks.git
+cd CelestiaWorks
+```
+
+#### 2. Configure the Project
+
+Create a build directory and configure the project:
+
+```
+mkdir build
+cd build
+cmake .. -G "Visual Studio 17 2022"
+```
+
+> Note: You can replace "Visual Studio 17 2022" with your preferred generator.
+
+#### 3. Building the DLL
+
+To build just the CelestiaWorks library DLL:
+
+```
+cmake --build . --config Release --target CelestiaWorks
+```
+
+The compiled DLL will be located in the `build/bin/Release` directory.
+
+#### 4. Building the Application (Bonus)
+
+If you want to build the example application as well:
+
+```
+cmake --build . --config Release
+```
+
+This will build both the library and the application. The executable will be located in the `build/bin/Release` directory.
+
+> Note: The CMake configuration will automatically download and build any missing dependencies (such as FreeType).
 
 ----
 

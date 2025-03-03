@@ -10,8 +10,6 @@ namespace celestia
 	class Pipeline;
 	class Window;
 	class Image;
-	class Descriptor;
-
 
 	class Render
 	{

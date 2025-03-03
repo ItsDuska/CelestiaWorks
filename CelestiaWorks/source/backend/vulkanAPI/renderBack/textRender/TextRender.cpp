@@ -56,12 +56,10 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	}
 
 	info.descriptors = set;
-	//info.material = &defaultMaterial;
 	info.mesh = buffer::createMesh(tempMesh);
-	
-	descriptors->createDescriptor();
 	descriptors->addBinding(0, DescriptorType::IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
 	descriptors->addBinding(1, DescriptorType::STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+
 	descriptors->build(info.descriptors, info.layout);
 
 	ShaderObject shader;
@@ -80,7 +78,7 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	pipeline.createScissors({ 0,0 }, render.swapChain->extent);
 	pipeline.createViewport({ 0,0 }, { static_cast<float>(render.swapChain->extent.width),static_cast<float>(render.swapChain->extent.height) });
 
-	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
+	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription();
 	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
 	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
 	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));

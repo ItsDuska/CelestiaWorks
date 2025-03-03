@@ -7,7 +7,7 @@
 
 struct VkVertexInputBindingDescription;
 struct VkVertexInputAttributeDescription;
-enum VkFromat;
+enum VkFormat;
 
 namespace celestia
 {

@@ -44,7 +44,6 @@ namespace celestia
 		*/
 		
 		DescriptorFactory();
-		void createDescriptor();
 		void addBinding(uint32_t binding, DescriptorType type, VkShaderStageFlagBits shader,uint32_t descriptorCount = 1, uint32_t bufferInfoSize = 1);
 		void build(VkDescriptorSet* descriptorSet, VkDescriptorSetLayout& descriptorLayout);
 
@@ -61,7 +60,7 @@ namespace celestia
 	private:
 		std::vector<VkDescriptorSetLayoutBinding> descriptorBindings;
 		uint32_t bindingCount;
-		uint32_t bindlessBindPosition; 
+		bool enableBindless; 
 
 		std::vector<VkDescriptorPoolSize> poolSizes;
 		VkDescriptorPool descriptorPool;

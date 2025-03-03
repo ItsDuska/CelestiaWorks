@@ -228,7 +228,7 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	VkPipeline newPipeline;
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)
 	{
-		std::cout << "failed to create pipeline\n";
+		std::cerr << "failed to create pipeline\n";
 		return VK_NULL_HANDLE;
 	}
 	else
