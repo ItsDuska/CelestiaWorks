@@ -41,6 +41,18 @@ void celestia::RendererHandler::drawText(const std::vector<Vertex>& vertices, co
 	}
 }
 
+void celestia::RendererHandler::drawVertices(Mesh* meshPtr, const uint32_t amountToDraw, const RawTexture* texture)
+{
+	DrawInfo info;
+	info.amountToDraw = amountToDraw;
+	info.mesh = meshPtr;
+	info.material = batchSpriteRenderer->getMaterial();
+	const FullDescriptorSet set = batchSpriteRenderer->getDescriptors();
+	info.layout = set.layout;
+	info.descriptors = set.descriptors;
+	coreRenderer->submitIndexedDraw(info);
+}
+
 void celestia::RendererHandler::beginRenderPass() const
 {
 	batchSpriteRenderer->beginBatch();

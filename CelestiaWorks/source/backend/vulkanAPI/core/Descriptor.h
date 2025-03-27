@@ -26,10 +26,7 @@ namespace celestia
 		VkDescriptorSetLayout layout;
 	};
 
-
-	
-
-	class DescriptorFactory
+	class Descriptor
 	{
 	public:
 		/*
@@ -43,7 +40,7 @@ namespace celestia
 		void addBinding(index, type, shader_stage)
 		*/
 		
-		DescriptorFactory();
+		Descriptor();
 		void addBinding(uint32_t binding, DescriptorType type, VkShaderStageFlagBits shader,uint32_t descriptorCount = 1, uint32_t bufferInfoSize = 1);
 		void build(VkDescriptorSet* descriptorSet, VkDescriptorSetLayout& descriptorLayout);
 

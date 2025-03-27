@@ -5,14 +5,14 @@
 #include <array>
 
 
-celestia::DescriptorFactory::DescriptorFactory()
+celestia::Descriptor::Descriptor()
 {
     bindingCount = 0;
     enableBindless = false;
     descriptorPool = VK_NULL_HANDLE;
 }
 
-void celestia::DescriptorFactory::addBinding(uint32_t binding, DescriptorType type,
+void celestia::Descriptor::addBinding(uint32_t binding, DescriptorType type,
     VkShaderStageFlagBits shader, uint32_t descriptorCount, uint32_t bufferInfoSize)
 {
     VkDescriptorType vkType = toVkType(type);
@@ -41,7 +41,7 @@ void celestia::DescriptorFactory::addBinding(uint32_t binding, DescriptorType ty
     bindingCount++;
 }
 
-void celestia::DescriptorFactory::build(VkDescriptorSet* descriptorSet, VkDescriptorSetLayout& descriptorLayout)
+void celestia::Descriptor::build(VkDescriptorSet* descriptorSet, VkDescriptorSetLayout& descriptorLayout)
 {   
     std::vector<VkDescriptorBindingFlags> flags(bindingCount, VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT);
 
@@ -114,7 +114,7 @@ void celestia::DescriptorFactory::build(VkDescriptorSet* descriptorSet, VkDescri
     }
 }
 
-void celestia::DescriptorFactory::updateTexture(const VkImageView* view, const VkSampler sampler,
+void celestia::Descriptor::updateTexture(const VkImageView* view, const VkSampler sampler,
     const int bindingSlot, const int count, VkDescriptorSet set)
 {
     for (int i = 0; i < count; i++)
@@ -143,7 +143,7 @@ void celestia::DescriptorFactory::updateTexture(const VkImageView* view, const V
     writes[TEXTURE_INDEX].pImageInfo = imageInfo.data();
 }
 
-void celestia::DescriptorFactory::updateBuffer(VkBuffer* buffer, const VkDeviceSize size, const int bindingSlot, const int count, VkDescriptorSet set)
+void celestia::Descriptor::updateBuffer(VkBuffer* buffer, const VkDeviceSize size, const int bindingSlot, const int count, VkDescriptorSet set)
 {
     for (int i = 0; i < count; i++)
     {
@@ -161,12 +161,12 @@ void celestia::DescriptorFactory::updateBuffer(VkBuffer* buffer, const VkDeviceS
     writes[UNIFORM_BUFFER_INDEX].pBufferInfo = bufferInfo.data();
 }
 
-void celestia::DescriptorFactory::updateSets()
+void celestia::Descriptor::updateSets()
 {
     vkUpdateDescriptorSets(Device::context.device, bindingCount, writes.data(), 0, nullptr);
 }
 
-VkDescriptorType celestia::DescriptorFactory::toVkType(DescriptorType type)
+VkDescriptorType celestia::Descriptor::toVkType(DescriptorType type)
 {
     switch (type)
     {

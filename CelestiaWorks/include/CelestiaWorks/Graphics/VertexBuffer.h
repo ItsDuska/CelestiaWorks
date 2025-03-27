@@ -25,7 +25,6 @@ namespace celestia
 	class VertexBuffer : public Drawable
 	{
 	public:
-		/// Tells the vulkan api how often the data will change.
 		// TODO: Siirrä alemmalle layerille.
 		
 
@@ -62,7 +61,11 @@ namespace celestia
 
 		void setDrawType(DrawType type);
 
+
+		size_t getVertexCount() const;
+
 		void draw(const RendererHandler& renderer) const override;
+		void draw(const RendererHandler& renderer, uint32_t amountToDraw, );
 
 	private:
 

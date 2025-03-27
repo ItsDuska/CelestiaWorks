@@ -1,5 +1,6 @@
 #include "Graphics/VertexBuffer.h"
 #include "backend/vulkanAPI/resources/VertexBufferImpl.h"
+#include "backend/vulkanAPI/renderBack/RendererHandler.h"
 #include <stdexcept>
 
 // TODO: Tee tää loppuun... guuuuuh bwaaaaaaaaaaaaaaa
@@ -48,6 +49,11 @@ void celestia::VertexBuffer::setDrawType(DrawType type)
 
 
 
+size_t celestia::VertexBuffer::getVertexCount() const
+{
+	return size;
+}
+
 /* TODO:
 * Nuke current renderer and redo it.
 * Guuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh.
@@ -57,6 +63,7 @@ void celestia::VertexBuffer::setDrawType(DrawType type)
 */
 void celestia::VertexBuffer::draw(const RendererHandler& renderer) const
 {
+	//renderer.drawVertices()
 	//renderer.drawSprite(quad, texture->getRawTexturePtr());
 }
 

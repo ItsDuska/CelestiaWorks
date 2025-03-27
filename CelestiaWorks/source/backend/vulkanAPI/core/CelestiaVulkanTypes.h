@@ -46,6 +46,13 @@ namespace celestia
 		uint32_t textureID;
 	};
 
+
+	struct FullDescriptorSet
+	{
+		VkDescriptorSet* descriptors;
+		VkDescriptorSetLayout layout;
+	};
+
 	struct DrawInfo
 	{
 		Material material;

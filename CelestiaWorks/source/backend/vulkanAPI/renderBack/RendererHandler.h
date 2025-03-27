@@ -18,6 +18,7 @@ namespace celestia
 	class TextRender;
 	struct RawTexture;
 	struct Font_t;
+	struct Mesh;
 
 	class RendererHandler
 	{
@@ -26,9 +27,14 @@ namespace celestia
 		~RendererHandler();
 
 		void draw(const Drawable& drawable) const;
+
+		//Bacth rendering functions
 		void drawSprite(const VertexPositions* quad, const RawTexture* texture) const;
 		void drawQuad(const Vec2& position, const Vec2& size, const Vec3& color) const;
 		void drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty, const int id) const;
+		
+		//normal draw call. Will draw it instantly.
+		void drawVertices(Mesh* meshPtr, const uint32_t amountToDraw, const RawTexture* texture);
 
 		void beginRenderPass() const;
 		void endRenderPass() const;

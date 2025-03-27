@@ -11,7 +11,7 @@
 
 celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32_t maxCharsPerBatch)
 	: render(render),
-	descriptors(std::make_unique<DescriptorFactory>()),
+	descriptors(std::make_unique<Descriptor>()),
 	bufferSize(sizeof(Vec2Aligned)* maxTextObjects),
 	set(),
 	MAX_TEXT_COUNT(maxTextObjects),
@@ -145,7 +145,7 @@ void celestia::TextRender::end()
 void celestia::TextRender::flush()
 {
 	info.amountToDraw = indexCount;
-	render.drawNew(info);
+	render.submitIndexedDraw(info);
 }
 
 void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty, const int id)

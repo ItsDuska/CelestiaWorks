@@ -51,7 +51,7 @@ namespace celestia
 	private:
 		Render& render;
 		DrawInfo info;
-		std::unique_ptr<DescriptorFactory> descriptors;
+		std::unique_ptr<Descriptor> descriptors;
 
 		const RawTexture* currentTexturePtr;
 		VkDescriptorSet set[MAX_FRAMES_IN_FLIGHT];

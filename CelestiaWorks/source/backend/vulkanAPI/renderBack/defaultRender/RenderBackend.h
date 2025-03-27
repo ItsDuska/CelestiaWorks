@@ -19,8 +19,7 @@ namespace celestia
 		Render& operator = (const Render&) = delete;
 		~Render();
 
-		void drawNew(DrawInfo& info);
-		void draw(const Mesh& mesh,const int amountToDraw);
+		void submitIndexedDraw(DrawInfo& info);
 		void beginRendering();
 		void endRendering();
 		void setClearColor(Color& color);

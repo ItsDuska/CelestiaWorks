@@ -46,7 +46,7 @@ celestia::Render::~Render()
 {
 }
 
-void celestia::Render::drawNew(DrawInfo& info)
+void celestia::Render::submitIndexedDraw(DrawInfo& info)
 {
 	if (!rendering)
 	{
@@ -86,81 +86,6 @@ void celestia::Render::drawNew(DrawInfo& info)
 	vkCmdBindIndexBuffer(commandBuffers[currentFrame], info.mesh->indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
 	vkCmdDrawIndexed(commandBuffers[currentFrame], info.amountToDraw, 1, 0, 0, 0);
-}
-
-void celestia::Render::draw(const Mesh& mesh,const int amountToDraw)
-{
-	if (!rendering)
-	{
-		std::cerr << "BeginRenderPass was not called!\n";
-		return;
-	}
-
-	if (!hasBindedTEMP)
-	{
-		//vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getDefaultMaterial()->pipeline);
-
-		/*
-		vkCmdBindDescriptorSets(commandBuffers[currentFrame],
-			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			pipeline->getDefaultMaterial()->layout,
-			0, 1,
-			&descriptor->getDescriptorSet(currentFrame),
-			0, nullptr
-		);
-		*/
-	}
-	
-	
-	//static auto startTime = std::chrono::high_resolution_clock::now();
-	//auto currentTime = std::chrono::high_resolution_clock::now();
-	//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	//Vec3 rotate{};
-	//rotate.x = 0.f;
-	//rotate.y = 0.f;
-	//rotate.z = -0.5f;
-
-	//const float DEGREE = 360.f;
-	//const float angle = fmodf(time * 20, DEGREE);
-
-	Mat4 model(1.f);
-	//model = math::translate(model, _pos);
-
-	//model = math::translate(model, Vec3(0.5f * _size.x, 0.5f * _size.y, 0.f));
-	//model = math::rotate(model, math::radians(angle), rotate);
-	//model = math::translate(model, Vec3(-0.5f * _size.x, -0.5f * _size.y, 0.f));
-
-	//model = math::scale(model, _size);
-	
-
-	UniformBufferObject uniform{};
-	//uniform.projection = projection;
-	uniform.transform = model;
-
-	//memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
-
-	//vkCmdPushConstants(commandBuffers[currentFrame],
-		//pipeline.getDefaultMaterial()->layout,
-		//VK_SHADER_STAGE_VERTEX_BIT, 0,
-		//sizeof(PUSH_CONSTANTS),
-		//&constants
-	//);
-
-	if (!hasBindedTEMP)
-	{
-		VkDeviceSize offset = 0;
-
-		vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &mesh.vertexBuffer.buffer, &offset);
-		vkCmdBindIndexBuffer(commandBuffers[currentFrame], mesh.indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
-
-		if (currentFrame == MAX_FRAMES_IN_FLIGHT)
-		{
-			hasBindedTEMP = true;
-		}
-	}
-
-	vkCmdDrawIndexed(commandBuffers[currentFrame], amountToDraw, 1, 0, 0, 0);	
 }
 
 void celestia::Render::beginRendering()
