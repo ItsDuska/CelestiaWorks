@@ -5,6 +5,7 @@
 #include <array>
 
 
+
 celestia::Descriptor::Descriptor()
 {
     bindingCount = 0;

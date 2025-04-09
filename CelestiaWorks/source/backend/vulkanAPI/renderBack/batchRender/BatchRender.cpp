@@ -69,10 +69,10 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
 
 	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(Vertex, texIndex));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(VertexBatch, position));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(VertexBatch, texCoord));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(VertexBatch, color));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(VertexBatch, texIndex));
 	
 	pipeline.createVertexInputStateCreateInfo(attributeDescriptions, bindingDescription,1);
 
@@ -95,7 +95,7 @@ void celestia::BatchSpriteRender::beginBatch()
 void celestia::BatchSpriteRender::endBatch()
 {
 	//vertex buffer updateing..
-	size_t size = vertexCount * sizeof(Vertex);
+	size_t size = vertexCount * sizeof(VertexBatch);
 	buffer::updateBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
 }
 

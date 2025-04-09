@@ -80,10 +80,10 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 
 	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription();
 	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(Vertex, texIndex));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(VertexBatch, position));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(VertexBatch, texCoord));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(VertexBatch, color));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(VertexBatch, texIndex));
 
 	pipeline.createVertexInputStateCreateInfo(attributeDescriptions, bindingDescription, 1);
 
@@ -138,7 +138,7 @@ void celestia::TextRender::end()
 	std::memcpy(data, transformationBuffer.data(), transformationSize);
 	vkUnmapMemory(Device::context.device, storageBuffer[render.currentFrame].memory);
 
-	size_t vertexSize = vertexCount * sizeof(Vertex);
+	size_t vertexSize = vertexCount * sizeof(VertexBatch);
 	buffer::updateBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
 }
 
@@ -148,7 +148,7 @@ void celestia::TextRender::flush()
 	render.submitIndexedDraw(info);
 }
 
-void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty, const int id)
+void celestia::TextRender::drawText(const std::vector<VertexBatch>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty, const int id)
 {
 	if (!needsUpdate)
 	{
@@ -197,7 +197,7 @@ void celestia::TextRender::drawText(const std::vector<Vertex>& vertices, const i
 
 	transformationBuffer[transformationIndexCounter].vec = position;
 
-	for (const Vertex& vertex : vertices)
+	for (const VertexBatch& vertex : vertices)
 	{
 		glyphBuffer[vertexCount] = vertex;
 		glyphBuffer[vertexCount].texIndex = transformationIndexCounter;

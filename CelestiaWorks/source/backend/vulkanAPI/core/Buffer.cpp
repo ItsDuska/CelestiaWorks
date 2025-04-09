@@ -46,7 +46,7 @@ celestia::Mesh* celestia::buffer::createMesh(RawMesh& rawMesh)
     Mesh* mesh = new Mesh;
     mesh->indexBufferSize = static_cast<uint32_t>(rawMesh.indices.size() * sizeof(uint16_t));
     mesh->indexBuffer = createIndexBuffer(rawMesh.indices.data(), mesh->indexBufferSize);
-    mesh->vertexBufferSize = static_cast<uint32_t>(rawMesh.vertices.size() * sizeof(Vertex));
+    mesh->vertexBufferSize = static_cast<uint32_t>(rawMesh.vertices.size() * sizeof(VertexBatch));
     mesh->vertexBuffer = createVertexBuffer(rawMesh.vertices.data(), mesh->vertexBufferSize);
     return mesh;
 }

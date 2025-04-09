@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.cpp" />
     <ClCompile Include="source\SourceGraphics\ShaderProgram.cpp" />
     <ClCompile Include="source\SourceGraphics\ShaderProgramImpl.cpp" />
     <ClCompile Include="source\SourceSystem\Mouse.cpp" />
@@ -179,7 +180,7 @@
     <ClCompile Include="source\backend\vulkanAPI\core\Device.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\core\Image.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\core\Pipeline.cpp" />
-    <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.cpp" />
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\vkRender\RenderBackend.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\core\ShaderObject.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\core\SwapChain.cpp" />
     <ClCompile Include="source\backend\window\Window.cpp" />
@@ -189,6 +190,7 @@
   <ItemGroup>
     <ClInclude Include="include\CelestiaWorks\Graphics\Drawable.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Font.h" />
+    <ClInclude Include="include\CelestiaWorks\Graphics\RenderPipeline.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\ShaderProgram.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\ShaderTypes.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Text.h" />
@@ -204,6 +206,7 @@
     <ClInclude Include="include\CelestiaWorks\Graphics\Sprite.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\Texture.h" />
     <ClInclude Include="include\CelestiaWorks\Graphics\WindowHandle.h" />
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.h" />
     <ClInclude Include="source\backend\vulkanAPI\renderBack\RendererHandler.h" />
     <ClInclude Include="source\backend\vulkanAPI\resources\FontReader.h" />
     <ClInclude Include="source\math\MatrixMath.h" />
@@ -216,7 +219,7 @@
     <ClInclude Include="source\backend\vulkanAPI\core\Device.h" />
     <ClInclude Include="source\backend\vulkanAPI\core\Image.h" />
     <ClInclude Include="source\backend\vulkanAPI\core\Pipeline.h" />
-    <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.h" />
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\vkRender\RenderBackend.h" />
     <ClInclude Include="source\backend\vulkanAPI\core\ShaderObject.h" />
     <ClInclude Include="source\backend\vulkanAPI\core\SwapChain.h" />
     <ClInclude Include="source\backend\window\Window.h" />
@@ -227,6 +230,8 @@
   <ItemGroup>
     <None Include="shaders\temp.frag" />
     <None Include="shaders\temp.vert" />
+    <None Include="source\shaders\basic\basic.frag" />
+    <None Include="source\shaders\basic\basic.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

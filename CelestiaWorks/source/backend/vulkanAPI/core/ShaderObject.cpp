@@ -92,6 +92,10 @@ static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderType shader
 			};
 			return vertexBinaryText;
 		}
+		else if (type == celestia::RenderGroup::BASIC)
+		{
+
+		}
 		
 		const std::vector<uint32_t> vertexBinary = { 0x07230203,0x00010000,0x0008000b,0x00000032,0x00000000,0x00020011,0x00000001,0x0006000b,
 	0x00000001,0x4c534c47,0x6474732e,0x3035342e,0x00000000,0x0003000e,0x00000000,0x00000001,
@@ -189,6 +193,12 @@ static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderType shader
 
 		return fragmentBinaryText;
 	}
+
+	else if (type == celestia::RenderGroup::BASIC)
+	{
+
+	}
+
 
 	const std::vector<uint32_t> fragmentBinary = { 0x07230203,0x00010000,0x0008000b,0x00000022,0x00000000,0x00020011,0x00000001,0x00020011,
 		0x000014b5,0x00020011,0x000014b6,0x00020011,0x000014bb,0x0008000a,0x5f565053,0x5f545845,

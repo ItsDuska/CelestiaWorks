@@ -17,7 +17,7 @@ celestia::Font* celestia::Text::getFont()
 	return font;
 }
 
-void celestia::Text::draw(const RendererHandler& renderer) const
+void celestia::Text::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
 	renderer.drawText(vertices, symbols.size(), position, *font->bitmapData, dirty, id);
 	//disableDirtyFlag();

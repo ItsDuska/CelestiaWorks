@@ -22,7 +22,7 @@ namespace celestia
 		Vec4 normalizeColor(Color& color);
 
 		// new way
-		VkVertexInputBindingDescription createBindingDescription(uint32_t binding = 0, uint32_t stride = sizeof(Vertex), VkVertexInputRate inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX);
+		VkVertexInputBindingDescription createBindingDescription(uint32_t binding = 0, uint32_t stride = sizeof(VertexBatch), VkVertexInputRate inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX);
 
 
 		class CustomVertexInputAttributeDescriptionFactory

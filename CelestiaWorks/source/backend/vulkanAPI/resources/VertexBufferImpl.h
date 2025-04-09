@@ -7,7 +7,7 @@
 #endif
 
 #include "System/CelestiaTypes.h"
-#include "backend/core/VertexBufferInfo.h"
+#include "Graphics/VertexBufferInfo.h"
 
 /*
 * 

@@ -71,7 +71,7 @@ const celestia::VertexPositions* celestia::Sprite::getQuad() const
 	return quad;
 }
 
-void celestia::Sprite::draw(const RendererHandler& renderer) const
+void celestia::Sprite::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
 	renderer.drawSprite(quad, texture->getRawTexturePtr());
 }

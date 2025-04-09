@@ -32,6 +32,7 @@ namespace celestia
 	private:
 		friend class BatchSpriteRender;
 		friend class TextRender;
+		friend class DefaultSingleRenderer;
 		Window& window;
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;
@@ -53,7 +54,7 @@ namespace celestia
 
 
 		//TEMP
-		unsigned frame_count_per_second = 0;
+		unsigned frameCountPerSecond = 0;
 		std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds> prev_time_in_seconds;
 		//TEMP
 	};

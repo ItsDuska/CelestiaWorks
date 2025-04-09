@@ -1,6 +1,7 @@
 #include "RendererHandler.h"
 #include "backend/vulkanAPI/renderBack/batchRender/BatchRender.h"
 #include "backend/vulkanAPI/renderBack/textRender/TextRender.h"
+#include "backend/vulkanAPI/renderBack/defaultRender/DefaultSingleRender.h"
 
 #include "backend/window/Window.h"
 #include "backend/vulkanAPI/renderBack/RendererHandler.h"
@@ -10,6 +11,7 @@ celestia::RendererHandler::RendererHandler(Window& window, uint32_t maxTexturesI
 {
 	coreRenderer = std::make_unique<Render>(window);
 	batchSpriteRenderer = std::make_unique<BatchSpriteRender>(*coreRenderer, maxTexturesInShader, maxQuadsPerBatch);
+	defaultSingleRenderer = std::make_unique<DefaultSingleRenderer>(*coreRenderer);
 }
 
 celestia::RendererHandler::~RendererHandler()
@@ -19,7 +21,12 @@ celestia::RendererHandler::~RendererHandler()
 
 void celestia::RendererHandler::draw(const Drawable& drawable) const
 {
-	drawable.draw(*this);
+	drawable.draw(*this,nullptr);
+}
+
+void celestia::RendererHandler::draw(const Drawable& drawable, RenderPipeline& pipeline) const
+{
+	drawable.draw(*this, &pipeline);
 }
 
 void celestia::RendererHandler::drawSprite(const VertexPositions* quad, const RawTexture* texture) const
@@ -32,8 +39,7 @@ void celestia::RendererHandler::drawQuad(const Vec2& position, const Vec2& size,
 	batchSpriteRenderer->drawQuad(position, size,color);
 }
 
-//TODO:
-void celestia::RendererHandler::drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty,const int id) const
+void celestia::RendererHandler::drawText(const std::vector<VertexBatch>& vertices, const int size, const Vec2& position, const Font_t& font, bool dirty,const int id) const
 {
 	if (batchTextRenderer)
 	{
@@ -41,16 +47,9 @@ void celestia::RendererHandler::drawText(const std::vector<Vertex>& vertices, co
 	}
 }
 
-void celestia::RendererHandler::drawVertices(Mesh* meshPtr, const uint32_t amountToDraw, const RawTexture* texture)
+void celestia::RendererHandler::drawVertices(Mesh* meshPtr, const uint32_t amountToDraw, const RawTexture* texture) const
 {
-	DrawInfo info;
-	info.amountToDraw = amountToDraw;
-	info.mesh = meshPtr;
-	info.material = batchSpriteRenderer->getMaterial();
-	const FullDescriptorSet set = batchSpriteRenderer->getDescriptors();
-	info.layout = set.layout;
-	info.descriptors = set.descriptors;
-	coreRenderer->submitIndexedDraw(info);
+	defaultSingleRenderer->draw(meshPtr, amountToDraw, texture);
 }
 
 void celestia::RendererHandler::beginRenderPass() const

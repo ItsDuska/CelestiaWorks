@@ -201,13 +201,12 @@ void celestia::Render::endRendering()
 
 	/*
 	//TEMP
-	auto time_in_seconds = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-	++frame_count_per_second;
-	if (time_in_seconds > prev_time_in_seconds)
+	auto timeInSeconds = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
+	++frameCountPerSecond;
+	if (timeInSeconds > prev_time_in_seconds)
 	{
-		std::cerr << frame_count_per_second << " frames per second\n";
-		frame_count_per_second = 0;
-		prev_time_in_seconds = time_in_seconds;
+		std::cerr << frameCountPerSecond << " frames per second\n";
+		frameCountPerSecond = timeInSeconds;
 	}
 	//TEMP
 	*/

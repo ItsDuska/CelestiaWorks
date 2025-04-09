@@ -10,6 +10,7 @@ namespace celestia
 	{
 		SPRITE_BATCH,
 		TEXT_BATCH,
+		BASIC,
 		CUSTOM
 	};
 

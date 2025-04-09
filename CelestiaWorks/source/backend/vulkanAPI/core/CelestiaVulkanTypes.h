@@ -15,7 +15,7 @@ namespace celestia
 	
 	struct RawMesh
 	{
-		std::vector<Vertex> vertices;
+		std::vector<VertexBatch> vertices;
 		std::vector<uint16_t> indices;
 	};
 

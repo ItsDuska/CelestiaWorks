@@ -21,7 +21,7 @@
     <ClCompile Include="source\backend\vulkanAPI\core\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.cpp">
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\vkRender\RenderBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\backend\vulkanAPI\core\SwapChain.cpp">
@@ -99,6 +99,9 @@
     <ClCompile Include="source\SourceGraphics\ShaderProgramImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\backend\window\Window.h">
@@ -110,7 +113,7 @@
     <ClInclude Include="source\backend\vulkanAPI\core\Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\RenderBackend.h">
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\vkRender\RenderBackend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\core\SwapChain.h">
@@ -209,9 +212,17 @@
     <ClInclude Include="source\SourceGraphics\ShaderProgramImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CelestiaWorks\Graphics\RenderPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\temp.vert" />
     <None Include="shaders\temp.frag" />
+    <None Include="source\shaders\basic\basic.vert" />
+    <None Include="source\shaders\basic\basic.frag" />
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@
 #include "CelestiaWorks/Graphics/Sprite.h"
 #include "CelestiaWorks/System/Keyboard.h"
 #include "CelestiaWorks/System/Mouse.h"
-
+#include "CelestiaWorks/Graphics/VertexBuffer.h"
 
 /* En en‰‰ muista mit‰ varten t‰‰ on guh? En edes uskalla poistaa t‰t‰ joten t‰‰ pysyy nyt t‰‰ll‰.
 STATIC PATH
@@ -16,12 +16,52 @@ DYNAMIC PATH:
 C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\release dll\win64
 */
 
+/*
+{{650.0f, 650.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},  // Vertex 0
+	{{750.0f, 650.0f}, {736.0f, 750.0f}, {0.0f, 1.0f, 0.0f}},  // Vertex 1
+	{{750.0f, 750.0f}, {736.0f, 867.0f}, {0.0f, 0.0f, 1.0f}},  // Vertex 2
+	{{650.0f, 750.0f}, {0.0f, 867.0f}, {1.0f, 1.0f, 0.0f}},  // Vertex 3
+
+	// Quad 2
+	{{750.0f, 650.0f}, {0.0f, 0.0f}, {0.0f, 1.0f, 1.0f}},  // Vertex 4
+	{{850.0f, 650.0f}, {736.0f, 750.0f}, {1.0f, 0.0f, 1.0f}},  // Vertex 5
+	{{850.0f, 750.0f}, {736.0f, 867.0f}, {0.5f, 0.5f, 0.5f}},  // Vertex 6
+	{{750.0f, 750.0f}, {0.0f, 867.0f}, {1.0f, 0.5f, 0.0f}},  // Vertex 7
+
+	// Quad 3
+	{{700.0f, 750.0f}, {0.0f, 0.0f}, {0.0f, 0.5f, 1.0f}},  // Vertex 8
+	{{800.0f, 750.0f}, {736.0f, 750.0f}, {0.2f, 0.8f, 0.2f}},  // Vertex 9
+	{{800.0f, 850.0f}, {736.0f, 867.0f}, {0.8f, 0.2f, 0.2f}},  // Vertex 10
+	{{700.0f, 850.0f}, {0.0f, 867.0f}, {0.2f, 0.2f, 0.8f}}
+
+*/
+
+/*
+static std::vector<celestia::Vertex> vertices = {
+	{{500.0f, 350.0f}, {0.0f, 0.0f}, {0.0f, 0.5f, 1.0f}},  // Vertex 8
+	{{800.0f, 350.0f}, {736.0f, 750.0f}, {0.2f, 0.8f, 0.2f}},  // Vertex 9
+	{{800.0f, 750.0f}, {736.0f, 867.0f}, {0.8f, 0.2f, 0.2f}},  // Vertex 10
+	{{500.0f, 750.0f}, {0.0f, 867.0f}, {0.2f, 0.2f, 0.8f}}
+};
+*/
+
+static std::vector<celestia::Vertex> vertices = {
+	{{600.0f, 350.0f}, {0.f, 0.f}, {0.0f, 0.5f, 1.0f}},  // Vertex 8
+	{{900.0f, 350.0f}, {1.f, 0.f}, {0.2f, 0.8f, 0.2f}},  // Vertex 9
+	{{900.0f, 750.0f}, {1.f, 1.f}, {0.8f, 0.2f, 0.2f}},  // Vertex 10
+	{{600.0f, 750.0f}, {0.f, 1.f}, {0.2f, 0.2f, 0.8f}}
+};
+
+
+
 
 int main()
 {
 	try
 	{
-		celestia::WindowHandle window({ 800,800 }, "Among Us Gaming");
+		celestia::Vec2i windowSize = { 900,800 };
+
+		celestia::WindowHandle window(windowSize, "CelestiaWorks testbed");
 		window.setFrameRateLimit(60);
 
 		window.createTextRenderer(10, 400);
@@ -32,22 +72,33 @@ int main()
 			std::cout << "FAILED TO LOAD FONT FROM MAIN!\n";
 		}
 		
-		celestia::Text text({ 100.f,400.f }, "jospa toimis nyt??    guhhhh..", {255,0,0,255}, &font);
-		celestia::Text text1({ 400.f,100.f }, "toinen amogus teksti", { 255,15,1,255 }, &font);
 
-		celestia::Color color = { 128,128,51,255 };
+		celestia::VertexBuffer buffer(vertices.size(), celestia::Usage::STATIC_INDEXED, celestia::DrawType::QUAD);
+		buffer.create(vertices.data(), vertices.size());
+
+		celestia::Text text({ 100.f,700.f }, "First text object   guhhhh..", {22,45,67,255}, &font);
+		celestia::Text text1({ 600.f,100.f }, "Second text object :p", { 155,9,1,100 }, &font);
+
+		celestia::Color color = { 78,128,81,255 };
 
 		window.setClearColor(color);
 
-		celestia::Texture textures[3];
+		celestia::Texture textures[4];
 		textures[0].loadTexture("../assets/test.png");
-		textures[1].loadTexture("../assets/TempAsset1.jpg");
+		textures[1].loadTexture("../assets/TempAsset1.png");
 		textures[2].loadTexture("../assets/RatSpriteSheet.png");
+		textures[3].loadTexture("../assets/cats.jpg");
 		
+
+		celestia::RenderPipeline pipeline{};
+		pipeline.Shader = nullptr;
+		pipeline.texuture = &textures[3];
+
+
 		std::vector<celestia::Sprite> sprites;
 		
-		float tempX = 800.f / 5;
-		float tempY = 800.f / 5;
+		float tempX = windowSize.x / 5;
+		float tempY = windowSize.y / 5;
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -89,6 +140,10 @@ int main()
 
 			window.beginRenderPass();
 
+
+			
+
+
 			for (celestia::Sprite& currentSprite : sprites)
 			{
 				window.draw(currentSprite);
@@ -106,6 +161,8 @@ int main()
 
 			window.draw(testSprite);
 			window.draw(text1);	
+
+			window.draw(buffer, pipeline);
 
 			window.endRenderPass();
 

@@ -2,21 +2,23 @@
 #include <cstdint>
 #include <vector>
 #include <stdexcept>
-#include "VertexBufferInfo.h"
+#include "Graphics/VertexBufferInfo.h"
 
 namespace celestia
 {
     void generateQuadIndices(std::vector<uint16_t>& indices, size_t count, uint16_t& offset)
     {
-        indices.reserve(count);
+        indices.reserve(count*6);
         for (size_t i = 0; i < count; ++i)
         {
             indices.push_back(offset);
             indices.push_back(offset + 1);
             indices.push_back(offset + 2);
+
             indices.push_back(offset + 2);
             indices.push_back(offset + 3);
             indices.push_back(offset);
+
             offset += 4;
         }
     }

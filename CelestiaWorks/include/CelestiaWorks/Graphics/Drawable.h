@@ -1,4 +1,5 @@
 #pragma once
+#include "RenderPipeline.h"
 
 namespace celestia
 {
@@ -8,6 +9,6 @@ namespace celestia
     {
     public:
         virtual ~Drawable() = default;
-        virtual void draw(const RendererHandler& renderer) const = 0;
+        virtual void draw(const RendererHandler& renderer, RenderPipeline* pipeline) const = 0;
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include "backend/vulkanAPI/renderBack/defaultRender/RenderBackend.h"
+#include "backend/vulkanAPI/renderBack/vkRender/RenderBackend.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 
 namespace celestia
@@ -31,7 +31,7 @@ namespace celestia
 		Render& render;
 		DrawInfo info;
 
-		std::vector<Vertex> quadBuffer; 
+		std::vector<VertexBatch> quadBuffer; 
 		int vertexCount;
 		int indexCount;
 		std::array<int, NUMBER_OF_TEXTURE_IN_SHADER> textureSlots;

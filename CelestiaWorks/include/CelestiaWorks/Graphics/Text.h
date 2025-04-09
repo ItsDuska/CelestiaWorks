@@ -19,7 +19,7 @@ namespace celestia
 
 		
 	private:
-		void draw(const RendererHandler& renderer) const override;
+		void draw(const RendererHandler& renderer, RenderPipeline* pipeline) const override;
 
 		void updatePosition();
 
@@ -40,7 +40,7 @@ namespace celestia
 		Vec2 size;
 		int id;
 		
-		std::vector<Vertex> vertices;
+		std::vector<VertexBatch> vertices;
 
 		//friend class WindowHandle;
 		//unsigned int characterSize; //????

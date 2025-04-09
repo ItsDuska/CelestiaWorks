@@ -28,8 +28,16 @@ celestia::WindowHandle::~WindowHandle()
 
 CELESTIA_WORKS void celestia::WindowHandle::draw(const Drawable& drawable) const
 {
-	return render->draw(drawable);
+	render->draw(drawable);
+
+	
 }
+
+CELESTIA_WORKS void celestia::WindowHandle::draw(const Drawable& drawable, RenderPipeline& pipeline) const
+{
+	render->draw(drawable, pipeline);
+}
+
 
 void celestia::WindowHandle::beginRenderPass() const
 {

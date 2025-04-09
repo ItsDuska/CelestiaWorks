@@ -29,7 +29,7 @@ namespace celestia
 
 		const VertexPositions* getQuad() const;
 	private:
-		CELESTIA_WORKS void draw(const RendererHandler& renderer) const override;
+		CELESTIA_WORKS void draw(const RendererHandler& renderer, RenderPipeline* pipeline) const override;
 
 		void updateQuadPosition();
 		void updateQuadTexCoord();
