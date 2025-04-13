@@ -5,12 +5,19 @@
 
 namespace celestia
 {
-	struct CELESTIA_WORKS Vertex
+	struct CELESTIA_WORKS VertexBatch
 	{
 		Vec2 position;
 		Vec2 texCoord;
 		Vec3 color; // TODO: add support for alpha value.
 		uint32_t texIndex;
+	};
+
+	struct CELESTIA_WORKS Vertex
+	{
+		Vec2 position;
+		Vec2 texCoord;
+		Vec3 color;
 	};
 
 	struct CELESTIA_WORKS VertexPositions

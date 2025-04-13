@@ -7,7 +7,7 @@
 #endif
 
 #include "System/CelestiaTypes.h"
-#include "backend/core/VertexBufferInfo.h"
+#include "Graphics/VertexBufferInfo.h"
 
 /*
 * 
@@ -44,11 +44,11 @@ namespace celestia
 
 		void freeBuffers() const;
 
+		Mesh* getBufferPairPtr();
+		
 	private:
 
-		AllocatedBuffer vertexBuffer;
-		AllocatedBuffer indexBuffer;
-
+		Mesh mesh;
 		
 	};
 }

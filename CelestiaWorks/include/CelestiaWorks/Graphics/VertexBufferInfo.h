@@ -8,7 +8,7 @@ namespace celestia
 	// datan säilömiseen. Sitä on vain 256 MB + se on hidasta.
 	// Sallitaan sen käyttä, mutta ei suositella.
 
-	enum class Usage : unsigned char
+	CELESTIA_WORKS enum class Usage : unsigned char
 	{
 		STATIC, // Almost never changes || USE VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 		STATIC_INDEXED, // Almost never changes. Also uses Index Buffer || USE VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
@@ -16,7 +16,7 @@ namespace celestia
 		STREAM_INDEXED // Changes often with Index Buffer. || USE VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ja VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 	};
 
-	enum class DrawType : unsigned char
+	CELESTIA_WORKS enum class DrawType : unsigned char
 	{
 		DOTS = 1, // 1 vert? miksi tälle ois tarvetta?? se kirjaimellisesti piirtää yhden pixelin :cold:
 		LINES, // 2 vert

@@ -1,5 +1,6 @@
 #include "Graphics/VertexBuffer.h"
 #include "backend/vulkanAPI/resources/VertexBufferImpl.h"
+#include "backend/vulkanAPI/renderBack/RendererHandler.h"
 #include <stdexcept>
 
 // TODO: Tee tää loppuun... guuuuuh bwaaaaaaaaaaaaaaa
@@ -23,7 +24,7 @@ celestia::VertexBuffer::VertexBuffer(Usage usage, DrawType type)
 celestia::VertexBuffer::~VertexBuffer()
 {
 	// Destroy and free the buffer mem here.
-	bufferImpl->freeBuffers();
+	//bufferImpl->freeBuffers();
 }
 
 void celestia::VertexBuffer::create(Vertex* vertices, size_t size)
@@ -48,6 +49,11 @@ void celestia::VertexBuffer::setDrawType(DrawType type)
 
 
 
+size_t celestia::VertexBuffer::getVertexCount() const
+{
+	return size;
+}
+
 /* TODO:
 * Nuke current renderer and redo it.
 * Guuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh.
@@ -55,8 +61,20 @@ void celestia::VertexBuffer::setDrawType(DrawType type)
 * Pass it with every draw command / func.
 * Example: void guh:draw(const RendererHandler& renderer, const RenderPipeline& pipeline);
 */
-void celestia::VertexBuffer::draw(const RendererHandler& renderer) const
+void celestia::VertexBuffer::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
+	if (pipeline == nullptr)
+	{
+		return;
+	}
+
+	if (pipeline->texuture == nullptr)
+	{
+		return;
+	}
+
+	Mesh* meshPtr = bufferImpl->getBufferPairPtr();
+	renderer.drawVertices(meshPtr, meshPtr->indexBufferSize / sizeof(uint16_t), pipeline->texuture->getRawTexturePtr());
 	//renderer.drawSprite(quad, texture->getRawTexturePtr());
 }
 

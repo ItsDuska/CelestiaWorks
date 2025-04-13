@@ -9,6 +9,6 @@ namespace celestia
 	public:
 		ShaderProgramImpl();
 	private:
-		DescriptorFactory descriptorFactory;
+		Descriptor descriptorFactory;
 	};
 }

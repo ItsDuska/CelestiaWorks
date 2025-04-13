@@ -15,7 +15,7 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	MAX_QUAD_COUNT(maxQuadsPerBatch),
 	MAX_VERTEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u),
 	MAX_INDEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u * 6u),
-	descriptors(std::make_unique<DescriptorFactory>()),
+	descriptors(std::make_unique<Descriptor>()),
 	set()
 {
 	textureSlotIndex = 1;
@@ -69,10 +69,10 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(); // create using default values.
 
 	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
-	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(Vertex, texIndex));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(VertexBatch, position));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(VertexBatch, texCoord));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(VertexBatch, color));
+	attributeDescriptions.pushDescription(0, VK_FORMAT_R32_UINT, offsetof(VertexBatch, texIndex));
 	
 	pipeline.createVertexInputStateCreateInfo(attributeDescriptions, bindingDescription,1);
 
@@ -95,7 +95,7 @@ void celestia::BatchSpriteRender::beginBatch()
 void celestia::BatchSpriteRender::endBatch()
 {
 	//vertex buffer updateing..
-	size_t size = vertexCount * sizeof(Vertex);
+	size_t size = vertexCount * sizeof(VertexBatch);
 	buffer::updateBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
 }
 
@@ -110,7 +110,7 @@ void celestia::BatchSpriteRender::flush()
 
 	textureSlotIndex = 1;
 	info.amountToDraw = indexCount;
-	render.drawNew(info);
+	render.submitIndexedDraw(info);
 }
 
 void celestia::BatchSpriteRender::drawQuad(const Vec2& position, const Vec2& size, const Vec3& color)
@@ -211,4 +211,15 @@ void celestia::BatchSpriteRender::drawQuad(const VertexPositions* quad, const Ra
 	vertexCount++;
 
 	indexCount += 6;
+}
+
+celestia::Material celestia::BatchSpriteRender::getMaterial() const
+{
+	return info.material;
+}
+
+celestia::FullDescriptorSet celestia::BatchSpriteRender::getDescriptors()
+{
+	FullDescriptorSet output{ info.descriptors,info.layout };
+	return output;
 }

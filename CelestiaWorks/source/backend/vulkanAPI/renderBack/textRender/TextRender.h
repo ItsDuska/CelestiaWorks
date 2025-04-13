@@ -1,5 +1,5 @@
 #pragma once
-#include "backend/vulkanAPI/renderBack/defaultRender/RenderBackend.h"
+#include "backend/vulkanAPI/renderBack/vkRender/RenderBackend.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 #include "backend/vulkanAPI/core/Descriptor.h"
 #include <unordered_map>
@@ -25,7 +25,7 @@ namespace celestia
 
 	struct TextBuffer_t // keksi parempi nimi
 	{
-		std::vector<Vertex> glyphBuffer;
+		std::vector<VertexBatch> glyphBuffer;
 		uint32_t vertexCount;
 		uint32_t indexCount;
 
@@ -45,13 +45,13 @@ namespace celestia
 		void end();
 		void flush();
 
-		void drawText(const std::vector<Vertex>& vertices, const int size, const Vec2& position, const Font_t& font,bool dirty, const int id);
+		void drawText(const std::vector<VertexBatch>& vertices, const int size, const Vec2& position, const Font_t& font,bool dirty, const int id);
 
 		bool isActive();
 	private:
 		Render& render;
 		DrawInfo info;
-		std::unique_ptr<DescriptorFactory> descriptors;
+		std::unique_ptr<Descriptor> descriptors;
 
 		const RawTexture* currentTexturePtr;
 		VkDescriptorSet set[MAX_FRAMES_IN_FLIGHT];
@@ -64,7 +64,7 @@ namespace celestia
 		int transformationIndexCounter;
 		//std::vector<int> idBuffer;
 
-		std::vector<Vertex> glyphBuffer;
+		std::vector<VertexBatch> glyphBuffer;
 		int vertexCount;
 		int indexCount;
 

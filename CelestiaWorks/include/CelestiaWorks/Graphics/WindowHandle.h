@@ -15,6 +15,7 @@ namespace celestia
 	class Window;
 
 	class Drawable;
+	class RenderPipeline;
 	//class Sprite;
 	//class Text;
 	//class VertexBuffer;
@@ -29,6 +30,7 @@ namespace celestia
 
 	public:
 		CELESTIA_WORKS void draw(const Drawable& drawable) const;
+		CELESTIA_WORKS void draw(const Drawable& drawable, RenderPipeline& pipeline) const;
 
 		//CELESTIA_WORKS void draw(const Sprite& sprite) const;
 		//CELESTIA_WORKS void draw(Text& text) const;

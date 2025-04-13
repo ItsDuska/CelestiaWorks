@@ -25,33 +25,44 @@ static VkBufferUsageFlags CelestiaUsageToVk(celestia::Usage usage)
 celestia::VertexBufferImpl::VertexBufferImpl()
 {
 	// a bit goofy xd.
-	vertexBuffer.buffer = nullptr;
-	vertexBuffer.memory = nullptr;
-	indexBuffer.buffer = nullptr;
-	indexBuffer.memory = nullptr;
+	mesh.vertexBuffer.buffer = nullptr;
+	mesh.vertexBuffer.memory = nullptr;
+	mesh.indexBuffer.buffer = nullptr;
+	mesh.indexBuffer.memory = nullptr;
 }
 
 void celestia::VertexBufferImpl::create(Vertex* vertices, size_t vertexCount, DrawType drawType, Usage usage)
 {
-	const size_t vertexBufferMemorySize = vertexCount * sizeof(Vertex);
-	this->vertexBuffer = buffer::createVertexBuffer(vertices, vertexBufferMemorySize,CelestiaUsageToVk(usage));
+	mesh.vertexBufferSize = vertexCount * sizeof(Vertex);
+	this->mesh.vertexBuffer = buffer::createVertexBuffer(vertices, mesh.vertexBufferSize, CelestiaUsageToVk(usage));
 
 	if (usage == Usage::STATIC_INDEXED || usage == Usage::STREAM_INDEXED)
 	{
 		// WE HAVE ARE USING INDEX BUFFERS.
 		std::vector<uint16_t> indicies = createIndexBufferForDrawType(vertexCount, drawType);
 
-		const size_t indexBufferMemorySize = indicies.size() * sizeof(uint16_t);
-		this->indexBuffer = buffer::createIndexBuffer(indicies.data(), indexBufferMemorySize);
+		mesh.indexBufferSize = indicies.size() * sizeof(uint16_t);
+		this->mesh.indexBuffer = buffer::createIndexBuffer(indicies.data(), mesh.indexBufferSize);
 	}
 }
 
 
 void celestia::VertexBufferImpl::freeBuffers() const
 {
-	vkDestroyBuffer(Device::context.device, vertexBuffer.buffer, nullptr);
-	if (indexBuffer.buffer != nullptr)
+	if (mesh.vertexBuffer.buffer == nullptr)
 	{
-		vkDestroyBuffer(Device::context.device, indexBuffer.buffer, nullptr);
+		std::cerr << "Error: tried to free buffer that was null.\n";
+		return;
 	}
+
+	vkDestroyBuffer(Device::context.device, mesh.vertexBuffer.buffer, nullptr);
+	if (mesh.indexBuffer.buffer != nullptr)
+	{
+		vkDestroyBuffer(Device::context.device, mesh.indexBuffer.buffer, nullptr);
+	}
+}
+
+celestia::Mesh* celestia::VertexBufferImpl::getBufferPairPtr()
+{
+	return &mesh;
 }

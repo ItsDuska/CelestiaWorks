@@ -15,7 +15,7 @@ namespace celestia
 	
 	struct RawMesh
 	{
-		std::vector<Vertex> vertices;
+		std::vector<VertexBatch> vertices;
 		std::vector<uint16_t> indices;
 	};
 
@@ -44,6 +44,13 @@ namespace celestia
 		AllocatedImage allocatedImage;
 		VkImageView imageView;
 		uint32_t textureID;
+	};
+
+
+	struct FullDescriptorSet
+	{
+		VkDescriptorSet* descriptors;
+		VkDescriptorSetLayout layout;
 	};
 
 	struct DrawInfo

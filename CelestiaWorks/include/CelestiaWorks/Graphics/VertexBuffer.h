@@ -5,9 +5,9 @@
 #define CELESTIA_WORKS __declspec(dllimport)
 #endif
 
-#include "System/CelestiaTypes.h"
+#include "../System/CelestiaTypes.h"
 #include <memory>
-#include "backend/core/VertexBufferInfo.h"
+#include "VertexBufferInfo.h"
 #include "Drawable.h"
 
 namespace celestia
@@ -25,7 +25,6 @@ namespace celestia
 	class VertexBuffer : public Drawable
 	{
 	public:
-		/// Tells the vulkan api how often the data will change.
 		// TODO: Siirrä alemmalle layerille.
 		
 
@@ -38,14 +37,14 @@ namespace celestia
 		CELESTIA_WORKS ~VertexBuffer();
 
 		// Use custom vertex format
-		template<typename Vertex_t>
-		void create(Vertex_t* vertices, size_t size)
-		{
+		//template<typename Vertex_t>
+		//void create(Vertex_t* vertices, size_t size)
+		//{
 			// template func so we need to this here Guuuuh.
-		}
+		//}
 
 		// Create VB by using default Vertex format that CelestiaWorks provides.
-		void create(Vertex* vertices, size_t size);
+		CELESTIA_WORKS void create(Vertex* vertices, size_t size);
 
 		// guh....
 		void resize(size_t size); // TODO: guh
@@ -54,15 +53,18 @@ namespace celestia
 		void update(size_t offset, Vertex* vertices, size_t size); // TODO: päivitä buffer jotenki maagisesti
 
 		// Update the VB by using a custom vertex format.
-		template<typename Vertex_t>
-		void update(size_t offset, Vertex_t* vertices, size_t size);
+		//template<typename Vertex_t>
+		//void update(size_t offset, Vertex_t* vertices, size_t size);
 
 		// set the vertex usage type duhhh..... 
-		void setUsage(Usage usage);
+		CELESTIA_WORKS void setUsage(Usage usage);
 
-		void setDrawType(DrawType type);
+		CELESTIA_WORKS void setDrawType(DrawType type);
 
-		void draw(const RendererHandler& renderer) const override;
+
+		CELESTIA_WORKS size_t getVertexCount() const;
+
+		CELESTIA_WORKS void draw(const RendererHandler& renderer, RenderPipeline* pipeline) const override;
 
 	private:
 
