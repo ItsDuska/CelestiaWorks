@@ -9,41 +9,6 @@
 #include "CelestiaWorks/System/Mouse.h"
 #include "CelestiaWorks/Graphics/VertexBuffer.h"
 
-/* En enää muista mitä varten tää on guh? En edes uskalla poistaa tätä joten tää pysyy nyt täällä.
-STATIC PATH
-C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\release static\vs2015-2022\win64
-DYNAMIC PATH:
-C:\Users\ollis\Documents\KoodiKirjastot\freetype-windows-binaries-2.13.2\release dll\win64
-*/
-
-/*
-{{650.0f, 650.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},  // Vertex 0
-	{{750.0f, 650.0f}, {736.0f, 750.0f}, {0.0f, 1.0f, 0.0f}},  // Vertex 1
-	{{750.0f, 750.0f}, {736.0f, 867.0f}, {0.0f, 0.0f, 1.0f}},  // Vertex 2
-	{{650.0f, 750.0f}, {0.0f, 867.0f}, {1.0f, 1.0f, 0.0f}},  // Vertex 3
-
-	// Quad 2
-	{{750.0f, 650.0f}, {0.0f, 0.0f}, {0.0f, 1.0f, 1.0f}},  // Vertex 4
-	{{850.0f, 650.0f}, {736.0f, 750.0f}, {1.0f, 0.0f, 1.0f}},  // Vertex 5
-	{{850.0f, 750.0f}, {736.0f, 867.0f}, {0.5f, 0.5f, 0.5f}},  // Vertex 6
-	{{750.0f, 750.0f}, {0.0f, 867.0f}, {1.0f, 0.5f, 0.0f}},  // Vertex 7
-
-	// Quad 3
-	{{700.0f, 750.0f}, {0.0f, 0.0f}, {0.0f, 0.5f, 1.0f}},  // Vertex 8
-	{{800.0f, 750.0f}, {736.0f, 750.0f}, {0.2f, 0.8f, 0.2f}},  // Vertex 9
-	{{800.0f, 850.0f}, {736.0f, 867.0f}, {0.8f, 0.2f, 0.2f}},  // Vertex 10
-	{{700.0f, 850.0f}, {0.0f, 867.0f}, {0.2f, 0.2f, 0.8f}}
-
-*/
-
-/*
-static std::vector<celestia::Vertex> vertices = {
-	{{500.0f, 350.0f}, {0.0f, 0.0f}, {0.0f, 0.5f, 1.0f}},  // Vertex 8
-	{{800.0f, 350.0f}, {736.0f, 750.0f}, {0.2f, 0.8f, 0.2f}},  // Vertex 9
-	{{800.0f, 750.0f}, {736.0f, 867.0f}, {0.8f, 0.2f, 0.2f}},  // Vertex 10
-	{{500.0f, 750.0f}, {0.0f, 867.0f}, {0.2f, 0.2f, 0.8f}}
-};
-*/
 
 static std::vector<celestia::Vertex> vertices = {
 	{{600.0f, 350.0f}, {0.f, 0.f}, {0.0f, 0.5f, 1.0f}},  // Vertex 8
@@ -51,8 +16,6 @@ static std::vector<celestia::Vertex> vertices = {
 	{{900.0f, 750.0f}, {1.f, 1.f}, {0.8f, 0.2f, 0.2f}},  // Vertex 10
 	{{600.0f, 750.0f}, {0.f, 1.f}, {0.2f, 0.2f, 0.8f}}
 };
-
-
 
 
 int main()
@@ -219,6 +182,6 @@ int main()
 /*
 
 TODO: TEXT RENDERING!
-TEE TAPA LUODA STORAGE BUFFEREITA JA SÄILÖ NE ESIM RENDERI HOMMASSA TAI JOSSAIN MUUALLA.
+TEE TAPA LUODA STORAGE BUFFEREITA JA Sï¿½ILï¿½ NE ESIM RENDERI HOMMASSA TAI JOSSAIN MUUALLA.
 
 */

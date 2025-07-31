@@ -108,7 +108,7 @@ void celestia::Render::beginRendering()
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
-		throw std::runtime_error("failed to present swap chain image");
+		throw std::runtime_error("Failed to present swap chain image!\n");
 	}
 
 	vkResetFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame));

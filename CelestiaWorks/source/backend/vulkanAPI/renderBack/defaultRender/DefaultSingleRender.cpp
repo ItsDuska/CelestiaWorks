@@ -12,19 +12,14 @@ celestia::DefaultSingleRenderer::DefaultSingleRenderer(Render& render)
 	descriptor.addBinding(0, DescriptorType::IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
 	descriptor.build(info.descriptors, info.layout);
 
-
 	ShaderObject shader;
-	//shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::BASIC, true);
-	//shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::BASIC, true);
-
-	//TODO: REMOVE TEMP PATH
-	shader.loadShader("C:/dev/CelestiaWorks/CelestiaWorks/source/shaders/basic/basicVert.spv", ShaderType::VERTEX_SHADER, RenderGroup::CUSTOM);
-	shader.loadShader("C:/dev/CelestiaWorks/CelestiaWorks/source/shaders/basic/basicFrag.spv", ShaderType::FRAGMENT_SHADER, RenderGroup::CUSTOM);
+	shader.loadShader(ShaderType::VERTEX_SHADER, RenderGroup::BASIC);
+	shader.loadShader(ShaderType::FRAGMENT_SHADER, RenderGroup::BASIC);
 	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
 	PipelineOptions options{};
 	options.blending = true;
-
+	
 	Pipeline pipeline;
 	pipeline.createColorBlendAttachment(options.blending);
 	pipeline.createInputAssembly(DrawingMode::TRIANGLE);
@@ -33,7 +28,7 @@ celestia::DefaultSingleRenderer::DefaultSingleRenderer(Render& render)
 	pipeline.createScissors({ 0,0 }, render.swapChain->extent);
 	pipeline.createViewport({ 0,0 }, { static_cast<float>(render.swapChain->extent.width),static_cast<float>(render.swapChain->extent.height) });
 
-	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(0,sizeof(Vertex)); // create using default values.
+	const VkVertexInputBindingDescription bindingDescription = utils::createBindingDescription(0, sizeof(Vertex)); // create using default values.
 
 	utils::CustomVertexInputAttributeDescriptionFactory attributeDescriptions;
 	attributeDescriptions.pushDescription(0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position));

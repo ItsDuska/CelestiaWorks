@@ -1,16 +1,13 @@
 #pragma once
 #include "Texture.h"
+#include "ShaderProgram.h"
 
 namespace celestia
 {
-
 	// Render options. Defines how things are in the pipeline, what shaders to use
-	class RenderPipeline
+	struct RenderPipeline
 	{
-	public:
-		const Texture* texuture;
-		const void* Shader;
+		const Texture* texture;
+		const ShaderProgram* shader;
 	};
-
-
 }

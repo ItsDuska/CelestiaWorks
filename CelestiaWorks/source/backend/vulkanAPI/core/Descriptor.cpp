@@ -3,185 +3,357 @@
 #include "Buffer.h"
 #include "Image.h"
 #include <array>
-
-
+#include <iostream>
 
 celestia::Descriptor::Descriptor()
 {
     bindingCount = 0;
     enableBindless = false;
     descriptorPool = VK_NULL_HANDLE;
+    descriptorLayout = VK_NULL_HANDLE;
+    isBuilt = false;
+
+    // Initialize descriptor sets to VK_NULL_HANDLE
+    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        descriptorSets[i] = VK_NULL_HANDLE;
+    }
 }
 
-void celestia::Descriptor::addBinding(uint32_t binding, DescriptorType type,
-    VkShaderStageFlagBits shader, uint32_t descriptorCount, uint32_t bufferInfoSize)
+celestia::Descriptor::~Descriptor()
+{
+    // Cleanup is handled by the deletion queue in Device class
+    // This is called when the device is destroyed
+}
+
+void celestia::Descriptor::addBinding(uint32_t binding, DescriptorType type, VkShaderStageFlags shaderStages, uint32_t descriptorCount)
 {
     VkDescriptorType vkType = toVkType(type);
-    if (type == DescriptorType::IMAGE || type == DescriptorType::BINDLESS_IMAGE)
-    {
-        imageInfo.resize(bufferInfoSize);
-    }
-    else
-    {
-        bufferInfo.resize(bufferInfoSize);
-    }
 
-    if (type == DescriptorType::BINDLESS_IMAGE) {
+    // Check if this is a bindless texture array
+    if (type == DescriptorType::BINDLESS_IMAGE)
+    {
         enableBindless = true;
         descriptorCount = NUMBER_OF_TEXTURE_IN_SHADER; // Ensure descriptor count matches allocation
     }
 
-    VkDescriptorSetLayoutBinding layoutbinding{};
-    layoutbinding.binding = bindingCount;
-    layoutbinding.descriptorCount = descriptorCount;
-    layoutbinding.descriptorType = vkType;
-    layoutbinding.stageFlags = shader;
-    descriptorBindings.push_back(layoutbinding);
-    poolSizes.push_back({ vkType,MAX_FRAMES_IN_FLIGHT * descriptorCount });
+    // Create binding info structure
+    BindingInfo bindingInfo;
+    bindingInfo.binding = binding;
+    bindingInfo.type = type;
+    bindingInfo.vkType = vkType;
+    bindingInfo.descriptorCount = descriptorCount;
+
+    // Pre-allocate info arrays based on type
+    if (type == DescriptorType::COMBINED_IMAGE_SAMPLER || type == DescriptorType::STORAGE_IMAGE || type == DescriptorType::BINDLESS_IMAGE)
+    {
+        bindingInfo.imageInfos.resize(descriptorCount);
+    }
+    else
+    {
+        bindingInfo.bufferInfos.resize(descriptorCount);
+    }
+
+    // Store binding info
+    bindings[binding] = std::move(bindingInfo);
+
+    // Create layout binding
+    VkDescriptorSetLayoutBinding layoutBinding{};
+    layoutBinding.binding = binding;
+    layoutBinding.descriptorCount = descriptorCount;
+    layoutBinding.descriptorType = vkType;
+    layoutBinding.stageFlags = shaderStages;
+    layoutBinding.pImmutableSamplers = nullptr;
+
+    layoutBindings.push_back(layoutBinding);
+
+    // Add to pool sizes
+    poolSizes.push_back({ vkType, MAX_FRAMES_IN_FLIGHT * descriptorCount });
 
     bindingCount++;
 }
 
-void celestia::Descriptor::build(VkDescriptorSet* descriptorSet, VkDescriptorSetLayout& descriptorLayout)
-{   
-    std::vector<VkDescriptorBindingFlags> flags(bindingCount, VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT);
-
-    if (bindingCount > 0)
+void celestia::Descriptor::build()
+{
+    if (isBuilt)
     {
-        flags[bindingCount - 1] |= VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT;
+        std::cerr << "Warning: Descriptor already built!" << std::endl;
+        return;
     }
 
-    VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlags{};
-    bindingFlags.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
-    bindingFlags.bindingCount = bindingCount;
-    bindingFlags.pBindingFlags = flags.data();
-
-    void* bindlessFlagPtr = nullptr;
+    // Setup binding flags for bindless support
+    std::vector<VkDescriptorBindingFlags> bindingFlags;
     if (enableBindless)
     {
-        bindlessFlagPtr = &bindingFlags;
+        bindingFlags.resize(layoutBindings.size(), VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT);
+        // Make the last binding variable count if bindless
+        if (!bindingFlags.empty()) {
+            bindingFlags.back() |= VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT;
+        }
     }
 
-    VkDescriptorSetLayoutCreateInfo setinfo = {};
-    setinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    setinfo.pNext = bindlessFlagPtr;
-    setinfo.bindingCount = bindingCount;
-    setinfo.flags = 0;
-    setinfo.pBindings = descriptorBindings.data();
+    VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsCreateInfo{};
+    bindingFlagsCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+    bindingFlagsCreateInfo.bindingCount = static_cast<uint32_t>(bindingFlags.size());
+    bindingFlagsCreateInfo.pBindingFlags = bindingFlags.data();
 
-    vkCreateDescriptorSetLayout(Device::context.device, &setinfo, nullptr, &descriptorLayout);
+    // Create descriptor set layout
+    VkDescriptorSetLayoutCreateInfo layoutCreateInfo{};
+    layoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutCreateInfo.pNext = enableBindless ? &bindingFlagsCreateInfo : nullptr;
+    layoutCreateInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
+    layoutCreateInfo.pBindings = layoutBindings.data();
 
-    VkDescriptorPoolCreateInfo poolInfo = {};
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.flags = 0;
-    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-    poolInfo.poolSizeCount = poolSizes.size();
-    poolInfo.pPoolSizes = poolSizes.data();
+    if (vkCreateDescriptorSetLayout(Device::context.device, &layoutCreateInfo, nullptr, &descriptorLayout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create descriptor set layout!");
+    }
 
-    vkCreateDescriptorPool(Device::context.device, &poolInfo, nullptr, &descriptorPool);
+    // Create descriptor pool
+    VkDescriptorPoolCreateInfo poolCreateInfo{};
+    poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolCreateInfo.flags = 0;
+    poolCreateInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
+    poolCreateInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    poolCreateInfo.pPoolSizes = poolSizes.data();
 
-    Device::context.deletionQueue.pushFunction([&]() {
+    if (vkCreateDescriptorPool(Device::context.device, &poolCreateInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create descriptor pool!");
+    }
+
+    // Add cleanup to deletion queue
+    Device::context.deletionQueue.pushFunction([=]() {
         vkDestroyDescriptorSetLayout(Device::context.device, descriptorLayout, nullptr);
         vkDestroyDescriptorPool(Device::context.device, descriptorPool, nullptr);
-    });
+        });
 
-    writes.resize(this->bindingCount);
-
-    uint32_t counts[1] = { NUMBER_OF_TEXTURE_IN_SHADER };
-    VkDescriptorSetVariableDescriptorCountAllocateInfo setCounts = {};
-    setCounts.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO;
-    setCounts.descriptorSetCount = 1;
-    setCounts.pDescriptorCounts = counts;
+    // Allocate descriptor sets
+    uint32_t variableDescriptorCount = NUMBER_OF_TEXTURE_IN_SHADER;
+    VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo{};
+    variableCountInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO;
+    variableCountInfo.descriptorSetCount = 1;
+    variableCountInfo.pDescriptorCounts = &variableDescriptorCount;
 
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-        void* countPtr = nullptr;
-        if (enableBindless)
-        {
-            countPtr = &setCounts;
-        }
+        VkDescriptorSetAllocateInfo allocateInfo{};
+        allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocateInfo.pNext = enableBindless ? &variableCountInfo : nullptr;
+        allocateInfo.descriptorPool = descriptorPool;
+        allocateInfo.descriptorSetCount = 1;
+        allocateInfo.pSetLayouts = &descriptorLayout;
 
-        VkDescriptorSetAllocateInfo allocInfo = {};
-        allocInfo.pNext = countPtr;
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = descriptorPool;
-        allocInfo.descriptorSetCount = 1;
-        allocInfo.pSetLayouts = &descriptorLayout;
-
-        if (vkAllocateDescriptorSets(Device::context.device, &allocInfo, &descriptorSet[i]) != VK_SUCCESS)
+        if (vkAllocateDescriptorSets(Device::context.device, &allocateInfo, &descriptorSets[i]) != VK_SUCCESS)
         {
-            std::cerr << "ALLOCATION ERROR!\n";
+            throw std::runtime_error("Failed to allocate descriptor sets!");
         }
     }
+
+    isBuilt = true;
 }
 
-void celestia::Descriptor::updateTexture(const VkImageView* view, const VkSampler sampler,
-    const int bindingSlot, const int count, VkDescriptorSet set)
+void celestia::Descriptor::updateTexture(uint32_t binding, const VkImageView* imageViews, VkSampler sampler, uint32_t count, uint32_t frameIndex)
 {
-    for (int i = 0; i < count; i++)
+    if (!isBuilt)
     {
-        imageInfo[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        std::cerr << "Warning: Descriptor not built yet!" << std::endl;
+        return;
+    }
 
-        if (view[i] == nullptr)
+    if (frameIndex >= MAX_FRAMES_IN_FLIGHT)
+    {
+        std::cerr << "Warning: Frame index " << frameIndex << " is out of range!" << std::endl;
+        return;
+    }
+
+    BindingInfo* bindingInfo = findBinding(binding);
+    if (!bindingInfo)
+    {
+        std::cerr << "Warning: Binding " << binding << " not found!" << std::endl;
+        return;
+    }
+
+    if (bindingInfo->type != DescriptorType::COMBINED_IMAGE_SAMPLER &&
+        bindingInfo->type != DescriptorType::STORAGE_IMAGE &&
+        bindingInfo->type != DescriptorType::BINDLESS_IMAGE)
+    {
+        std::cerr << "Warning: Binding " << binding << " is not an image binding!" << std::endl;
+        return;
+    }
+
+    // Ensure we don't exceed the allocated size
+    count = std::min(count, static_cast<uint32_t>(bindingInfo->imageInfos.size()));
+
+    // Update image infos
+    for (uint32_t i = 0; i < count; i++)
+    {
+        // Set appropriate image layout based on descriptor type
+        if (bindingInfo->type == DescriptorType::STORAGE_IMAGE)
         {
-            imageInfo[i].imageView = view[0]; // default texture
+            bindingInfo->imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            bindingInfo->imageInfos[i].sampler = VK_NULL_HANDLE; // Storage images don't use samplers
         }
         else
         {
-            imageInfo[i].imageView = view[i];
+            bindingInfo->imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            bindingInfo->imageInfos[i].sampler = sampler;
         }
-
-        imageInfo[i].sampler = sampler;
+        bindingInfo->imageInfos[i].imageView = (imageViews[i] != VK_NULL_HANDLE) ? imageViews[i] : imageViews[0]; // fallback to first image
     }
 
-    writes[TEXTURE_INDEX].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    writes[TEXTURE_INDEX].pNext = nullptr;
-    writes[TEXTURE_INDEX].dstBinding = bindingSlot;
-    writes[TEXTURE_INDEX].dstSet = set;
-    writes[TEXTURE_INDEX].descriptorCount = count;
-    writes[TEXTURE_INDEX].dstArrayElement = 0;
-    writes[TEXTURE_INDEX].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    writes[TEXTURE_INDEX].pImageInfo = imageInfo.data();
+    // Create write descriptor set
+    VkWriteDescriptorSet writeDescriptorSet{};
+    writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescriptorSet.dstSet = descriptorSets[frameIndex];
+    writeDescriptorSet.dstBinding = binding;
+    writeDescriptorSet.dstArrayElement = 0;
+    writeDescriptorSet.descriptorType = bindingInfo->vkType;
+    writeDescriptorSet.descriptorCount = count;
+    writeDescriptorSet.pImageInfo = bindingInfo->imageInfos.data();
+
+    pendingWrites.push_back(writeDescriptorSet);
 }
 
-void celestia::Descriptor::updateBuffer(VkBuffer* buffer, const VkDeviceSize size, const int bindingSlot, const int count, VkDescriptorSet set)
+void celestia::Descriptor::updateBuffer(uint32_t binding, VkBuffer* buffers, VkDeviceSize size, uint32_t count, uint32_t frameIndex)
 {
-    for (int i = 0; i < count; i++)
+    if (!isBuilt)
     {
-        bufferInfo[i].buffer = buffer[i];
-        bufferInfo[i].offset = 0;
-        bufferInfo[i].range = size;
+        std::cerr << "Warning: Descriptor not built yet!" << std::endl;
+        return;
     }
 
-    writes[UNIFORM_BUFFER_INDEX].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    writes[UNIFORM_BUFFER_INDEX].pNext = nullptr;
-    writes[UNIFORM_BUFFER_INDEX].dstBinding = bindingSlot;
-    writes[UNIFORM_BUFFER_INDEX].dstSet = set;
-    writes[UNIFORM_BUFFER_INDEX].descriptorCount = count;
-    writes[UNIFORM_BUFFER_INDEX].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    writes[UNIFORM_BUFFER_INDEX].pBufferInfo = bufferInfo.data();
+    if (frameIndex >= MAX_FRAMES_IN_FLIGHT)
+    {
+        std::cerr << "Warning: Frame index " << frameIndex << " is out of range!" << std::endl;
+        return;
+    }
+
+    BindingInfo* bindingInfo = findBinding(binding);
+    if (!bindingInfo)
+    {
+        std::cerr << "Warning: Binding " << binding << " not found!" << std::endl;
+        return;
+    }
+
+    if (bindingInfo->type != DescriptorType::UNIFORM_BUFFER && bindingInfo->type != DescriptorType::STORAGE_BUFFER)
+    {
+        std::cerr << "Warning: Binding " << binding << " is not a buffer binding!" << std::endl;
+        return;
+    }
+
+    // Ensure we don't exceed the allocated size
+    count = std::min(count, static_cast<uint32_t>(bindingInfo->bufferInfos.size()));
+
+    // Update buffer infos
+    for (uint32_t i = 0; i < count; i++)
+    {
+        bindingInfo->bufferInfos[i].buffer = buffers[i];
+        bindingInfo->bufferInfos[i].offset = 0;
+        bindingInfo->bufferInfos[i].range = size;
+    }
+
+    // Create write descriptor set
+    VkWriteDescriptorSet writeDescriptorSet{};
+    writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescriptorSet.dstSet = descriptorSets[frameIndex];
+    writeDescriptorSet.dstBinding = binding;
+    writeDescriptorSet.dstArrayElement = 0;
+    writeDescriptorSet.descriptorType = bindingInfo->vkType;
+    writeDescriptorSet.descriptorCount = count;
+    writeDescriptorSet.pBufferInfo = bindingInfo->bufferInfos.data();
+
+    pendingWrites.push_back(writeDescriptorSet);
 }
 
-void celestia::Descriptor::updateSets()
+void celestia::Descriptor::flushWrites()
 {
-    vkUpdateDescriptorSets(Device::context.device, bindingCount, writes.data(), 0, nullptr);
+    if (!pendingWrites.empty())
+    {
+        vkUpdateDescriptorSets(Device::context.device, static_cast<uint32_t>(pendingWrites.size()), pendingWrites.data(), 0, nullptr);
+        pendingWrites.clear();
+    }
+}
+
+void celestia::Descriptor::clearWrites()
+{
+    pendingWrites.clear();
 }
 
 VkDescriptorType celestia::Descriptor::toVkType(DescriptorType type)
 {
     switch (type)
     {
-    case celestia::DescriptorType::IMAGE:
+    case DescriptorType::STORAGE_IMAGE:
+        return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    case DescriptorType::BINDLESS_IMAGE:
         return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    case celestia::DescriptorType::BINDLESS_IMAGE:
-        return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        // tee t�ss� jotain erikoista
-    case celestia::DescriptorType::UNIFORM_BUFFER:
+    case DescriptorType::UNIFORM_BUFFER:
         return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    case celestia::DescriptorType::STORAGE_BUFFER:
-        return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; //TODO: en tii� pit��k� olla dynamic!
+    case DescriptorType::STORAGE_BUFFER:
+        return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    case DescriptorType::COMBINED_IMAGE_SAMPLER:
     default:
-        break;
+        return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     }
-    return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+}
+
+celestia::BindingInfo* celestia::Descriptor::findBinding(uint32_t binding)
+{
+    auto it = bindings.find(binding);
+    return (it != bindings.end()) ? &it->second : nullptr;
+}
+
+void celestia::Descriptor::addWrite(uint32_t binding, VkDescriptorSet descriptorSet)
+{
+    BindingInfo* bindingInfo = findBinding(binding);
+    if (!bindingInfo) return;
+
+    VkWriteDescriptorSet writeDescriptorSet{};
+    writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeDescriptorSet.dstSet = descriptorSet;
+    writeDescriptorSet.dstBinding = binding;
+    writeDescriptorSet.dstArrayElement = 0;
+    writeDescriptorSet.descriptorType = bindingInfo->vkType;
+    writeDescriptorSet.descriptorCount = bindingInfo->descriptorCount;
+
+    if (bindingInfo->type == DescriptorType::COMBINED_IMAGE_SAMPLER ||
+        bindingInfo->type == DescriptorType::STORAGE_IMAGE ||
+        bindingInfo->type == DescriptorType::BINDLESS_IMAGE) {
+        writeDescriptorSet.pImageInfo = bindingInfo->imageInfos.data();
+    }
+    else
+    {
+        writeDescriptorSet.pBufferInfo = bindingInfo->bufferInfos.data();
+    }
+
+    pendingWrites.push_back(writeDescriptorSet);
+}
+
+VkDescriptorSet celestia::Descriptor::getDescriptorSet(uint32_t frameIndex) const
+{
+    if (frameIndex >= MAX_FRAMES_IN_FLIGHT)
+    {
+        std::cerr << "Warning: Frame index " << frameIndex << " is out of range!" << std::endl;
+        return VK_NULL_HANDLE;
+    }
+
+    if (!isBuilt)
+    {
+        std::cerr << "Warning: Descriptor not built yet!" << std::endl;
+        return VK_NULL_HANDLE;
+    }
+
+    return descriptorSets[frameIndex];
+}
+
+VkDescriptorSetLayout celestia::Descriptor::getLayout() const
+{
+    if (!isBuilt)
+    {
+        std::cerr << "Warning: Descriptor not built yet!" << std::endl;
+        return VK_NULL_HANDLE;
+    }
+
+    return descriptorLayout;
 }
