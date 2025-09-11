@@ -55,12 +55,17 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 		offset += 4;
 	}
 
-	info.descriptors = set;
+	//info.descriptors = set;
 	info.mesh = buffer::createMesh(tempMesh);
-	descriptors->addBinding(0, DescriptorType::IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
+	descriptors->addBinding(0, DescriptorType::COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	descriptors->addBinding(1, DescriptorType::STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+	descriptors->build();
 
-	descriptors->build(info.descriptors, info.layout);
+	
+	info.layout = descriptors->getLayout();
+
+
+	//descriptors->build(info.descriptors, info.layout);
 
 	ShaderObject shader;
 	shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::TEXT_BATCH, true);
@@ -145,6 +150,7 @@ void celestia::TextRender::end()
 void celestia::TextRender::flush()
 {
 	info.amountToDraw = indexCount;
+	info.descriptor = descriptors->getDescriptorSet(render.currentFrame);
 	render.submitIndexedDraw(info);
 }
 
@@ -173,6 +179,7 @@ void celestia::TextRender::drawText(const std::vector<VertexBatch>& vertices, co
 		active = true;
 		currentTexturePtr = &font.texture;
 
+		/*
 		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			//descriptors->updateBuffer(storageBuffer[i].buffer, bufferSize, info.descriptors[i]);
@@ -183,6 +190,13 @@ void celestia::TextRender::drawText(const std::vector<VertexBatch>& vertices, co
 			descriptors->updateBuffer(&storageBuffer[i].buffer, bufferSize, 1, 1, info.descriptors[i]);
 			descriptors->updateSets();
 		}
+		*/
+
+		descriptors->updateBuffer(1, &storageBuffer[render.currentFrame].buffer, bufferSize, 2, render.currentFrame);
+		descriptors->updateTexture(0, &currentTexturePtr->imageView, render.image->textureSampler, 1, render.currentFrame);
+
+		descriptors->flushWrites();
+
 	}
 	
 	indexCount += size * 6;

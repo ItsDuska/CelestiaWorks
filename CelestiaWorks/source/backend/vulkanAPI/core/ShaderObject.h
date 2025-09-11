@@ -6,14 +6,6 @@
 
 namespace celestia
 {
-	enum class RenderGroup
-	{
-		SPRITE_BATCH,
-		TEXT_BATCH,
-		BASIC,
-		CUSTOM
-	};
-
 	class Device;
 
 	class ShaderObject

@@ -54,8 +54,8 @@ int main()
 		
 
 		celestia::RenderPipeline pipeline{};
-		pipeline.Shader = nullptr;
-		pipeline.texuture = &textures[3];
+		pipeline.shader = nullptr;
+		pipeline.texture = &textures[3];
 
 
 		std::vector<celestia::Sprite> sprites;
@@ -120,12 +120,12 @@ int main()
 				testSprite.setTextureRectPosition({ rectPositionX,0 });
 			}
 
-			window.draw(text);
+			//window.draw(text);
 
-			window.draw(testSprite);
-			window.draw(text1);	
+			//window.draw(testSprite);
+			//window.draw(text1);	
 
-			window.draw(buffer, pipeline);
+			//window.draw(buffer, pipeline);
 
 			window.endRenderPass();
 

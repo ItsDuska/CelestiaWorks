@@ -7,6 +7,7 @@
 
 namespace celestia
 {
+
 	struct AllocatedBuffer
 	{
 		VkBuffer buffer;
@@ -49,14 +50,14 @@ namespace celestia
 
 	struct FullDescriptorSet
 	{
-		VkDescriptorSet* descriptors;
+		VkDescriptorSet descriptor;
 		VkDescriptorSetLayout layout;
 	};
 
 	struct DrawInfo
 	{
 		Material material;
-		VkDescriptorSet* descriptors;
+		VkDescriptorSet descriptor;
 		VkDescriptorSetLayout layout;
 		Mesh* mesh;
 		int amountToDraw;

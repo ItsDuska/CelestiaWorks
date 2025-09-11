@@ -38,6 +38,7 @@ namespace celestia
 		VkImageView textures[NUMBER_OF_TEXTURE_IN_SHADER]{};
 		std::unique_ptr<Descriptor> descriptors;
 		VkDescriptorSet set[MAX_FRAMES_IN_FLIGHT]; // bit goofy but we go with this one for now... :p
+VkDescriptorSet descriptorSets[MAX_FRAMES_IN_FLIGHT]; // Store descriptor sets for each frame
 		int textureSlotIndex;
 
 

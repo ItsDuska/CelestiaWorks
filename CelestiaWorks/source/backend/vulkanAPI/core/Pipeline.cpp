@@ -6,11 +6,11 @@
 #include "backend/utils/Utils.h"
 
 
-// TODO: Tee t‰st‰ template functio. template <typename Vertex_t> 
-// T‰m‰n avulla voidaan m‰‰ritell‰ custom vertex type.
+// TODO: Tee t√§st√§ template functio. template <typename Vertex_t> 
+// T√§m√§n avulla voidaan m√§√§ritell√§ custom vertex type.
 // 
 //Use nullptr for descriptor if not using any uniform buffers or textures.
-// T‰st‰ pit‰‰ tulla myˆs funktio jota voidaan k‰ytt‰‰ kaikkialla muualla
+// T√§st√§ pit√§√§ tulla my√∂s funktio jota voidaan k√§ytt√§√§ kaikkialla muualla
 
 const celestia::Material celestia::Pipeline::createPipeline(ShaderObject& shader,
 	DrawingMode drawMode,
@@ -175,10 +175,17 @@ VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& sh
 	info.pNext = nullptr;
 	info.flags = 0;
 
-	if (descriptors != nullptr)
+	// Only set descriptor layouts if descriptors pointer is not null AND the layout is not VK_NULL_HANDLE
+	if (descriptors != nullptr && *descriptors != VK_NULL_HANDLE)
 	{
-		info.setLayoutCount = 1; // TODO: descriptoreille funktio joka antaa niitten m‰‰r‰n.
+		info.setLayoutCount = 1; // TODO: descriptoreille funktio joka antaa niitten m√§√§r√§n.
 		info.pSetLayouts = descriptors;
+	}
+	else
+	{
+		// Ensure proper initialization when no valid descriptors
+		info.setLayoutCount = 0;
+		info.pSetLayouts = nullptr;
 	}
 	
 	info.pushConstantRangeCount = 1;

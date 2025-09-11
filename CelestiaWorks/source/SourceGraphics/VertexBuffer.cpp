@@ -63,13 +63,13 @@ size_t celestia::VertexBuffer::getVertexCount() const
 */
 void celestia::VertexBuffer::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
-	if (pipeline == nullptr || pipeline->texuture == nullptr)
+	if (pipeline == nullptr || pipeline->texture == nullptr)
 	{
 		return;
 	}
 
 	Mesh* meshPtr = bufferImpl->getBufferPairPtr();
-	renderer.drawVertices(meshPtr, meshPtr->indexBufferSize / sizeof(uint16_t), pipeline->texuture->getRawTexturePtr());
+	renderer.drawVertices(meshPtr, meshPtr->indexBufferSize / sizeof(uint16_t), pipeline->texture->getRawTexturePtr());
 }
 
 

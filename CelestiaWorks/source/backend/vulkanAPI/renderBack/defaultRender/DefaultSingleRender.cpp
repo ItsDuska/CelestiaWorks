@@ -8,13 +8,19 @@
 celestia::DefaultSingleRenderer::DefaultSingleRenderer(Render& render)
 	: render(render), info({})
 {
-	info.descriptors = set;
-	descriptor.addBinding(0, DescriptorType::IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
-	descriptor.build(info.descriptors, info.layout);
+	//info.descriptors = set;
+	descriptor.addBinding(0, DescriptorType::COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//descriptor.build(info.descriptors, info.layout);
+	descriptor.build();
+	
+	info.layout = descriptor.getLayout();
+
 
 	ShaderObject shader;
-	shader.loadShader(ShaderType::VERTEX_SHADER, RenderGroup::BASIC);
-	shader.loadShader(ShaderType::FRAGMENT_SHADER, RenderGroup::BASIC);
+	shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::BASIC, true);
+	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::BASIC, true);
+	//shader.loadShader(ShaderType::VERTEX_SHADER, RenderGroup::BASIC);
+	//shader.loadShader(ShaderType::FRAGMENT_SHADER, RenderGroup::BASIC);
 	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
 	PipelineOptions options{};
@@ -46,12 +52,15 @@ celestia::DefaultSingleRenderer::~DefaultSingleRenderer()
 
 void celestia::DefaultSingleRenderer::draw(Mesh* mesh, const uint32_t amountToDraw, const RawTexture* texture)
 {
-	descriptor.updateTexture(
-		&texture->imageView,
-		render.image->textureSampler,
-		0, 1,
-		info.descriptors[render.currentFrame]);
-	descriptor.updateSets();
+	//descriptor.updateTexture(
+		//&texture->imageView,
+		//render.image->textureSampler,
+		//0, 1,
+		//info.descriptors[render.currentFrame]);
+	//descriptor.updateSets();
+
+	descriptor.updateTexture(0, &texture->imageView, render.image->textureSampler, 1, render.currentFrame);
+	descriptor.flushWrites();
 
 	info.mesh = mesh;
 	info.amountToDraw = amountToDraw;

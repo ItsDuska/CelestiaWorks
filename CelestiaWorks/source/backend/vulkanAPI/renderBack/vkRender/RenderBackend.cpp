@@ -60,7 +60,7 @@ void celestia::Render::submitIndexedDraw(DrawInfo& info)
 		VK_PIPELINE_BIND_POINT_GRAPHICS,
 		info.material.layout,
 		0, 1,
-		&info.descriptors[currentFrame],
+		&info.descriptor,
 		0, nullptr
 	);
 	

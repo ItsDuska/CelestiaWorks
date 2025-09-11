@@ -52,7 +52,6 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	descriptors->addBinding(0, DescriptorType::BINDLESS_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
 	//descriptors->flushWrites();
 	descriptors->build();
-	info.layout = descriptors->getLayout();
 
 	//descriptors->build(info.descriptors, info.layout); // INFO.DESCRIPTORS ON NULL?
 
@@ -118,7 +117,6 @@ void celestia::BatchSpriteRender::flush()
 	descriptors->updateTexture(0, textures, render.image->textureSampler, NUMBER_OF_TEXTURE_IN_SHADER, render.currentFrame);
 	descriptors->flushWrites();
 
-	info.descriptor = descriptors->getDescriptorSet(render.currentFrame);
 	textureSlotIndex = 1;
 	info.amountToDraw = indexCount;
 	render.submitIndexedDraw(info);
@@ -231,6 +229,6 @@ celestia::Material celestia::BatchSpriteRender::getMaterial() const
 
 celestia::FullDescriptorSet celestia::BatchSpriteRender::getDescriptors()
 {
-	FullDescriptorSet output{ info.descriptor,info.layout };
+	FullDescriptorSet output{ info.descriptors,info.layout };
 	return output;
 }
