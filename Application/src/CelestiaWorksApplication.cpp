@@ -17,6 +17,12 @@ static std::vector<celestia::Vertex> vertices = {
 	{{600.0f, 750.0f}, {0.f, 1.f}, {0.2f, 0.2f, 0.8f}}
 };
 
+/*
+*  TODO: 
+*  TEE EXPORT CLASS JOKA SISÄLTÄÄ SEN DEC HOMMA RÖPÖN 
+*/
+
+
 
 int main()
 {
