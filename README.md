@@ -27,7 +27,7 @@ Disclaimer: This project is not guaranteed to work flawlessly. The performance m
   - `System/` – vectors, matrices, input, basic shapes  
 - **example/** – sample code demonstrating library usage  
 
-### **Celestia Works be like:**
+### **CelestiaWorks be like:**
 
 ![drawCallsBeLike](https://github.com/ItsDuska/CelestiaWorks/assets/89298953/c5180c1f-af51-4528-a84f-dfa329c910a6)
 
