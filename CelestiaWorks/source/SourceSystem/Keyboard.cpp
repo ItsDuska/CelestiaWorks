@@ -1,7 +1,7 @@
 #include "System/Keyboard.h"
-#include "backend/window/Window.h"
+#include "backend/window/WindowContext.h"
 
 bool celestia::Keyboard::isKeyPressed(Key key)
 {
-	return Window::getKeyPressed(static_cast<int>(key));
+	return WindowContext::get()->getKeyPressed(static_cast<int>(key));
 }

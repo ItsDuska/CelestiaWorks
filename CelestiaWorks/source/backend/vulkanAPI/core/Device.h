@@ -6,9 +6,12 @@
 #include <queue>
 #include <functional>
 
+#ifdef _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
+#elif __linux__
+#define VK_USE_PLATFORM_WAYLAND_KHR
+#endif
 #include <vulkan/vulkan.h>
-
 
 struct VmaAllocator_T;
 
@@ -56,7 +59,7 @@ namespace celestia
 	class Device
 	{
 	public:
-		Device(Window& window);
+		Device();
 		~Device();
 		Device(const Device&) = delete;
 		Device& operator = (const Device&) = delete;
@@ -82,7 +85,7 @@ namespace celestia
 	private:
 		void createInstance();
 		void createDebugMessenger();
-		void createSurface(Window& window);
+		void createSurface();
 		void createDevice();
 		void createCommandPool();
 		void createAllocator();

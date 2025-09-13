@@ -13,7 +13,6 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	: render(render),
 	descriptors(std::make_unique<Descriptor>()),
 	bufferSize(sizeof(Vec2Aligned)* maxTextObjects),
-	set(),
 	MAX_TEXT_COUNT(maxTextObjects),
 	MAX_VERTEX_COUNT_PER_BATCH(maxCharsPerBatch*4u),
 	MAX_INDEX_COUNT_PER_BATCH(maxCharsPerBatch * 4u*6u)

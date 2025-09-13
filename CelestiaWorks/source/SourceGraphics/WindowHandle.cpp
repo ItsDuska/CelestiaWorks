@@ -1,5 +1,11 @@
 #include "Graphics/WindowHandle.h"
-#include "backend/window/Window.h"
+
+#ifdef _WIN32
+#include "backend/window/Win32/Win32Window.h"
+#elif __linux__
+#include "backend/window/Wayland/WaylandWindow.h"
+#endif
+#include "backend/window/WindowContext.h"
 #include "backend/vulkanAPI/renderBack/RendererHandler.h"
 #include "Graphics/Sprite.h"
 #include "Graphics/Text.h"
@@ -13,10 +19,18 @@ celestia::WindowHandle::WindowHandle(const Vec2i size,
 	const char* name,
 	uint32_t maxTexturesInShader,
 	uint32_t maxQuadsPerBatch)
-	: window{ std::make_unique<Window>(size, name) }
 {
+
+#ifdef _WIN32
+	auto win = std::make_unique<Win32Window>(size, name);
+#elif __linux__
+	auto win = std::make_unique<WaylandWindow>(size, name);
+#endif
+
+	WindowContext::set(win.get());
+	window = std::move(win);
+
 	render = std::make_unique<RendererHandler>(
-		*window,
 		maxTexturesInShader,
 		maxQuadsPerBatch
 	);

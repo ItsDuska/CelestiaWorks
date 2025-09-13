@@ -19,6 +19,5 @@ namespace celestia
 		Render& render;
 		DrawInfo info;
 		Descriptor descriptor;
-		VkDescriptorSet set[MAX_FRAMES_IN_FLIGHT]{};
 	};
 }

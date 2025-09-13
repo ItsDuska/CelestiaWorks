@@ -1,14 +1,14 @@
 #include "SwapChain.h"
 #include "Device.h"
-#include "backend/window/window.h"
+#include "backend/window/windowContext.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
 
 #include <algorithm>
 #include <limits>
 #include <array>
 
-celestia::SwapChain::SwapChain(Device& device, Window& window)
-	: device(device), window(window)
+celestia::SwapChain::SwapChain(Device& device)
+	: device(device)
 {
 	createSwapChain();
 	createImageViews();
@@ -32,12 +32,15 @@ celestia::SwapChain::~SwapChain()
 
 void celestia::SwapChain::recreateSwapChain()
 {
-	Vec2i winSize = window.getWindowSize();
+	PlatformWindow* win = WindowContext::get(); // tallennetaan paikalliseen muuttujaan
+	Vec2i winSize = win->getWindowSize();
+
 	while (winSize.x == 0 || winSize.y == 0)
 	{
-		winSize = window.getWindowSize();
-		window.processMessages();
+		winSize = win->getWindowSize();
+		win->processMessages();
 	}
+
 
 	vkDeviceWaitIdle(Device::context.device);
 
@@ -312,7 +315,7 @@ VkExtent2D celestia::SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR&
 	}
 	else
 	{
-		Vec2i winSize = window.getWindowSize();
+		Vec2i winSize = WindowContext::get()->getWindowSize();
 		VkExtent2D actualExtent = {
 			static_cast<uint32_t>(winSize.x),
 			static_cast<uint32_t>(winSize.y)

@@ -14,7 +14,7 @@ namespace celestia
 	class Render
 	{
 	public:
-		Render(Window &window);
+		Render();
 		Render(const Render&) = delete;
 		Render& operator = (const Render&) = delete;
 		~Render();
@@ -33,7 +33,7 @@ namespace celestia
 		friend class BatchSpriteRender;
 		friend class TextRender;
 		friend class DefaultSingleRenderer;
-		Window& window;
+
 		std::unique_ptr<Device> device;
 		std::unique_ptr<SwapChain> swapChain;
 		std::unique_ptr<Image> image;

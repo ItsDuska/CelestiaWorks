@@ -54,7 +54,6 @@ namespace celestia
 		std::unique_ptr<Descriptor> descriptors;
 
 		const RawTexture* currentTexturePtr;
-		VkDescriptorSet set[MAX_FRAMES_IN_FLIGHT];
 		Material defaultMaterial;
 
 		AllocatedBuffer storageBuffer[MAX_FRAMES_IN_FLIGHT];

@@ -3,13 +3,12 @@
 #include "backend/vulkanAPI/renderBack/textRender/TextRender.h"
 #include "backend/vulkanAPI/renderBack/defaultRender/DefaultSingleRender.h"
 
-#include "backend/window/Window.h"
 #include "backend/vulkanAPI/renderBack/RendererHandler.h"
 #include "Graphics/Drawable.h"
 
-celestia::RendererHandler::RendererHandler(Window& window, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
+celestia::RendererHandler::RendererHandler(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 {
-	coreRenderer = std::make_unique<Render>(window);
+	coreRenderer = std::make_unique<Render>();
 	batchSpriteRenderer = std::make_unique<BatchSpriteRender>(*coreRenderer, maxTexturesInShader, maxQuadsPerBatch);
 	defaultSingleRenderer = std::make_unique<DefaultSingleRenderer>(*coreRenderer);
 }

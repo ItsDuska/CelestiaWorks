@@ -1,5 +1,10 @@
 #include "Device.h"
-#include "backend/window/Window.h"
+
+#ifdef _WIN32
+#include "Windows.h"
+#endif
+
+#include "backend/window/WindowContext.h"
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 #include "backend/vulkanAPI/config/VulkanConfig.h"
@@ -19,13 +24,13 @@ const std::vector<const char*> deviceExtensions = {
 
 
 
-celestia::Device::Device(Window& window)
+celestia::Device::Device()
 {
 	createInstance();
 #ifdef ENABLE_VALIDATION_LAYER
 	createDebugMessenger();
 #endif // ENABLE_VALIDATION_LAYER
-	createSurface(window);
+	createSurface();
 	createDevice();
 	createCommandPool();
 	createAllocator();
@@ -135,19 +140,35 @@ void celestia::Device::createDebugMessenger()
 	}
 }
 
-void celestia::Device::createSurface(Window& window)
+void celestia::Device::createSurface()
 {
+	PlatformWindow* window = WindowContext::get();
+
+#ifdef _WIN32
+	// Windows
 	VkWin32SurfaceCreateInfoKHR info{};
 	info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 	info.pNext = nullptr;
 	info.flags = 0;
-	info.hinstance = window.getInstance();
-	info.hwnd = window.getHandle();
+	info.hinstance = static_cast<HINSTANCE>(window->getNativeInstance());
+	info.hwnd = static_cast<HWND>(window->getNativeHandle());
 
 	if (vkCreateWin32SurfaceKHR(instance, &info, nullptr, &context.surface) != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create Window Surface for Win32!\n");
+		throw std::runtime_error("Failed to create VkSurface for Win32!\n");
 	}
+#elif __linux__
+	// Wayland
+	VkWaylandSurfaceCreateInfoKHR info{};
+	info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+	info.display = static_cast<wl_display*>(WindowContext::get()->getNativeInstance());
+	info.surface = static_cast<wl_surface*>(WindowContext::get()->getNativeHandle());
+
+	if (vkCreateWaylandSurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create VkSurface for Wayland!\n");
+	}
+#endif
 }
 
 void celestia::Device::createDevice()
@@ -259,10 +280,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL celestia::Device::debugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* pUserData)
 {
+#ifdef _WIN32
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, 6);
+	SetConsoleTextAttribute(hConsole, 6); // keltainen
 	std::cout << "VALIDATION LAYER: ";
 	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+#else
+	// Linux/Wayland: ANSI escape code for yellow
+	std::cout << "\033[1;33mVALIDATION LAYER: \033[0m";
+#endif
+
 	std::cerr << pCallbackData->pMessage << std::endl;
 	return VK_FALSE;
 }

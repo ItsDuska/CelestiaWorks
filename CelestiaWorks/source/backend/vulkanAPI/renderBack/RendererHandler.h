@@ -3,14 +3,10 @@
 #include <vector>
 #include <memory>
 
-//#include "backend/vulkanAPI/renderBack/batchRender/BatchRender.h"
-//#include "backend/vulkanAPI/renderBack/textRender/TextRender.h"
-
 
 namespace celestia
 {
 	class TextRender;
-	class Window;
 	class Text;
 	class Drawable;
 	class Render;
@@ -26,7 +22,7 @@ namespace celestia
 	class RendererHandler
 	{
 	public:
-		RendererHandler(Window& window, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
+		RendererHandler(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
 		~RendererHandler();
 
 		void draw(const Drawable& drawable) const;

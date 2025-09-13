@@ -12,7 +12,7 @@ namespace celestia
 {
 	class Render;
 	class RendererHandler;
-	class Window;
+	class PlatformWindow;
 
 	class Drawable;
 	class RenderPipeline;
@@ -45,7 +45,7 @@ namespace celestia
 		CELESTIA_WORKS Vec2i screenSpaceToWindowSpace(Vec2i& position);
 
 	private:
-		std::unique_ptr<Window> window;
+		std::unique_ptr<PlatformWindow> window;
 		std::unique_ptr<RendererHandler> render;
 	};
 }

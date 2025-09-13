@@ -1,5 +1,5 @@
 #include "RenderBackend.h"
-#include "backend/window/Window.h"
+#include "backend/window/WindowContext.h"
 #include "backend/vulkanAPI/core/Device.h"
 #include "backend/vulkanAPI/core/SwapChain.h"
 #include "backend/vulkanAPI/core/Pipeline.h"
@@ -12,11 +12,10 @@
 
 #include <thread>
 
-celestia::Render::Render(Window& window)
-	: window(window)
+celestia::Render::Render()
 {
-	device = std::make_unique<Device>(window);
-	swapChain = std::make_unique<SwapChain>(*device, window);
+	device = std::make_unique<Device>();
+	swapChain = std::make_unique<SwapChain>(*device);
 	image = std::make_unique<Image>();
 	rendering = false;
 	clearColor = { 0.f,0.f,0.f,1.f };
@@ -24,11 +23,13 @@ celestia::Render::Render(Window& window)
 	createCommandBuffers();
 	imageIndex = 0;
 
+	PlatformWindow* window = WindowContext::get();
+
 	constants.projection = math::ortho(
 		0.f,
-		static_cast<float>(window.getWindowSize().x),
+		static_cast<float>(window->getWindowSize().x),
 		0.f,
-		static_cast<float>(window.getWindowSize().y),
+		static_cast<float>(window->getWindowSize().y),
 		-1.f,
 		1.f
 	);
@@ -188,11 +189,12 @@ void celestia::Render::endRendering()
 
 	VkResult result = vkQueuePresentKHR(Device::context.presentQueue, &presentInfo);
 
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.isFramebufferResized()) {
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || WindowContext::get()->isFramebufferResized()) {
 		resize();
 	}
-	else if (result != VK_SUCCESS) {
-		throw std::runtime_error("failed to present swap chain image!");
+	else if (result != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to present swap chain image!\n");
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -234,14 +236,16 @@ void celestia::Render::setFramerateLimit(const int frameRate)
 
 void celestia::Render::resize()
 {
-	window.setFramebufferResized(false);
+	PlatformWindow* window = WindowContext::get();
+
+	window->setFramebufferResized(false);
 	swapChain->recreateSwapChain();
 
 	constants.projection = math::ortho(
 		0.f,
-		static_cast<float>(window.getWindowSize().x),
+		static_cast<float>(window->getWindowSize().x),
 		0.f,
-		static_cast<float>(window.getWindowSize().y),
+		static_cast<float>(window->getWindowSize().y),
 		-1.f,
 		1.f
 	);

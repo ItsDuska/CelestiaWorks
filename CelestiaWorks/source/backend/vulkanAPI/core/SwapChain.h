@@ -11,7 +11,7 @@ namespace celestia
 	class SwapChain
 	{
 	public:
-		SwapChain(Device& device,Window& window);
+		SwapChain(Device& device);
 		~SwapChain();
 		SwapChain(const SwapChain&) = delete;
 		SwapChain& operator = (const SwapChain&) = delete;
@@ -45,7 +45,6 @@ namespace celestia
 		std::vector<VkImage> images;
 		std::vector<VkFramebuffer> framebuffers;
 		VkRenderPass renderPass;
-		Window& window;
 
 		std::vector<VkSemaphore> imageAvailableSemaphores;
 		std::vector<VkSemaphore> renderFinishedSemaphores;

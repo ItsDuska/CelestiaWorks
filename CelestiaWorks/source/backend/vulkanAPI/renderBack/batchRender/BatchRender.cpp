@@ -15,8 +15,7 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	MAX_QUAD_COUNT(maxQuadsPerBatch),
 	MAX_VERTEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u),
 	MAX_INDEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u * 6u),
-	descriptors(std::make_unique<Descriptor>()),
-	set()
+	descriptors(std::make_unique<Descriptor>())
 {
 	textureSlotIndex = 1;
 	indexCount = 0;

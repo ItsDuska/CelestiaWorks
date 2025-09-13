@@ -8,9 +8,7 @@
 celestia::DefaultSingleRenderer::DefaultSingleRenderer(Render& render)
 	: render(render), info({})
 {
-	//info.descriptors = set;
 	descriptor.addBinding(0, DescriptorType::COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//descriptor.build(info.descriptors, info.layout);
 	descriptor.build();
 	
 	info.layout = descriptor.getLayout();
