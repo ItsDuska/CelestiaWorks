@@ -1,5 +1,5 @@
-#include "System/Keyboard.h"
-#include "backend/window/WindowContext.h"
+#include "System/Keyboard.hpp"
+#include "Backend/Window/WindowContext.hpp"
 
 bool celestia::Keyboard::isKeyPressed(Key key)
 {

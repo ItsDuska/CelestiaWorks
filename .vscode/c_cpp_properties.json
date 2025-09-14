@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/CelestiaWorks/include",
+                "${workspaceFolder}/CelestiaWorks/include/CelestiaWorks",
+                "${workspaceFolder}/CelestiaWorks/source",
+                "${workspaceFolder}/Application/src",
+                "${workspaceFolder}/dependencies",
+                "/usr/include",
+                "/usr/include/vulkan",
+                "/usr/include/freetype2",
+                "/usr/include/libpng16",
+                "/usr/include/harfbuzz",
+                "/usr/include/glib-2.0",
+                "/usr/lib/glib-2.0/include",
+                "/usr/include/sysprof-6"
+            ],
+            "defines": [
+                "CELESTIA_WORKS_EXPORTS",
+                "UNICODE",
+                "_UNICODE",
+                "CELESTIA_DEBUG"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}

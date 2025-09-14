@@ -1,12 +1,7 @@
 #pragma once
-#ifdef CELESTIA_WORKS_EXPORTS
-#define CELESTIA_WORKS __declspec(dllexport)
-#else
-#define CELESTIA_WORKS __declspec(dllimport)
-#endif
 
 #include <memory>
-#include "../System/CelestiaTypes.h"
+#include "../System/CelestiaTypes.hpp"
 
 namespace celestia
 {
@@ -16,25 +11,23 @@ namespace celestia
 
 	class Drawable;
 	class RenderPipeline;
-	//class Sprite;
-	//class Text;
-	//class VertexBuffer;
 
 	class WindowHandle
 	{
 	public:
-		CELESTIA_WORKS WindowHandle(const Vec2i size, const char* name, uint32_t maxTexturesInShader = 5u, uint32_t maxQuadsPerBatch = 100);
+		CELESTIA_WORKS WindowHandle(
+		  const Vec2i size, const char* name, uint32_t maxTexturesInShader = 5u, uint32_t maxQuadsPerBatch = 100);
 		CELESTIA_WORKS WindowHandle(const WindowHandle&) = delete;
-		CELESTIA_WORKS WindowHandle& operator = (const WindowHandle&) = delete;
+		CELESTIA_WORKS WindowHandle& operator=(const WindowHandle&) = delete;
 		CELESTIA_WORKS ~WindowHandle();
 
 	public:
 		CELESTIA_WORKS void draw(const Drawable& drawable) const;
 		CELESTIA_WORKS void draw(const Drawable& drawable, RenderPipeline& pipeline) const;
 
-		//CELESTIA_WORKS void draw(const Sprite& sprite) const;
-		//CELESTIA_WORKS void draw(Text& text) const;
-		//CELESTIA_WORKS void draw(VertexBuffer& buffer) const;
+		// CELESTIA_WORKS void draw(const Sprite& sprite) const;
+		// CELESTIA_WORKS void draw(Text& text) const;
+		// CELESTIA_WORKS void draw(VertexBuffer& buffer) const;
 		CELESTIA_WORKS void beginRenderPass() const;
 		CELESTIA_WORKS void endRenderPass() const;
 		CELESTIA_WORKS bool isOpen() const;
@@ -48,4 +41,4 @@ namespace celestia
 		std::unique_ptr<PlatformWindow> window;
 		std::unique_ptr<RendererHandler> render;
 	};
-}
+} // namespace celestia
