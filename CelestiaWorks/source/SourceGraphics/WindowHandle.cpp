@@ -1,26 +1,22 @@
-#include "Graphics/WindowHandle.h"
+#include "Graphics/WindowHandle.hpp"
 
 #ifdef _WIN32
-#include "backend/window/Win32/Win32Window.h"
+#include "Backend/Window/Win32/Win32Window.hpp"
 #elif __linux__
-#include "backend/window/Wayland/WaylandWindow.h"
+#include "Backend/Window/Wayland/WaylandWindow.hpp"
 #endif
-#include "backend/window/WindowContext.h"
-#include "backend/vulkanAPI/renderBack/RendererHandler.h"
-#include "Graphics/Sprite.h"
-#include "Graphics/Text.h"
-#include "Graphics/Font.h"
-#include "backend/vulkanAPI/resources/FontReader.h"
-#include "Graphics/VertexBuffer.h"
+#include "Backend/Window/WindowContext.hpp"
+#include "Backend/VulkanAPI/RenderBack/RendererHandler.hpp"
+#include "Backend/VulkanAPI/Resources/FontReader.hpp"
+#include "Graphics/Sprite.hpp"
+#include "Graphics/Text.hpp"
+#include "Graphics/Font.hpp"
+#include "Graphics/VertexBuffer.hpp"
 #include <iostream>
 
-
-celestia::WindowHandle::WindowHandle(const Vec2i size,
-	const char* name,
-	uint32_t maxTexturesInShader,
-	uint32_t maxQuadsPerBatch)
+celestia::WindowHandle::WindowHandle(
+  const Vec2i size, const char* name, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 {
-
 #ifdef _WIN32
 	auto win = std::make_unique<Win32Window>(size, name);
 #elif __linux__
@@ -30,10 +26,7 @@ celestia::WindowHandle::WindowHandle(const Vec2i size,
 	WindowContext::set(win.get());
 	window = std::move(win);
 
-	render = std::make_unique<RendererHandler>(
-		maxTexturesInShader,
-		maxQuadsPerBatch
-	);
+	render = std::make_unique<RendererHandler>(maxTexturesInShader, maxQuadsPerBatch);
 }
 
 celestia::WindowHandle::~WindowHandle()
@@ -43,15 +36,12 @@ celestia::WindowHandle::~WindowHandle()
 CELESTIA_WORKS void celestia::WindowHandle::draw(const Drawable& drawable) const
 {
 	render->draw(drawable);
-
-	
 }
 
 CELESTIA_WORKS void celestia::WindowHandle::draw(const Drawable& drawable, RenderPipeline& pipeline) const
 {
 	render->draw(drawable, pipeline);
 }
-
 
 void celestia::WindowHandle::beginRenderPass() const
 {

@@ -1,27 +1,24 @@
-#include "Pipeline.h"
-#include "Device.h"
-#include "SwapChain.h"
-#include "ShaderObject.h"
-#include "Descriptor.h"
-#include "backend/utils/Utils.h"
+#include "Pipeline.hpp"
+#include "Device.hpp"
+#include "SwapChain.hpp"
+#include "ShaderObject.hpp"
+#include "Descriptor.hpp"
+#include "Backend/Utils/Utils.hpp"
 
-
-// TODO: Tee tästä template functio. template <typename Vertex_t> 
+// TODO: Tee tästä template functio. template <typename Vertex_t>
 // Tämän avulla voidaan määritellä custom vertex type.
-// 
-//Use nullptr for descriptor if not using any uniform buffers or textures.
+//
+// Use nullptr for descriptor if not using any uniform buffers or textures.
 // Tästä pitää tulla myös funktio jota voidaan käyttää kaikkialla muualla
 
-const celestia::Material celestia::Pipeline::createPipeline(ShaderObject& shader,
-	DrawingMode drawMode,
-	VkDescriptorSetLayout* descriptors,
-	VkRenderPass renderpass)
+const celestia::Material celestia::Pipeline::createPipeline(
+  ShaderObject& shader, DrawingMode drawMode, VkDescriptorSetLayout* descriptors, VkRenderPass renderpass)
 {
 	Material material{};
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = createLayoutInfo(shader, descriptors);
 
-	if (vkCreatePipelineLayout(Device::context.device, &pipelineLayoutInfo, nullptr, &material.layout) != VK_SUCCESS)
+	if(vkCreatePipelineLayout(Device::context.device, &pipelineLayoutInfo, nullptr, &material.layout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout!");
 	}
@@ -31,12 +28,12 @@ const celestia::Material celestia::Pipeline::createPipeline(ShaderObject& shader
 
 	material.pipeline = builder.buildPipeline(Device::context.device, renderpass);
 
-
-	Device::context.deletionQueue.pushFunction([=]() {
-		vkDestroyPipeline(Device::context.device, material.pipeline, nullptr);
-		vkDestroyPipelineLayout(Device::context.device, material.layout, nullptr);
-		}
-	);
+	Device::context.deletionQueue.pushFunction(
+	  [=]()
+	  {
+		  vkDestroyPipeline(Device::context.device, material.pipeline, nullptr);
+		  vkDestroyPipelineLayout(Device::context.device, material.layout, nullptr);
+	  });
 	return material;
 }
 
@@ -46,19 +43,12 @@ void celestia::Pipeline::createInputAssembly(DrawingMode mode)
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	info.primitiveRestartEnable = VK_FALSE;
 
-	switch (mode)
+	switch(mode)
 	{
-	case celestia::DrawingMode::TRIANGLE:
-		info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		break;
-	case celestia::DrawingMode::POINTS:
-		info.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		break;
-	case celestia::DrawingMode::LINES:
-		info.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-		break;
-	default:
-		break;
+	case celestia::DrawingMode::TRIANGLE: info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; break;
+	case celestia::DrawingMode::POINTS: info.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
+	case celestia::DrawingMode::LINES: info.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; break;
+	default: break;
 	}
 
 	builder.inputAssembly = info;
@@ -81,7 +71,7 @@ void celestia::Pipeline::createViewport(Vec2 position, Vec2 dimensions)
 void celestia::Pipeline::createScissors(Vec2i offset, VkExtent2D extent)
 {
 	VkRect2D scissor{};
-	scissor.offset = { offset.x, offset.y };
+	scissor.offset = {offset.x, offset.y};
 	scissor.extent = extent;
 
 	builder.scissor = scissor;
@@ -101,19 +91,12 @@ void celestia::Pipeline::createRasterizer(DrawingMode mode)
 	info.depthBiasClamp = 0.0f;
 	info.depthBiasSlopeFactor = 0.0f;
 
-	switch (mode)
+	switch(mode)
 	{
-	case celestia::DrawingMode::TRIANGLE:
-		info.polygonMode = VK_POLYGON_MODE_FILL;
-		break;
-	case celestia::DrawingMode::POINTS:
-		info.polygonMode = VK_POLYGON_MODE_POINT;
-		break;
-	case celestia::DrawingMode::LINES:
-		info.polygonMode = VK_POLYGON_MODE_LINE;
-		break;
-	default:
-		break;
+	case celestia::DrawingMode::TRIANGLE: info.polygonMode = VK_POLYGON_MODE_FILL; break;
+	case celestia::DrawingMode::POINTS: info.polygonMode = VK_POLYGON_MODE_POINT; break;
+	case celestia::DrawingMode::LINES: info.polygonMode = VK_POLYGON_MODE_LINE; break;
+	default: break;
 	}
 
 	builder.rasterizer = info;
@@ -136,14 +119,12 @@ void celestia::Pipeline::createMultisampling()
 void celestia::Pipeline::createColorBlendAttachment(bool blending)
 {
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-		VK_COLOR_COMPONENT_G_BIT |
-		VK_COLOR_COMPONENT_B_BIT |
-		VK_COLOR_COMPONENT_A_BIT;
+	colorBlendAttachment.colorWriteMask =
+	  VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = blending;
 
-	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA; //VK_BLEND_FACTOR_ONE;
-	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA; //VK_BLEND_FACTOR_DST_ALPHA;
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;			// VK_BLEND_FACTOR_ONE;
+	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA; // VK_BLEND_FACTOR_DST_ALPHA;
 	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
 	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
@@ -153,9 +134,8 @@ void celestia::Pipeline::createColorBlendAttachment(bool blending)
 }
 
 void celestia::Pipeline::createVertexInputStateCreateInfo(
-	utils::CustomVertexInputAttributeDescriptionFactory& attributeDescriptions,
-	const VkVertexInputBindingDescription& bindingDescription,
-	uint32_t count)
+  utils::CustomVertexInputAttributeDescriptionFactory& attributeDescriptions,
+  const VkVertexInputBindingDescription& bindingDescription, uint32_t count)
 {
 	VkPipelineVertexInputStateCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -168,7 +148,8 @@ void celestia::Pipeline::createVertexInputStateCreateInfo(
 	builder.vertexInputInfo = info;
 }
 
-VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors)
+VkPipelineLayoutCreateInfo
+celestia::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors)
 {
 	VkPipelineLayoutCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -176,7 +157,7 @@ VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& sh
 	info.flags = 0;
 
 	// Only set descriptor layouts if descriptors pointer is not null AND the layout is not VK_NULL_HANDLE
-	if (descriptors != nullptr && *descriptors != VK_NULL_HANDLE)
+	if(descriptors != nullptr && *descriptors != VK_NULL_HANDLE)
 	{
 		info.setLayoutCount = 1; // TODO: descriptoreille funktio joka antaa niitten määrän.
 		info.pSetLayouts = descriptors;
@@ -187,12 +168,11 @@ VkPipelineLayoutCreateInfo celestia::Pipeline::createLayoutInfo(ShaderObject& sh
 		info.setLayoutCount = 0;
 		info.pSetLayouts = nullptr;
 	}
-	
+
 	info.pushConstantRangeCount = 1;
 	info.pPushConstantRanges = &shader.getPushConstant();
 	return info;
 }
-
 
 VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass pass)
 {
@@ -231,9 +211,9 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	pipelineInfo.renderPass = pass;
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-	
+
 	VkPipeline newPipeline;
-	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)
+	if(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS)
 	{
 		std::cerr << "failed to create pipeline\n";
 		return VK_NULL_HANDLE;
@@ -242,5 +222,4 @@ VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass 
 	{
 		return newPipeline;
 	}
-
 }

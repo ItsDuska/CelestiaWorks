@@ -7,7 +7,7 @@
 #include "Backend/Window/WindowContext.hpp"
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
-#include "backend/vulkanAPI/config/VulkanConfig.h"
+#include "Backend/VulkanAPI/Config/VulkanConfig.hpp"
 
 // #define ENABLE_VALIDATION_LAYER // FORCE VALIDATION LAYER FOR RELEASE MODE DEBUGGING
 
@@ -155,8 +155,8 @@ void celestia::Device::createSurface()
 	// Wayland
 	VkWaylandSurfaceCreateInfoKHR info{};
 	info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-	info.display = static_cast<wl_display*>(WindowContext::get()->getNativeInstance());
-	info.surface = static_cast<wl_surface*>(WindowContext::get()->getNativeHandle());
+	info.display = static_cast<wl_display*>(window->getNativeInstance());
+	info.surface = static_cast<wl_surface*>(window->getNativeHandle());
 
 	if(vkCreateWaylandSurfaceKHR(instance, &info, nullptr, &context.surface) != VK_SUCCESS)
 	{
@@ -339,9 +339,14 @@ void celestia::Device::supportedExtensions()
 std::vector<const char*> celestia::Device::getExtensions() // VK_EXT_DESCRIPTOR_INDEXING_EXTENSION
 {
 	std::vector<const char*> extensions = {
-	  VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface", VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
+	  VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
 
-	};
+	// Add platform-specific surface extensions
+#ifdef _WIN32
+	extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#elif __linux__
+	extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+#endif
 
 #ifdef ENABLE_VALIDATION_LAYER
 	extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

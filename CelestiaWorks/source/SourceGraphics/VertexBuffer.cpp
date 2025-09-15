@@ -1,9 +1,9 @@
-#include "Graphics/VertexBuffer.h"
-#include "backend/vulkanAPI/resources/VertexBufferImpl.h"
-#include "backend/vulkanAPI/renderBack/RendererHandler.h"
+#include "Graphics/VertexBuffer.hpp"
+#include "Backend/VulkanAPI/Resources/VertexBufferImpl.hpp"
+#include "Backend/VulkanAPI/RenderBack/RendererHandler.hpp"
 #include <stdexcept>
 
-// TODO: Tee tää loppuun... guuuuuh bwaaaaaaaaaaaaaaa
+// TODO: Tee tï¿½ï¿½ loppuun... guuuuuh bwaaaaaaaaaaaaaaa
 celestia::VertexBuffer::VertexBuffer(size_t size, Usage usage, DrawType type)
 {
 	this->size = size;
@@ -24,12 +24,12 @@ celestia::VertexBuffer::VertexBuffer(Usage usage, DrawType type)
 celestia::VertexBuffer::~VertexBuffer()
 {
 	// Destroy and free the buffer mem here.
-	//bufferImpl->freeBuffers();
+	// bufferImpl->freeBuffers();
 }
 
 void celestia::VertexBuffer::create(Vertex* vertices, size_t size)
 {
-	if (vertices == nullptr || size == 0)
+	if(vertices == nullptr || size == 0)
 	{
 		throw std::invalid_argument("Vertex buffers data is null or the size of the data is zero");
 	}
@@ -47,23 +47,21 @@ void celestia::VertexBuffer::setDrawType(DrawType type)
 	this->type = type;
 }
 
-
-
 size_t celestia::VertexBuffer::getVertexCount() const
 {
 	return size;
 }
 
 /* TODO:
-* Nuke current renderer and redo it.
-* Guuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh.
-* Add a RenderPipeline class. It holds shaders, textures and such.
-* Pass it with every draw command / func.
-* Example: void guh:draw(const RendererHandler& renderer, const RenderPipeline& pipeline);
-*/
+ * Nuke current renderer and redo it.
+ * Guuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh.
+ * Add a RenderPipeline class. It holds shaders, textures and such.
+ * Pass it with every draw command / func.
+ * Example: void guh:draw(const RendererHandler& renderer, const RenderPipeline& pipeline);
+ */
 void celestia::VertexBuffer::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
-	if (pipeline == nullptr || pipeline->texture == nullptr)
+	if(pipeline == nullptr || pipeline->texture == nullptr)
 	{
 		return;
 	}
@@ -71,6 +69,3 @@ void celestia::VertexBuffer::draw(const RendererHandler& renderer, RenderPipelin
 	Mesh* meshPtr = bufferImpl->getBufferPairPtr();
 	renderer.drawVertices(meshPtr, meshPtr->indexBufferSize / sizeof(uint16_t), pipeline->texture->getRawTexturePtr());
 }
-
-
-

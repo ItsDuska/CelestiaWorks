@@ -1,9 +1,7 @@
-#include "Graphics/Texture.h"
-#include "backend/vulkanAPI/core/Image.h"
+#include "Graphics/Texture.hpp"
+#include "Backend/VulkanAPI/Core/Image.hpp"
 
-
-celestia::Texture::Texture()
-	: size(0, 0), pixels(nullptr)
+celestia::Texture::Texture() : size(0, 0), pixels(nullptr)
 {
 }
 

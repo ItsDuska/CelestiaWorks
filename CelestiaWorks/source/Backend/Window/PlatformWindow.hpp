@@ -22,6 +22,13 @@ namespace celestia
 
 		virtual void* getNativeHandle() = 0;
 		virtual void* getNativeInstance() = 0;
+		bool createdSuccessfully() const
+		{
+			return initialised;
+		}
+
+	protected:
+		bool initialised = false;
 	};
 
 } // namespace celestia

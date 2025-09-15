@@ -1,13 +1,12 @@
-#include "Image.h"
-
-#include <iostream>
-
-#include "Device.h"
-#include "Buffer.h"
-#include "CommandBuffer.h"
+#include "Image.hpp"
+#include "Device.hpp"
+#include "Buffer.hpp"
+#include "CommandBuffer.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#include <iostream>
 
 celestia::Image::Image()
 {
@@ -23,8 +22,8 @@ celestia::Image::~Image()
 	vkDestroySampler(Device::context.device, textureSampler, nullptr);
 }
 
-void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling,
-	VkImageUsageFlags usage, VkMemoryPropertyFlags properties, AllocatedImage& image)
+void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+  VkMemoryPropertyFlags properties, AllocatedImage& image)
 {
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -42,7 +41,7 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 	imageInfo.flags = 0;
 
-	if (vkCreateImage(Device::context.device, &imageInfo, nullptr, &image.image) != VK_SUCCESS)
+	if(vkCreateImage(Device::context.device, &imageInfo, nullptr, &image.image) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create image!\n");
 	}
@@ -55,7 +54,7 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = buffer::findMemoryType(memRequirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &image.memory) != VK_SUCCESS)
+	if(vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &image.memory) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate image memory!\n");
 	}
@@ -71,9 +70,9 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath, V
 	int texChannels;
 
 	stbi_uc* pixels;
-	stbi_uc defaultPixels[4] = { 255u,255u,255u,255u };
+	stbi_uc defaultPixels[4] = {255u, 255u, 255u, 255u};
 
-	if (isDefaultTexture)
+	if(isDefaultTexture)
 	{
 		pixels = defaultPixels;
 		texSize.x = 1;
@@ -86,7 +85,7 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath, V
 
 	VkDeviceSize imageSize = static_cast<VkDeviceSize>(texSize.x) * texSize.y * 4;
 
-	if (!pixels)
+	if(!pixels)
 	{
 		throw std::runtime_error("Failed to load texture image!\n");
 	}
@@ -99,7 +98,7 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath, V
 
 	createTextureFromBuffer(pixels, imageSize, texSize, texture, VK_FORMAT_R8G8B8A8_SRGB);
 
-	if (!isDefaultTexture)
+	if(!isDefaultTexture)
 	{
 		stbi_image_free(pixels);
 	}
@@ -118,46 +117,34 @@ void celestia::Image::deleteTextureImage(RawTexture& texture)
 	vkFreeMemory(Device::context.device, texture.allocatedImage.memory, nullptr);
 }
 
-void celestia::Image::createTextureFromBuffer(const void* bufferPtr, const VkDeviceSize& bufferSize,
-	const Vec2i& size, RawTexture& texture, VkFormat format)
+void celestia::Image::createTextureFromBuffer(
+  const void* bufferPtr, const VkDeviceSize& bufferSize, const Vec2i& size, RawTexture& texture, VkFormat format)
 {
 	AllocatedBuffer stagingBuffer = buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	void* data;
 	vkMapMemory(Device::context.device, stagingBuffer.memory, 0, bufferSize, 0, &data);
 	memcpy(data, bufferPtr, static_cast<size_t>(bufferSize));
 	vkUnmapMemory(Device::context.device, stagingBuffer.memory);
 
-	createImage(size,
-		format,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		texture.allocatedImage
-	);
+	createImage(size, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+	  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture.allocatedImage);
 
-	transitionImageLayout(texture.allocatedImage.image,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-	);
+	transitionImageLayout(
+	  texture.allocatedImage.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-	copyBufferToImage(stagingBuffer.buffer,
-		texture.allocatedImage.image,
-		{ static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y) }
-	);
+	copyBufferToImage(stagingBuffer.buffer, texture.allocatedImage.image,
+	  {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)});
 
-	transitionImageLayout(texture.allocatedImage.image,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-	);
+	transitionImageLayout(
+	  texture.allocatedImage.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	vkDestroyBuffer(Device::context.device, stagingBuffer.buffer, nullptr);
 	vkFreeMemory(Device::context.device, stagingBuffer.memory, nullptr);
 
 	texture.imageView = createImageView(texture.allocatedImage.image, format);
 }
-
 
 void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
@@ -179,38 +166,31 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 	barrier.subresourceRange.baseArrayLayer = 0;
 	barrier.subresourceRange.layerCount = 1;
 
-	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+	if(oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+	else if(oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+	{
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
-	else {
+	else
+	{
 		throw std::invalid_argument("unsupported layout transition!");
 	}
 
-	vkCmdPipelineBarrier(
-		cmdBuffer,
-		sourceStage,
-		destinationStage,
-		0,
-		0,
-		nullptr,
-		0,
-		nullptr,
-		1,
-		&barrier
-	);
+	vkCmdPipelineBarrier(cmdBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-	endSingleTimeCommands(Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
+	endSingleTimeCommands(
+	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
 void celestia::Image::copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u imageSize)
@@ -227,23 +207,13 @@ void celestia::Image::copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u im
 	region.imageSubresource.baseArrayLayer = 0;
 	region.imageSubresource.layerCount = 1;
 
-	region.imageOffset = { 0, 0, 0 };
-	region.imageExtent = {
-		imageSize.x,
-		imageSize.y,
-		1
-	};
+	region.imageOffset = {0, 0, 0};
+	region.imageExtent = {imageSize.x, imageSize.y, 1};
 
-	vkCmdCopyBufferToImage(
-		cmdBuffer,
-		buffer,
-		image,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		1,
-		&region
-	);
+	vkCmdCopyBufferToImage(cmdBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-	endSingleTimeCommands(Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
+	endSingleTimeCommands(
+	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
 VkImageView celestia::Image::createImageView(VkImage image, VkFormat format)
@@ -260,26 +230,18 @@ VkImageView celestia::Image::createImageView(VkImage image, VkFormat format)
 	viewInfo.subresourceRange.layerCount = 1;
 
 	VkImageView imageView;
-	if (vkCreateImageView(Device::context.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+	if(vkCreateImageView(Device::context.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+	{
 		throw std::runtime_error("Failed to create texture image view!\n");
 	}
 
 	return imageView;
 }
 
-VkSampler celestia::Image::createTextureSampler(
-	VkFilter magFilter,
-	VkFilter minFilter,
-	VkSamplerAddressMode addressModeU,
-	VkSamplerAddressMode addressModeV,
-	VkSamplerAddressMode addressModeW,
-	bool enableAnisotropy,
-	float maxAnisotropy,
-	VkBorderColor borderColor,
-	VkSamplerMipmapMode mipmapMode,
-	float mipLodBias,
-	float minLod,
-	float maxLod)
+VkSampler
+celestia::Image::createTextureSampler(VkFilter magFilter, VkFilter minFilter, VkSamplerAddressMode addressModeU,
+  VkSamplerAddressMode addressModeV, VkSamplerAddressMode addressModeW, bool enableAnisotropy, float maxAnisotropy,
+  VkBorderColor borderColor, VkSamplerMipmapMode mipmapMode, float mipLodBias, float minLod, float maxLod)
 {
 	VkSamplerCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -301,7 +263,7 @@ VkSampler celestia::Image::createTextureSampler(
 
 	VkSampler sampler;
 
-	if (vkCreateSampler(Device::context.device, &info, nullptr, &sampler) != VK_SUCCESS)
+	if(vkCreateSampler(Device::context.device, &info, nullptr, &sampler) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create texture sampler!\n");
 	}
@@ -316,8 +278,8 @@ celestia::RawTexture celestia::Image::createStorageImage(Vec2i size, VkFormat fo
 	texture.textureID = id++;
 
 	createImage(size, format, VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture.allocatedImage);
+	  VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+	  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture.allocatedImage);
 
 	texture.imageView = createImageViewForStorage(texture.allocatedImage.image, format);
 
@@ -332,19 +294,21 @@ celestia::RawTexture celestia::Image::createStorageImageForSampling(Vec2i size, 
 
 	// Create image with both storage and sampled usage flags
 	createImage(size, format, VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture.allocatedImage);
+	  VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+		VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+	  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texture.allocatedImage);
 
 	texture.imageView = createImageViewForStorage(texture.allocatedImage.image, format);
 
 	return texture;
 }
 
-celestia::RawTexture celestia::Image::createStorageImageWithData(Vec2i size, VkFormat format, const void* data, VkDeviceSize dataSize)
+celestia::RawTexture
+celestia::Image::createStorageImageWithData(Vec2i size, VkFormat format, const void* data, VkDeviceSize dataSize)
 {
 	// Create staging buffer
 	AllocatedBuffer stagingBuffer = buffer::createBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	void* bufferData;
 	vkMapMemory(Device::context.device, stagingBuffer.memory, 0, dataSize, 0, &bufferData);
@@ -355,9 +319,11 @@ celestia::RawTexture celestia::Image::createStorageImageWithData(Vec2i size, VkF
 	RawTexture storageTexture = createStorageImage(size, format);
 
 	// Copy data to image
-	transitionImageLayoutForCompute(storageTexture.allocatedImage.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	transitionImageLayoutForCompute(
+	  storageTexture.allocatedImage.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copyBufferToImage(stagingBuffer.buffer, storageTexture.allocatedImage.image, Vec2u(size.x, size.y));
-	transitionImageLayoutForCompute(storageTexture.allocatedImage.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
+	transitionImageLayoutForCompute(
+	  storageTexture.allocatedImage.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
 
 	// Clean up
 	vkDestroyBuffer(Device::context.device, stagingBuffer.buffer, nullptr);
@@ -378,12 +344,13 @@ void celestia::Image::copyImageToBuffer(const RawTexture& image, VkBuffer buffer
 	region.imageSubresource.mipLevel = 0;
 	region.imageSubresource.baseArrayLayer = 0;
 	region.imageSubresource.layerCount = 1;
-	region.imageOffset = { 0, 0, 0 };
-	region.imageExtent = { static_cast<uint32_t>(imageSize.x), static_cast<uint32_t>(imageSize.y), 1 };
+	region.imageOffset = {0, 0, 0};
+	region.imageExtent = {static_cast<uint32_t>(imageSize.x), static_cast<uint32_t>(imageSize.y), 1};
 
 	vkCmdCopyImageToBuffer(cmdBuffer, image.allocatedImage.image, VK_IMAGE_LAYOUT_GENERAL, buffer, 1, &region);
 
-	endSingleTimeCommands(Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
+	endSingleTimeCommands(
+	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
 void celestia::Image::transitionImageLayoutForCompute(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
@@ -406,43 +373,43 @@ void celestia::Image::transitionImageLayoutForCompute(VkImage image, VkImageLayo
 	VkPipelineStageFlags sourceStage;
 	VkPipelineStageFlags destinationStage;
 
-	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+	if(oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL) {
+	else if(oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL)
+	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT;
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL) {
+	else if(oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL)
+	{
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT;
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+	else if(oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+	{
 		barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 		sourceStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
-	else {
+	else
+	{
 		throw std::invalid_argument("unsupported layout transition!");
 	}
 
-	vkCmdPipelineBarrier(
-		cmdBuffer,
-		sourceStage, destinationStage, 0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
-	);
+	vkCmdPipelineBarrier(cmdBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-	endSingleTimeCommands(Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
+	endSingleTimeCommands(
+	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
 VkImageView celestia::Image::createImageViewForStorage(VkImage image, VkFormat format)
@@ -459,7 +426,8 @@ VkImageView celestia::Image::createImageViewForStorage(VkImage image, VkFormat f
 	viewInfo.subresourceRange.layerCount = 1;
 
 	VkImageView imageView;
-	if (vkCreateImageView(Device::context.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+	if(vkCreateImageView(Device::context.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+	{
 		throw std::runtime_error("Failed to create storage image view!\n");
 	}
 

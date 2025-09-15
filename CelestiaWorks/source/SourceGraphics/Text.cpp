@@ -1,9 +1,9 @@
-#include "Graphics/Text.h"
-#include "backend/vulkanAPI/resources/FontReader.h"
-#include "backend/vulkanAPI/renderBack/RendererHandler.h"
+#include "Graphics/Text.hpp"
+#include "Backend/VulkanAPI/Resources/FontReader.hpp"
+#include "Backend/VulkanAPI/RenderBack/RendererHandler.hpp"
 
 celestia::Text::Text(const Vec2 position, const char* symbols, const Color color, Font* font)
-	: position(position),color(color),font(font),dirty(true)
+	: position(position), color(color), font(font), dirty(true)
 {
 	this->symbols = symbols;
 	static int textID = 1;
@@ -20,20 +20,20 @@ celestia::Font* celestia::Text::getFont()
 void celestia::Text::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
 	renderer.drawText(vertices, symbols.size(), position, *font->bitmapData, dirty, id);
-	//disableDirtyFlag();
+	// disableDirtyFlag();
 }
 
 void celestia::Text::updatePosition()
 {
 	uint32_t indexoffset = 0;
 	size_t len = symbols.size();
-	vertices.resize(len*4);
+	vertices.resize(len * 4);
 	size = getTextSize();
 
 	float x = 0.f;
 	float scale = 1.f;
 
-	for (size_t i = 0; i < len; i++)
+	for(size_t i = 0; i < len; i++)
 	{
 		const char c = symbols[i];
 		const Character& character = font->bitmapData->characters[c];
@@ -49,20 +49,20 @@ void celestia::Text::updatePosition()
 
 		const int offset = i * 4;
 
-		vertices[offset] = { {xpos,ypos},{u0,0.f},{color.r,color.g,color.b},0};
-		vertices[offset+1] = { { xpos + w,ypos},{u1,0.f},{color.r,color.g,color.b},0 };
-		vertices[offset +2] = { {xpos + w,ypos + h},{u1,v},{color.r,color.g,color.b},0 };
-		vertices[offset + 3] = { {xpos,ypos + h},{u0,v},{color.r,color.g,color.b},0 };
-		
-		x += (character.advance >> 6) * scale;
+		vertices[offset] = {{xpos, ypos}, {u0, 0.f}, {color.r, color.g, color.b}, 0};
+		vertices[offset + 1] = {{xpos + w, ypos}, {u1, 0.f}, {color.r, color.g, color.b}, 0};
+		vertices[offset + 2] = {{xpos + w, ypos + h}, {u1, v}, {color.r, color.g, color.b}, 0};
+		vertices[offset + 3] = {{xpos, ypos + h}, {u0, v}, {color.r, color.g, color.b}, 0};
 
+		x += (character.advance >> 6) * scale;
 	}
 }
 
 celestia::Vec2 celestia::Text::getTextSize()
 {
 	Vec2 size;
-	for (size_t i = 0; i < symbols.size(); i++) {
+	for(size_t i = 0; i < symbols.size(); i++)
+	{
 		char c = symbols[i];
 		const Character& character = font->bitmapData->characters[c];
 		float w = (float)character.size.x;
@@ -71,7 +71,7 @@ celestia::Vec2 celestia::Text::getTextSize()
 		size.x += (character.advance >> 6);
 		size.y = std::max(size.y, h);
 	}
-	
+
 	return size;
 }
 
@@ -79,4 +79,3 @@ void celestia::Text::disableDirtyFlag()
 {
 	dirty = false;
 }
-
