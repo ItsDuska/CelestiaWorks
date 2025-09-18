@@ -2,6 +2,7 @@
 #include "Device.hpp"
 #include "Buffer.hpp"
 #include "CommandBuffer.hpp"
+#include <vulkan/vulkan_core.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -184,7 +185,7 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 	}
 	else
 	{
-		throw std::invalid_argument("unsupported layout transition!");
+		throw std::invalid_argument("ERROR: Unsupported layout transition!\n");
 	}
 
 	vkCmdPipelineBarrier(cmdBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
@@ -216,14 +217,14 @@ void celestia::Image::copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u im
 	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
-VkImageView celestia::Image::createImageView(VkImage image, VkFormat format)
+VkImageView celestia::Image::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectMask)
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewInfo.image = image;
 	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewInfo.subresourceRange.aspectMask = aspectMask;
 	viewInfo.subresourceRange.baseMipLevel = 0;
 	viewInfo.subresourceRange.levelCount = 1;
 	viewInfo.subresourceRange.baseArrayLayer = 0;

@@ -34,7 +34,8 @@ namespace celestia
 		  VkMemoryPropertyFlags properties, AllocatedImage& image);
 		static void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 		static void copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u imageSize);
-		static VkImageView createImageView(VkImage image, VkFormat format);
+		static VkImageView
+		createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectMask = VK_IMAGE_ASPECT_COLOR_BIT);
 		static VkImageView createImageViewForStorage(VkImage image, VkFormat format);
 
 		static VkSampler
