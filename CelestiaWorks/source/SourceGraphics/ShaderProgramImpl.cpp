@@ -1,6 +1,5 @@
-#include "ShaderProgramImpl.h"
+#include "ShaderProgramImpl.hpp"
 
 celestia::ShaderProgramImpl::ShaderProgramImpl()
 {
-
 }

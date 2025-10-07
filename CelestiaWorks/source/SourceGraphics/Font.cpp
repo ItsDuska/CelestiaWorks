@@ -1,15 +1,14 @@
-#include "Graphics/Font.h"
-#include "backend/vulkanAPI/resources/FontReader.h"
-#include "backend/vulkanAPI/core/Image.h"
+#include "Graphics/Font.hpp"
+#include "Backend/VulkanAPI/Resources/FontReader.hpp"
+#include "Backend/VulkanAPI/Core/Image.hpp"
 
-celestia::Font::Font()
-	: bitmapData(nullptr)
+celestia::Font::Font() : bitmapData(nullptr)
 {
 }
 
 celestia::Font::~Font()
 {
-	if (bitmapData == nullptr)
+	if(bitmapData == nullptr)
 	{
 		return;
 	}

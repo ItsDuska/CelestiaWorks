@@ -1,9 +1,9 @@
-#include "Graphics/ShaderProgram.h"
-#include "SourceGraphics/ShaderProgramImpl.h"
+#include "Graphics/ShaderProgram.hpp"
+#include "SourceGraphics/ShaderProgramImpl.hpp"
 
 /*
-* Tee tähän backend toteutus eli tänne vaa smart pointer siihe pimpl luokkaan.
-* Se luokka tarvii temp ShaderObject luokan joka luo sen shaderin. Sitten se tarvitsee myös
-*  DescriptorFactory classin, jolla se luo sen cusotom pipelinen ja shader attributet.
-* 
-*/
+ * Tee tï¿½hï¿½n backend toteutus eli tï¿½nne vaa smart pointer siihe pimpl luokkaan.
+ * Se luokka tarvii temp ShaderObject luokan joka luo sen shaderin. Sitten se tarvitsee myï¿½s
+ *  DescriptorFactory classin, jolla se luo sen cusotom pipelinen ja shader attributet.
+ *
+ */

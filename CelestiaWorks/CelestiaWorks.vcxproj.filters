@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\backend\window\Window.cpp">
+    <ClCompile Include="source\backend\window\Win32\Win32Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\backend\vulkanAPI\core\Device.cpp">
@@ -102,9 +102,12 @@
     <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\backend\window\WindowContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\backend\window\Window.h">
+    <ClInclude Include="source\backend\window\Win32\Win32Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h">
@@ -216,6 +219,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\window\PlatformWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\window\Wayland\WaylandWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\backend\window\WindowContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

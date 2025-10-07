@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.cpp" />
+    <ClCompile Include="source\backend\window\WindowContext.cpp" />
     <ClCompile Include="source\SourceGraphics\ShaderProgram.cpp" />
     <ClCompile Include="source\SourceGraphics\ShaderProgramImpl.cpp" />
     <ClCompile Include="source\SourceSystem\Mouse.cpp" />
@@ -183,7 +184,7 @@
     <ClCompile Include="source\backend\vulkanAPI\renderBack\vkRender\RenderBackend.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\core\ShaderObject.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\core\SwapChain.cpp" />
-    <ClCompile Include="source\backend\window\Window.cpp" />
+    <ClCompile Include="source\backend\window\Win32\Win32Window.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\renderBack\textRender\TextRender.cpp" />
     <ClCompile Include="source\backend\vulkanAPI\resources\VertexBufferImpl.cpp" />
   </ItemGroup>
@@ -197,6 +198,7 @@
     <ClInclude Include="include\CelestiaWorks\Graphics\VertexBuffer.h" />
     <ClInclude Include="include\CelestiaWorks\System\Keyboard.h" />
     <ClInclude Include="include\CelestiaWorks\System\Mouse.h" />
+    <ClInclude Include="source\backend\window\PlatformWindow.h" />
     <ClInclude Include="source\backend\core\IndexBufferGenerator.h" />
     <ClInclude Include="source\backend\vulkanAPI\config\VulkanConfig.h" />
     <ClInclude Include="include\CelestiaWorks\System\CelestiaTypes.h" />
@@ -209,6 +211,8 @@
     <ClInclude Include="source\backend\vulkanAPI\renderBack\defaultRender\DefaultSingleRender.h" />
     <ClInclude Include="source\backend\vulkanAPI\renderBack\RendererHandler.h" />
     <ClInclude Include="source\backend\vulkanAPI\resources\FontReader.h" />
+    <ClInclude Include="source\backend\window\Wayland\WaylandWindow.h" />
+    <ClInclude Include="source\backend\window\WindowContext.h" />
     <ClInclude Include="source\math\MatrixMath.h" />
     <ClInclude Include="source\math\VectorMath.h" />
     <ClInclude Include="source\backend\utils\Utils.h" />
@@ -222,7 +226,7 @@
     <ClInclude Include="source\backend\vulkanAPI\renderBack\vkRender\RenderBackend.h" />
     <ClInclude Include="source\backend\vulkanAPI\core\ShaderObject.h" />
     <ClInclude Include="source\backend\vulkanAPI\core\SwapChain.h" />
-    <ClInclude Include="source\backend\window\Window.h" />
+    <ClInclude Include="source\backend\window\Win32\Win32Window.h" />
     <ClInclude Include="source\backend\vulkanAPI\renderBack\textRender\TextRender.h" />
     <ClInclude Include="source\backend\vulkanAPI\resources\VertexBufferImpl.h" />
     <ClInclude Include="source\SourceGraphics\ShaderProgramImpl.h" />
