@@ -6,6 +6,10 @@
 namespace celestia
 {
 
+	/**
+	 * @brief Sprite is a lightweight class that contains the postion and texture information.
+	 *
+	 */
 	class Sprite : public Drawable
 	{
 	public:

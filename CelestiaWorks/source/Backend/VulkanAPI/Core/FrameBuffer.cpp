@@ -131,7 +131,6 @@ namespace celestia
 
 	void FrameBuffer::createColorTexture()
 	{
-		// Käytä tässä Image classia ja niiden funktiota lol
 		Image::createImage(size, colorFormat, VK_IMAGE_TILING_OPTIMAL,
 		  VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		  colorTexture.allocatedImage);

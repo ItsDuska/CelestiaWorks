@@ -133,6 +133,8 @@ void celestia::TextRender::end()
 
 	size_t vertexSize = vertexCount * sizeof(VertexBatch);
 	buffer::updateBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
+
+
 }
 
 void celestia::TextRender::flush()
@@ -179,11 +181,11 @@ void celestia::TextRender::drawText(const std::vector<VertexBatch>& vertices, co
 		info.descriptors[i]); descriptors->updateSets();
 		}
 		*/
-
-		descriptors->updateBuffer(1, &storageBuffer[render.currentFrame].buffer, bufferSize, 2, render.currentFrame);
-		descriptors->updateTexture(
-		  0, &currentTexturePtr->imageView, render.image->textureSampler, 1, render.currentFrame);
-
+		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			descriptors->updateBuffer(1, &storageBuffer[i].buffer, bufferSize, 1, i);
+			descriptors->updateTexture(0, &currentTexturePtr->imageView, render.image->textureSampler, 1, i);
+		}
 		descriptors->flushWrites();
 	}
 

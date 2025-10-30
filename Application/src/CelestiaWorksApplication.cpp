@@ -31,7 +31,7 @@ int main()
 		window.createTextRenderer(10, 400);
 
 		celestia::Font font;
-		if(!font.loadFont("../assets/yoster.ttf", 32))
+		if(!font.loadFont("assets/yoster.ttf", 32))
 		{
 			std::cout << "FAILED TO LOAD FONT FROM MAIN!\n";
 		}
@@ -47,10 +47,10 @@ int main()
 		window.setClearColor(color);
 
 		celestia::Texture textures[4];
-		textures[0].loadTexture("../assets/test.png");
-		textures[1].loadTexture("../assets/TempAsset1.png");
-		textures[2].loadTexture("../assets/RatSpriteSheet.png");
-		textures[3].loadTexture("../assets/cats.jpg");
+		textures[0].loadTexture("assets/test.png");
+		textures[1].loadTexture("assets/TempAsset1.png");
+		textures[2].loadTexture("assets/RatSpriteSheet.png");
+		textures[3].loadTexture("assets/cats.jpg");
 
 		celestia::RenderPipeline pipeline{};
 		pipeline.shader = nullptr;
@@ -58,8 +58,8 @@ int main()
 
 		std::vector<celestia::Sprite> sprites;
 
-		float tempX = windowSize.x / 5;
-		float tempY = windowSize.y / 5;
+		float tempX = windowSize.x / 5.0f;
+		float tempY = windowSize.y / 5.0f;
 
 		for(int i = 0; i < 3; i++)
 		{

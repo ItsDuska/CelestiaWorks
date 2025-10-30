@@ -16,3 +16,10 @@ target_link_libraries(CelestiaApp PRIVATE CelestiaWorks)
 set_target_properties(CelestiaApp PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+add_custom_command(TARGET CelestiaApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/assets"
+    "$<TARGET_FILE_DIR:CelestiaApp>/assets"
+    COMMENT "Copying assets to build directory"
+)
