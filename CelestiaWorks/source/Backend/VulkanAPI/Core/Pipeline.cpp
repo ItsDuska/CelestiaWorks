@@ -2,7 +2,7 @@
 #include "Device.hpp"
 #include "SwapChain.hpp"
 #include "ShaderObject.hpp"
-#include "Descriptor.hpp"
+//#include "Descriptor.hpp"
 #include "Backend/Utils/Utils.hpp"
 
 // TODO: Tee tästä template functio. template <typename Vertex_t>
