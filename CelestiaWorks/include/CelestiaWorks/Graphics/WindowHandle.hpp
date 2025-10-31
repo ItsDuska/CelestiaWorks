@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "../System/CelestiaTypes.hpp"
+#include "Graphics/RenderTarget.hpp"
+//#include "../System/CelestiaTypes.hpp"
 
 namespace celestia
 {
@@ -10,9 +11,8 @@ namespace celestia
 	class PlatformWindow;
 
 	class Drawable;
-	class RenderPipeline;
 
-	class WindowHandle
+	class WindowHandle : public RenderTarget
 	{
 	public:
 		CELESTIA_WORKS WindowHandle(
@@ -25,7 +25,7 @@ namespace celestia
 		CELESTIA_WORKS void draw(const Drawable& drawable) const;
 		CELESTIA_WORKS void draw(const Drawable& drawable, RenderPipeline& pipeline) const;
 
-		CELESTIA_WORKS void beginRenderPass() const;
+		CELESTIA_WORKS void beginRenderPass();
 		CELESTIA_WORKS void endRenderPass() const;
 		CELESTIA_WORKS bool isOpen() const;
 		CELESTIA_WORKS void setClearColor(Color& color);
@@ -33,9 +33,13 @@ namespace celestia
 		CELESTIA_WORKS void createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
 
 		CELESTIA_WORKS Vec2i screenSpaceToWindowSpace(Vec2i& position);
-
+		CELESTIA_WORKS Vec2i getSize() const override;
+	private:
+		void activateAsRenderTarget() override;
+		VkRenderPass getRenderPass() const  override;
+		VkFramebuffer getFramebuffer() const override;
 	private:
 		std::unique_ptr<PlatformWindow> window;
-		std::unique_ptr<RendererHandler> render;
+		//std::unique_ptr<RendererHandler> render;
 	};
 } // namespace celestia

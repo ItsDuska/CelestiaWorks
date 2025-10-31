@@ -1,5 +1,7 @@
 #pragma once
 #include "RenderTarget.hpp"
+#include "Texture.hpp"
+#include <memory>
 
 namespace celestia
 {
@@ -14,21 +16,19 @@ namespace celestia
 		CELESTIA_WORKS RenderTexture& operator=(const RenderTexture&) = delete;
 		CELESTIA_WORKS ~RenderTexture() override;
 
-		// RenderTarget interface implementation
-		// CELESTIA_WORKS Vec2i getSize() const;
-		// CELESTIA_WORKS bool isValid() const;
+		CELESTIA_WORKS Vec2i getSize() const override;
 
-		// RenderTexture-specific features
-		CELESTIA_WORKS const RawTexture* getTexture() const;
+		CELESTIA_WORKS const Texture* getTexture() const;
+		CELESTIA_WORKS const RawTexture* getRawTexture() const;
 		CELESTIA_WORKS void resize(Vec2i newSize);
-		CELESTIA_WORKS void saveToFile(const char* filepath);
-
-		// Utility methods
-		// CELESTIA_WORKS bool hasDepthBuffer() const;
-		// CELESTIA_WORKS VkFormat getFormat() const;
 
 	private:
+		void activateAsRenderTarget() override;
+		VkRenderPass getRenderPass() const override;
+		VkFramebuffer getFramebuffer() const override;
+	private:
 		std::unique_ptr<FrameBuffer> frameBuffer;
+		std::unique_ptr<Texture> m_texture;
 		Vec2i size;
 		bool hasDepth;
 

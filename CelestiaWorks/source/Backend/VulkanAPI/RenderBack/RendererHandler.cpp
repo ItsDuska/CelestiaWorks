@@ -5,6 +5,26 @@
 
 #include "Backend/VulkanAPI/RenderBack/RendererHandler.hpp"
 #include "Graphics/Drawable.hpp"
+#include <vulkan/vulkan.h>
+#include <memory>
+
+
+static std::unique_ptr<celestia::RendererHandler> handler = nullptr;
+
+celestia::RendererHandler& celestia::RendererHandler::getInstance()
+{
+	return *handler.get();
+}
+
+void celestia::RendererHandler::init(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
+{
+	handler = std::make_unique<RendererHandler>(maxTexturesInShader,maxQuadsPerBatch);
+}
+
+void celestia::RendererHandler::cleanup()
+{
+	handler.reset();
+}
 
 celestia::RendererHandler::RendererHandler(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 {
@@ -16,6 +36,18 @@ celestia::RendererHandler::RendererHandler(uint32_t maxTexturesInShader, uint32_
 celestia::RendererHandler::~RendererHandler()
 {
 	coreRenderer->cleanUp();
+}
+
+void celestia::RendererHandler::setActiveRenderTarget(celestia::RenderTarget* target)
+{
+	activeTarget = target;
+	coreRenderer->setRenderTarget(target);
+}
+
+
+celestia::RenderTarget* celestia::RendererHandler::getActiveRenderTarget() const
+{
+	return activeTarget;
 }
 
 void celestia::RendererHandler::draw(const Drawable& drawable) const
@@ -55,6 +87,7 @@ void celestia::RendererHandler::drawVertices(
 
 void celestia::RendererHandler::beginRenderPass() const
 {
+	const_cast<RendererHandler*>(this)->isRenderingActive = true;
 	batchSpriteRenderer->beginBatch();
 	if(batchTextRenderer)
 	{
@@ -75,6 +108,7 @@ void celestia::RendererHandler::endRenderPass() const
 	}
 
 	coreRenderer->endRendering();
+	const_cast<RendererHandler*>(this)->isRenderingActive = false;
 }
 
 void celestia::RendererHandler::setClearColor(Color& color)

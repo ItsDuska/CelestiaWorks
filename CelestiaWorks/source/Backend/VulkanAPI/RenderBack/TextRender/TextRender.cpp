@@ -126,13 +126,22 @@ void celestia::TextRender::end()
 
 	size_t transformationSize = transformationIndexCounter * sizeof(Vec2Aligned);
 
-	void* data;
-	vkMapMemory(Device::context.device, storageBuffer[render.currentFrame].memory, 0, transformationSize, 0, &data);
-	std::memcpy(data, transformationBuffer.data(), transformationSize);
-	vkUnmapMemory(Device::context.device, storageBuffer[render.currentFrame].memory);
+	// Only update transformation buffer if we have transformations to update
+	if (transformationIndexCounter > 0 && transformationSize > 0)
+	{
+		void* data;
+		vkMapMemory(Device::context.device, storageBuffer[render.currentFrame].memory, 0, transformationSize, 0, &data);
+		std::memcpy(data, transformationBuffer.data(), transformationSize);
+		vkUnmapMemory(Device::context.device, storageBuffer[render.currentFrame].memory);
+	}
 
 	size_t vertexSize = vertexCount * sizeof(VertexBatch);
-	buffer::updateBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
+	
+	// Only update buffer if we have vertices to update
+	if (vertexCount > 0 && vertexSize > 0)
+	{
+		buffer::updateBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
+	}
 
 
 }

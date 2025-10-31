@@ -1,5 +1,4 @@
 #include "DefaultSingleRender.hpp"
-#include "Backend/VulkanAPI/Config/VulkanConfig.hpp"
 #include "Backend/VulkanAPI/Core/Image.hpp"
 #include "Backend/VulkanAPI/Core/Pipeline.hpp"
 #include "Backend/VulkanAPI/Core/ShaderObject.hpp"

@@ -10,6 +10,7 @@ namespace celestia
 	class Pipeline;
 	class Window;
 	class Image;
+	class RenderTarget;
 
 	class Render
 	{
@@ -25,10 +26,12 @@ namespace celestia
 		void setClearColor(Color& color);
 		void cleanUp();
 		void setFramerateLimit(const int frameRate);
+		void setRenderTarget(RenderTarget* target);
 
 	private:
 		void resize();
 		void createCommandBuffers();
+		void createOffscreenCommandBuffer();
 
 	private:
 		friend class BatchSpriteRender;
@@ -40,21 +43,23 @@ namespace celestia
 		std::unique_ptr<Image> image;
 
 		std::vector<VkCommandBuffer> commandBuffers;
+		VkCommandBuffer offscreenCommandBuffer; // Separate command buffer for offscreen rendering
 
 		uint32_t currentFrame;
 		uint32_t imageIndex;
 		bool rendering;
-		Vec4 clearColor;
 		bool hasBindedTEMP;
+		Vec4 clearColor;
 		PUSH_CONSTANTS constants;
+
+		RenderTarget* activeRenderTarget = nullptr;
+		bool isOffscreenRendering = false; // Track if we're doing offscreen rendering
 
 		std::chrono::system_clock::duration framerateLimit;
 
 		std::chrono::system_clock::time_point beginFrameTime;
 		std::chrono::system_clock::time_point endFrameTime;
 
-		// TEMP
-		unsigned frameCountPerSecond = 0;
 		std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds> prev_time_in_seconds;
 		// TEMP
 	};

@@ -97,31 +97,51 @@ namespace celestia
 		subpass.pColorAttachments = colorRefs.data();
 		subpass.pDepthStencilAttachment = hasDepth ? &depthRef : VK_NULL_HANDLE;
 
-		std::array<VkSubpassDependency, 2> deps{};
-		deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		deps[0].dstSubpass = 0;
-		deps[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		deps[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		deps[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		deps[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		deps[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-		deps[1].srcSubpass = 0;
-		deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		deps[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		deps[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		deps[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		deps[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		deps[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
 		VkRenderPassCreateInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		renderPassInfo.pAttachments = attachments.data();
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
-		renderPassInfo.dependencyCount = static_cast<uint32_t>(deps.size());
-		renderPassInfo.pDependencies = deps.data();
+
+		// Use SwapChain-compatible dependencies when using SwapChain format
+		if(colorFormat == VK_FORMAT_B8G8R8A8_SRGB)
+		{
+			// Single dependency compatible with SwapChain
+			VkSubpassDependency dependency{};
+			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependency.dstSubpass = 0;
+			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.srcAccessMask = 0;
+			dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+			renderPassInfo.dependencyCount = 1;
+			renderPassInfo.pDependencies = &dependency;
+		}
+		else
+		{
+			// Original dual dependency structure for other formats
+			std::array<VkSubpassDependency, 2> deps{};
+			deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			deps[0].dstSubpass = 0;
+			deps[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			deps[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			deps[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			deps[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			deps[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			deps[1].srcSubpass = 0;
+			deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+			deps[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			deps[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			deps[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			deps[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			deps[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+			renderPassInfo.dependencyCount = static_cast<uint32_t>(deps.size());
+			renderPassInfo.pDependencies = deps.data();
+		}
 
 		if(vkCreateRenderPass(Device::context.device, &renderPassInfo, nullptr, &renderPass))
 		{
@@ -144,7 +164,7 @@ namespace celestia
 	void FrameBuffer::createDepthTexture()
 	{
 		Image::createImage(size, depthFormat, VK_IMAGE_TILING_OPTIMAL,
-		  VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		  VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		  depthTexture.allocatedImage);
 
 		depthTexture.imageView =
@@ -181,6 +201,8 @@ namespace celestia
 
 	void FrameBuffer::cleanup()
 	{
+		vkDeviceWaitIdle(Device::context.device);
+		
 		if(frameBuffer != VK_NULL_HANDLE)
 		{
 			vkDestroyFramebuffer(Device::context.device, frameBuffer, nullptr);

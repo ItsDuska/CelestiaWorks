@@ -4,6 +4,7 @@
 #include "Backend/VulkanAPI/Core/SwapChain.hpp"
 #include "Backend/VulkanAPI/Core/Pipeline.hpp"
 #include "Backend/VulkanAPI/Core/Image.hpp"
+#include "Graphics/RenderTarget.hpp"
 
 #include "Backend/Utils/Utils.hpp"
 #include "Math/MatrixMath.hpp"
@@ -19,7 +20,9 @@ celestia::Render::Render()
 	clearColor = {0.f, 0.f, 0.f, 1.f};
 	hasBindedTEMP = false;
 	createCommandBuffers();
+	createOffscreenCommandBuffer();
 	imageIndex = 0;
+	isOffscreenRendering = false;
 
 	PlatformWindow* window = WindowContext::get();
 
@@ -48,9 +51,11 @@ void celestia::Render::submitIndexedDraw(DrawInfo& info)
 		return;
 	}
 
-	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.pipeline);
+	VkCommandBuffer currentCommandBuffer = isOffscreenRendering ? offscreenCommandBuffer : commandBuffers[currentFrame];
 
-	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.layout, 0, 1,
+	vkCmdBindPipeline(currentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.pipeline);
+
+	vkCmdBindDescriptorSets(currentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.layout, 0, 1,
 	  &info.descriptor, 0, nullptr);
 
 	// TODO: tee t�� kivemmi.
@@ -62,15 +67,15 @@ void celestia::Render::submitIndexedDraw(DrawInfo& info)
 	// memcpy(buffer->uniformBuffersMapped[currentFrame], &uniform, sizeof(UniformBufferObject));
 
 	// TODO: add custom push Constants to this
-	vkCmdPushConstants(commandBuffers[currentFrame], info.material.layout, VK_SHADER_STAGE_VERTEX_BIT, 0,
+	vkCmdPushConstants(currentCommandBuffer, info.material.layout, VK_SHADER_STAGE_VERTEX_BIT, 0,
 	  sizeof(PUSH_CONSTANTS), &constants);
 
 	VkDeviceSize offset = 0;
 
-	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, &info.mesh->vertexBuffer.buffer, &offset);
-	vkCmdBindIndexBuffer(commandBuffers[currentFrame], info.mesh->indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+	vkCmdBindVertexBuffers(currentCommandBuffer, 0, 1, &info.mesh->vertexBuffer.buffer, &offset);
+	vkCmdBindIndexBuffer(currentCommandBuffer, info.mesh->indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
-	vkCmdDrawIndexed(commandBuffers[currentFrame], info.amountToDraw, 1, 0, 0, 0);
+	vkCmdDrawIndexed(currentCommandBuffer, info.amountToDraw, 1, 0, 0, 0);
 }
 
 void celestia::Render::beginRendering()
@@ -81,46 +86,70 @@ void celestia::Render::beginRendering()
 		return;
 	}
 
-	vkWaitForFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
+	isOffscreenRendering = (activeRenderTarget != nullptr);
 
-	VkResult result = vkAcquireNextImageKHR(Device::context.device, swapChain->getSwapchain(), UINT64_MAX,
-	  swapChain->getImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
-
-	if(result == VK_ERROR_OUT_OF_DATE_KHR)
+	if(!isOffscreenRendering)
 	{
-		resize();
-		return;
+		// Window rendering: handle swapchain synchronization
+		vkWaitForFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
+
+		VkResult result = vkAcquireNextImageKHR(Device::context.device, swapChain->getSwapchain(), UINT64_MAX,
+		  swapChain->getImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
+
+		if(result == VK_ERROR_OUT_OF_DATE_KHR)
+		{
+			resize();
+			return;
+		}
+		else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+		{
+			throw std::runtime_error("Failed to present swap chain image!\n");
+		}
+
+		vkResetFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame));
+		vkResetCommandBuffer(commandBuffers[currentFrame], 0);
 	}
-	else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	else
 	{
-		throw std::runtime_error("Failed to present swap chain image!\n");
+		// Offscreen rendering: use separate command buffer
+		// Command buffer reset is handled after GPU completion in endRendering
 	}
 
-	vkResetFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame));
-	vkResetCommandBuffer(commandBuffers[currentFrame], 0);
+	VkCommandBuffer currentCommandBuffer = isOffscreenRendering ? offscreenCommandBuffer : commandBuffers[currentFrame];
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = 0;
 	beginInfo.pInheritanceInfo = nullptr;
 
-	if(vkBeginCommandBuffer(commandBuffers[currentFrame], &beginInfo) != VK_SUCCESS)
+	if(vkBeginCommandBuffer(currentCommandBuffer, &beginInfo) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to begin recording command buffer!");
 	}
 
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = swapChain->getRenderPass();
-	renderPassInfo.framebuffer = swapChain->getFrameBuffer(imageIndex);
+
+	if (activeRenderTarget)
+	{
+		renderPassInfo.renderPass = activeRenderTarget->getRenderPass();
+		renderPassInfo.framebuffer = activeRenderTarget->getFramebuffer();
+		renderPassInfo.renderArea.extent = { (uint32_t)activeRenderTarget->getSize().x, (uint32_t)activeRenderTarget->getSize().y};
+	}
+	else
+	{
+		renderPassInfo.renderPass = swapChain->getRenderPass();
+		renderPassInfo.framebuffer = swapChain->getFrameBuffer(imageIndex);
+		renderPassInfo.renderArea.extent = swapChain->extent;
+	}
+
 	renderPassInfo.renderArea.offset = {0, 0};
-	renderPassInfo.renderArea.extent = swapChain->extent;
 
 	VkClearValue clearValue = {{{clearColor.x, clearColor.y, clearColor.z, clearColor.w}}};
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearValue;
 
-	vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(currentCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	this->rendering = true;
 }
 
@@ -132,59 +161,85 @@ void celestia::Render::endRendering()
 		return;
 	}
 
-	vkCmdEndRenderPass(commandBuffers[currentFrame]);
+	VkCommandBuffer currentCommandBuffer = isOffscreenRendering ? offscreenCommandBuffer : commandBuffers[currentFrame];
 
-	if(vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS)
+	vkCmdEndRenderPass(currentCommandBuffer);
+
+	if(vkEndCommandBuffer(currentCommandBuffer) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to record command buffer!");
 	}
 
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-	VkSemaphore waitSemaphores[] = {swapChain->getImageAvailableSemaphore(currentFrame)};
-	VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = waitStages;
-
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
-
-	VkSemaphore signalSemaphore[] = {swapChain->getRenderFinishedSemaphore(currentFrame)};
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphore;
-
-	if(vkQueueSubmit(Device::context.graphicsQueue, 1, &submitInfo, swapChain->getInFlightFence(currentFrame)) !=
-	   VK_SUCCESS)
+	if(!isOffscreenRendering)
 	{
-		throw std::runtime_error("Failed to submit draw command buffer!");
+		// Window rendering: full swapchain synchronization
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+		VkSemaphore waitSemaphores[] = {swapChain->getImageAvailableSemaphore(currentFrame)};
+		VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
+
+		VkSemaphore signalSemaphore[] = {swapChain->getRenderFinishedSemaphore(currentFrame)};
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = signalSemaphore;
+
+		if(vkQueueSubmit(Device::context.graphicsQueue, 1, &submitInfo, swapChain->getInFlightFence(currentFrame)) !=
+		   VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to submit draw command buffer!");
+		}
+
+		// Present to swapchain
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = signalSemaphore;
+
+		VkSwapchainKHR swapChains[] = {swapChain->getSwapchain()};
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = swapChains;
+		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.pResults = nullptr;
+
+		VkResult result = vkQueuePresentKHR(Device::context.presentQueue, &presentInfo);
+
+		if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+		   WindowContext::get()->isFramebufferResized())
+		{
+			resize();
+		}
+		else if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to present swap chain image!\n");
+		}
+
+		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
-
-	VkPresentInfoKHR presentInfo{};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = signalSemaphore;
-
-	VkSwapchainKHR swapChains[] = {swapChain->getSwapchain()};
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = swapChains;
-	presentInfo.pImageIndices = &imageIndex;
-	presentInfo.pResults = nullptr;
-
-	VkResult result = vkQueuePresentKHR(Device::context.presentQueue, &presentInfo);
-
-	if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-	   WindowContext::get()->isFramebufferResized())
+	else
 	{
-		resize();
-	}
-	else if(result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to present swap chain image!\n");
-	}
+		// Offscreen rendering: simple submission
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &offscreenCommandBuffer;
 
-	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+		if(vkQueueSubmit(Device::context.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to submit offscreen command buffer!");
+		}
+
+		// Wait for GPU to complete offscreen work before reusing command buffer
+		vkQueueWaitIdle(Device::context.graphicsQueue);
+		
+		// Reset the offscreen command buffer state for next use
+		vkResetCommandBuffer(offscreenCommandBuffer, 0);
+	}
 
 	rendering = false;
 
@@ -214,6 +269,8 @@ void celestia::Render::cleanUp()
 	vkDeviceWaitIdle(Device::context.device);
 	vkFreeCommandBuffers(
 	  Device::context.device, Device::context.commandPool, MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
+	vkFreeCommandBuffers(
+	  Device::context.device, Device::context.commandPool, 1, &offscreenCommandBuffer);
 	Device::context.deletionQueue.flush();
 }
 
@@ -221,6 +278,11 @@ void celestia::Render::setFramerateLimit(const int frameRate)
 {
 	framerateLimit =
 	  std::chrono::round<std::chrono::system_clock::duration>(std::chrono::duration<double>{1. / frameRate});
+}
+
+void celestia::Render::setRenderTarget(RenderTarget* target)
+{
+	activeRenderTarget = target;
 }
 
 void celestia::Render::resize()
@@ -246,6 +308,20 @@ void celestia::Render::createCommandBuffers()
 
 	if(vkAllocateCommandBuffers(Device::context.device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to allocate command buffers!");
+		throw std::runtime_error("Failed to allocate command buffers!");
+	}
+}
+
+void celestia::Render::createOffscreenCommandBuffer()
+{
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = Device::context.commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = 1;
+
+	if(vkAllocateCommandBuffers(Device::context.device, &allocInfo, &offscreenCommandBuffer) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to allocate offscreen command buffer!");
 	}
 }

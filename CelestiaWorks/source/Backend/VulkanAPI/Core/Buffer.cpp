@@ -6,6 +6,11 @@
 celestia::AllocatedBuffer
 celestia::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
+	if(size == 0)
+	{
+		throw std::invalid_argument("ERROR: Cannot create buffer with zero size!");
+	}
+
 	AllocatedBuffer buffer{};
 
 	VkBufferCreateInfo bufferInfo{};
@@ -55,6 +60,12 @@ celestia::Mesh* celestia::buffer::createMesh(RawMesh& rawMesh)
 void celestia::buffer::updateBuffer(
   AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const void* vertexData)
 {
+	// Skip update if there's no data to update
+	if(dataSize == 0 || vertexData == nullptr)
+	{
+		return;
+	}
+
 	AllocatedBuffer stagingBuffer = createBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
