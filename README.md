@@ -5,9 +5,7 @@ Disclaimer: This project is not guaranteed to work flawlessly. The performance m
 
 ----
 ### **The list of things I want to add to this when I have the time for it:**
-  - RenderTextures
   - Custom shader support
-  - Vertex arrays
   - Music / sound system
   - Camera system? (Maybe not)
   - sprite rotations?
