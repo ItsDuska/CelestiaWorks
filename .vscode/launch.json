@@ -5,7 +5,8 @@
             "name": "Debug Application",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Application",
+            "program": "${workspaceFolder}/build/bin/CelestiaApp",
+
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

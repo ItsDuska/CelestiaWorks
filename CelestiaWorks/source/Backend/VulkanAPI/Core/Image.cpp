@@ -26,6 +26,11 @@ celestia::Image::~Image()
 void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
   VkMemoryPropertyFlags properties, AllocatedImage& image)
 {
+	if(imageSize.x <= 0 || imageSize.y <= 0)
+	{
+		throw std::invalid_argument("ERROR: Cannot create image with zero or negative dimensions!");
+	}
+
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -86,6 +91,11 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath, V
 
 	VkDeviceSize imageSize = static_cast<VkDeviceSize>(texSize.x) * texSize.y * 4;
 
+	if(texSize.x <= 0 || texSize.y <= 0)
+	{
+		throw std::invalid_argument("ERROR: Texture has zero or negative dimensions!");
+	}
+
 	if(!pixels)
 	{
 		throw std::runtime_error("Failed to load texture image!\n");
@@ -121,6 +131,21 @@ void celestia::Image::deleteTextureImage(RawTexture& texture)
 void celestia::Image::createTextureFromBuffer(
   const void* bufferPtr, const VkDeviceSize& bufferSize, const Vec2i& size, RawTexture& texture, VkFormat format)
 {
+	if (bufferPtr == nullptr)
+	{
+		throw std::invalid_argument("ERROR: Buffer pointer is null in createTextureFromBuffer!");
+	}
+
+	if (bufferSize == 0)
+	{
+		throw std::invalid_argument("ERROR: Buffer size is zero in createTextureFromBuffer!");
+	}
+
+	if (size.x <= 0 || size.y <= 0)
+	{
+		throw std::invalid_argument("ERROR: Invalid texture dimensions in createTextureFromBuffer!");
+	}
+
 	AllocatedBuffer stagingBuffer = buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
@@ -161,7 +186,15 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	barrier.image = image;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	// Set aspect mask based on the new layout
+	if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	{
+		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+	}
+	else
+	{
+		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	}
 	barrier.subresourceRange.baseMipLevel = 0;
 	barrier.subresourceRange.levelCount = 1;
 	barrier.subresourceRange.baseArrayLayer = 0;
@@ -182,6 +215,30 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+	{
+		barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
 	else
 	{

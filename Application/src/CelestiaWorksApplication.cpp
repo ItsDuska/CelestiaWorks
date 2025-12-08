@@ -8,6 +8,7 @@
 #include "CelestiaWorks/System/Keyboard.hpp"
 #include "CelestiaWorks/System/Mouse.hpp"
 #include "CelestiaWorks/Graphics/VertexBuffer.hpp"
+#include "CelestiaWorks/Graphics/RenderTexture.hpp"
 
 static std::vector<celestia::Vertex> vertices = {{{600.0f, 350.0f}, {0.f, 0.f}, {0.0f, 0.5f, 1.0f}}, // Vertex 8
   {{900.0f, 350.0f}, {1.f, 0.f}, {0.2f, 0.8f, 0.2f}},												 // Vertex 9
@@ -31,7 +32,7 @@ int main()
 		window.createTextRenderer(10, 400);
 
 		celestia::Font font;
-		if(!font.loadFont("../assets/yoster.ttf", 32))
+		if(!font.loadFont("assets/yoster.ttf", 32))
 		{
 			std::cout << "FAILED TO LOAD FONT FROM MAIN!\n";
 		}
@@ -47,10 +48,10 @@ int main()
 		window.setClearColor(color);
 
 		celestia::Texture textures[4];
-		textures[0].loadTexture("../assets/test.png");
-		textures[1].loadTexture("../assets/TempAsset1.png");
-		textures[2].loadTexture("../assets/RatSpriteSheet.png");
-		textures[3].loadTexture("../assets/cats.jpg");
+		textures[0].loadTexture("assets/test.png");
+		textures[1].loadTexture("assets/TempAsset1.png");
+		textures[2].loadTexture("assets/RatSpriteSheet.png");
+		textures[3].loadTexture("assets/cats.jpg");
 
 		celestia::RenderPipeline pipeline{};
 		pipeline.shader = nullptr;
@@ -58,8 +59,8 @@ int main()
 
 		std::vector<celestia::Sprite> sprites;
 
-		float tempX = windowSize.x / 5;
-		float tempY = windowSize.y / 5;
+		float tempX = windowSize.x / 5.0f;
+		float tempY = windowSize.y / 5.0f;
 
 		for(int i = 0; i < 3; i++)
 		{
@@ -75,7 +76,7 @@ int main()
 			}
 		}
 
-		celestia::Sprite testSprite({200.f, 600.f}, {50.f, 50.f});
+		celestia::Sprite testSprite({50.f, 50.f}, {50.f, 50.f});
 		testSprite.setTexture(textures[2]);
 		testSprite.setTextureRectSize({32.f, 32.f});
 
@@ -85,6 +86,13 @@ int main()
 		int rectPositionX = 0;
 
 		celestia::Vec2i mousePos;
+
+		celestia::Color rTColor(75,100,25,255);
+		celestia::RenderTexture rTexture({400,400},false);
+		rTexture.setClearColor(rTColor);
+
+		celestia::Sprite sussy({0,0},{350,350});
+		sussy.setTexture(textures[1]);
 
 		while(window.isOpen())
 		{
@@ -97,9 +105,18 @@ int main()
 
 			mousePos = celestia::Mouse::mousePosition();
 			mousePos = window.screenSpaceToWindowSpace(mousePos);
-			// std::cout << "x: " << mousePos.x << " y: " << mousePos.y << "\n";
 
+			rTexture.beginRenderPass();
+			rTexture.draw(sussy);
+			rTexture.draw(testSprite);
+			rTexture.endRenderPass();
+
+			const celestia::Texture* tempTex = rTexture.getTexture();
+			celestia::Sprite amogTex({550,350}, {200,200});
+			amogTex.setTexture(*tempTex);
 			window.beginRenderPass();
+
+			window.draw(amogTex);
 
 			for(celestia::Sprite& currentSprite : sprites)
 			{
@@ -114,12 +131,12 @@ int main()
 				testSprite.setTextureRectPosition({rectPositionX, 0});
 			}
 
-			// window.draw(text);
+			 window.draw(text);
 
-			// window.draw(testSprite);
-			// window.draw(text1);
 
-			// window.draw(buffer, pipeline);
+			window.draw(text1);
+
+			window.draw(buffer, pipeline);
 
 			window.endRenderPass();
 

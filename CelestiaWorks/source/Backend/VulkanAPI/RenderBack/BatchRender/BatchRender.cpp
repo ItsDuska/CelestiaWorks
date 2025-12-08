@@ -95,6 +95,8 @@ void celestia::BatchSpriteRender::beginBatch()
 {
 	indexCount = 0;
 	vertexCount = 0;
+	textureSlotIndex = 1;
+	textureSlots.fill(0);
 }
 
 void celestia::BatchSpriteRender::endBatch()
@@ -107,26 +109,18 @@ void celestia::BatchSpriteRender::endBatch()
 // the real draw command in nutshell...
 void celestia::BatchSpriteRender::flush()
 {
-	/*
-	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		descriptors->updateTexture(textures, render.image->textureSampler, 0, textureSlotIndex, info.descriptors[i]);
-		descriptors->updateSets();
-	}
-	*/
 	descriptors->updateTexture(
-	  0, textures, render.image->textureSampler, NUMBER_OF_TEXTURE_IN_SHADER, render.currentFrame);
+	  0, textures, render.image->textureSampler, textureSlotIndex, render.currentFrame);
 	descriptors->flushWrites();
 
 	info.descriptor = descriptors->getDescriptorSet(render.currentFrame);
-	textureSlotIndex = 1;
 	info.amountToDraw = indexCount;
 	render.submitIndexedDraw(info);
 }
 
 void celestia::BatchSpriteRender::drawQuad(const Vec2& position, const Vec2& size, const Vec3& color)
 {
-	if(indexCount >= MAX_VERTEX_COUNT_PER_BATCH)
+	if(indexCount >= MAX_INDEX_COUNT_PER_BATCH)
 	{
 		endBatch();
 		flush();

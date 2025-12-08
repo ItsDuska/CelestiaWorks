@@ -1,11 +1,20 @@
 #include "Graphics/Sprite.hpp"
 #include "Backend/VulkanAPI/RenderBack/RendererHandler.hpp"
+#include "Graphics/Texture.hpp"
 
 celestia::Sprite::Sprite(Vec2 position, Vec2 size) : texture(nullptr), textureRect({})
 {
 	spriteRect.position = position;
 	spriteRect.size = size;
 	updateQuadPosition();
+}
+
+void celestia::Sprite::setTexture(const Texture& texture)
+{
+	this->texture = const_cast<Texture*>(&texture);
+	setTextureRectPosition({0.f, 0.f});
+	const Vec2i temp = texture.getSize();
+	setTextureRectSize({temp.x, temp.y});
 }
 
 void celestia::Sprite::setTexture(Texture& texture)

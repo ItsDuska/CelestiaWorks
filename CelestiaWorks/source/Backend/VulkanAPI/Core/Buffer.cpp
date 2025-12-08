@@ -6,6 +6,11 @@
 celestia::AllocatedBuffer
 celestia::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
+	if(size == 0)
+	{
+		throw std::invalid_argument("ERROR: Cannot create buffer with zero size!");
+	}
+
 	AllocatedBuffer buffer{};
 
 	VkBufferCreateInfo bufferInfo{};
@@ -16,7 +21,7 @@ celestia::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMe
 
 	if(vkCreateBuffer(Device::context.device, &bufferInfo, nullptr, &buffer.buffer) != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create buffer!");
+		throw std::runtime_error("Failed to create buffer!\n");
 	}
 
 	VkMemoryRequirements memRequirments;
@@ -29,7 +34,7 @@ celestia::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMe
 
 	if(vkAllocateMemory(Device::context.device, &allocInfo, nullptr, &buffer.memory) != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to allocate buffer memory");
+		throw std::runtime_error("Failed to allocate buffer memory!\n");
 	}
 
 	vkBindBufferMemory(Device::context.device, buffer.buffer, buffer.memory, 0);
@@ -55,6 +60,12 @@ celestia::Mesh* celestia::buffer::createMesh(RawMesh& rawMesh)
 void celestia::buffer::updateBuffer(
   AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const void* vertexData)
 {
+	// Skip update if there's no data to update
+	if(dataSize == 0 || vertexData == nullptr)
+	{
+		return;
+	}
+
 	AllocatedBuffer stagingBuffer = createBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
@@ -82,7 +93,7 @@ uint32_t celestia::buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyF
 		}
 	}
 
-	throw std::runtime_error("Failed to find suitable memory type!");
+	throw std::runtime_error("Failed to find suitable memory type!\n");
 }
 
 celestia::AllocatedBuffer

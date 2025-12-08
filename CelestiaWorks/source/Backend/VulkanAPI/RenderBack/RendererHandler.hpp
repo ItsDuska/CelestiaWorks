@@ -2,6 +2,7 @@
 #include "System/CelestiaTypes.hpp"
 #include <vector>
 #include <memory>
+#include "Graphics/RenderTarget.hpp"
 
 namespace celestia
 {
@@ -9,7 +10,6 @@ namespace celestia
 	class Text;
 	class Drawable;
 	class Render;
-	class RenderPipeline;
 	class BatchSpriteRender;
 	class TextRender;
 	class DefaultSingleRenderer;
@@ -22,6 +22,14 @@ namespace celestia
 	public:
 		RendererHandler(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
 		~RendererHandler();
+
+		static RendererHandler& getInstance();
+
+		static void init(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch);
+		static void cleanup();
+
+		void setActiveRenderTarget(RenderTarget* target);
+		RenderTarget* getActiveRenderTarget() const;
 
 		void draw(const Drawable& drawable) const;
 		void draw(const Drawable& drawable, RenderPipeline& pipeline) const;
@@ -42,8 +50,13 @@ namespace celestia
 
 		// TEXT RENDERING
 		void createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
+	private:
+		void switchRenderTarget(RenderTarget* newTarget);
 
 	private:
+		RenderTarget* activeTarget = nullptr;
+		bool isRenderingActive = false;
+
 		std::unique_ptr<Render> coreRenderer; // t�t� heitell��n molemmille render classeille
 
 		std::unique_ptr<BatchSpriteRender> batchSpriteRenderer;

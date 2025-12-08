@@ -368,3 +368,7 @@ commands.txt
 build/
 build*/
 out/
+
+Application/CMakeFiles/
+CelestiaWorks/CMakeFiles/
+CmakeFiles/

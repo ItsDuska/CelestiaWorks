@@ -123,8 +123,30 @@ std::unique_ptr<celestia::Font_t> celestia::FontReader::createFont(const char* f
 
 	// craeting VkTexture
 
+	// Validate bitmap dimensions before creating texture
+	if(bmpWidth <= 0 || font->bmpHeigth <= 0)
+	{
+		std::cerr << "ERROR: Invalid font bitmap dimensions: " << bmpWidth << "x" << font->bmpHeigth << std::endl;
+		FT_Done_FreeType(ft);
+		return nullptr;
+	}
+
 	VkDeviceSize textureSize = static_cast<VkDeviceSize>(bmpWidth) *
-							   font->bmpHeigth; // * pixelSize; // t�t� ei tarvi koska pixelin koko on valmiiksi jo 1
+							   font->bmpHeigth; // * pixelSize; // tätä ei tarvi koska pixelin koko on valmiiksi jo 1
+
+	if(textureSize == 0)
+	{
+		std::cerr << "ERROR: Font texture size is zero!" << std::endl;
+		FT_Done_FreeType(ft);
+		return nullptr;
+	}
+
+	if(pixelBuffer.empty())
+	{
+		std::cerr << "ERROR: Pixel buffer is empty!" << std::endl;
+		FT_Done_FreeType(ft);
+		return nullptr;
+	}
 
 	Vec2i bitmapSize(bmpWidth, font->bmpHeigth);
 	Image::createTextureFromBuffer(pixelBuffer.data(), textureSize, bitmapSize, font->texture, VK_FORMAT_R8_UNORM);
