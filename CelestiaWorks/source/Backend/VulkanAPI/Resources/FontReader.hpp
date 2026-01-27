@@ -1,5 +1,5 @@
 #pragma once
-#include "Backend/VulkanAPI/Core/CelestiaVulkanTypes.hpp"
+#include "Vulkan/CelestiaVulkanTypes.hpp"
 #include "System/Vector.hpp"
 #include <unordered_map>
 #include <memory>
@@ -16,7 +16,7 @@ namespace celestia
 
 	struct Font_t
 	{
-		RawTexture texture;
+		vk::RawTexture texture;
 		std::unordered_map<char, const Character> characters;
 		float invBmpWidth;
 		uint32_t bmpHeigth;

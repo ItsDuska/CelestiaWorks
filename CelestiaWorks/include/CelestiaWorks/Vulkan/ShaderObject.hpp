@@ -3,7 +3,7 @@
 #include <vector>
 #include "Graphics/ShaderTypes.hpp"
 
-namespace celestia
+namespace celestia::vk
 {
 	class Device;
 
@@ -36,4 +36,4 @@ namespace celestia
 		void createShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule);
 		VkShaderStageFlagBits convertToVkFlags(ShaderType type);
 	};
-} // namespace celestia
+} // namespace celestia::vk

@@ -25,7 +25,7 @@ void celestia::Text::draw(const RendererHandler& renderer, RenderPipeline* pipel
 
 void celestia::Text::updatePosition()
 {
-	uint32_t indexoffset = 0;
+	// uint32_t indexoffset = 0;
 	size_t len = symbols.size();
 	vertices.resize(len * 4);
 	size = getTextSize();

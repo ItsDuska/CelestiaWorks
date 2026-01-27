@@ -5,8 +5,11 @@
 
 namespace celestia
 {
-	struct RawTexture;
-	class FrameBuffer;
+	namespace vk
+	{
+		struct RawTexture;
+		class FrameBuffer;
+	} // namespace vk
 
 	class RenderTexture : public RenderTarget
 	{
@@ -19,15 +22,16 @@ namespace celestia
 		CELESTIA_WORKS Vec2i getSize() const override;
 
 		CELESTIA_WORKS const Texture* getTexture() const;
-		CELESTIA_WORKS const RawTexture* getRawTexture() const;
+		CELESTIA_WORKS const vk::RawTexture* getRawTexture() const;
 		CELESTIA_WORKS void resize(Vec2i newSize);
 
 	private:
 		void activateAsRenderTarget() override;
 		VkRenderPass getRenderPass() const override;
 		VkFramebuffer getFramebuffer() const override;
+
 	private:
-		std::unique_ptr<FrameBuffer> frameBuffer;
+		std::unique_ptr<vk::FrameBuffer> frameBuffer;
 		std::unique_ptr<Texture> m_texture;
 		Vec2i size;
 		bool hasDepth;

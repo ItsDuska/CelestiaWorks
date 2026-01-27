@@ -1,5 +1,5 @@
 #include "FontReader.hpp"
-#include "Backend/VulkanAPI/Core/Image.hpp"
+#include "Vulkan/Image.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -149,7 +149,7 @@ std::unique_ptr<celestia::Font_t> celestia::FontReader::createFont(const char* f
 	}
 
 	Vec2i bitmapSize(bmpWidth, font->bmpHeigth);
-	Image::createTextureFromBuffer(pixelBuffer.data(), textureSize, bitmapSize, font->texture, VK_FORMAT_R8_UNORM);
+	vk::Image::createTextureFromBuffer(pixelBuffer.data(), textureSize, bitmapSize, font->texture, VK_FORMAT_R8_UNORM);
 
 	FT_Done_FreeType(ft);
 

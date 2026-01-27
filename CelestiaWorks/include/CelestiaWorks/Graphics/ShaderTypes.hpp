@@ -1,5 +1,5 @@
 #pragma once
-// Tänne varmaan tarvii CELESTIA_WORKS homman ShaderType Enumille? guh.
+// TÃ¤nne varmaan tarvii CELESTIA_WORKS homman ShaderType Enumille? guh.
 
 
 namespace celestia

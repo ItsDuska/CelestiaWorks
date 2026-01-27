@@ -6,7 +6,7 @@
 #include "CelestiaVulkanTypes.hpp"
 #include "System/Vector.hpp"
 
-namespace celestia
+namespace celestia::vk
 {
 	class FrameBuffer
 	{
@@ -71,4 +71,4 @@ namespace celestia
 		RawTexture colorTexture;
 		RawTexture depthTexture;
 	};
-} // namespace celestia
+} // namespace celestia::vk

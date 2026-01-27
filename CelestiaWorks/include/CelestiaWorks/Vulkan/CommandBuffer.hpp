@@ -4,10 +4,10 @@
 Simple helper functions for managing commandBuffers.
 */
 
-namespace celestia
+namespace celestia::vk
 {
 	VkCommandBuffer beginSingleTimeCommands(VkCommandPool cmdPool, VkDevice device);
 
-	void endSingleTimeCommands(VkQueue graphicsQueue,VkCommandPool cmdPool, VkDevice device, VkCommandBuffer buffer);
+	void endSingleTimeCommands(VkQueue graphicsQueue, VkCommandPool cmdPool, VkDevice device, VkCommandBuffer buffer);
 
-}
+} // namespace celestia::vk

@@ -12,30 +12,28 @@ namespace celestia
 	class ShaderProgram
 	{
 	public:
-		// Loads the shader and designate it as the shadertype
-		void loadShader(const std::string& filepath, ShaderType format);
-		void loadShader(const std::filesystem::path& filepath, ShaderType format);
-		void loadShader(std::string_view& filepath, ShaderType format);
+		// Load a shader from a file.
+		void loadFromFile(const std::string& filepath, ShaderType stage);
+		void loadFromFile(const std::filesystem::path& filepath, ShaderType stage);
+		void loadFromFile(const char* filepath, ShaderType stage);
+
+		// Load shaders from a buffer. // en tiiä tarvitaanko koska oletamme sen formaatin olevan jo binäärissä.
+		void loadFromBytes(void* data, size_t size, ShaderType stage);
 
 		// Pushconstants, by default this is used for the projection matrix
 		template <typename PushConstantStruct> void addPushConstant(int offset, ShaderType dataDestination);
 
 		// register an image, a buffer or something else to the shader.
 		// for the offset, use the offset(struct, member) macro.
-		void addBinding(uint32_t binding, ShaderUniformTypes format, uint32_t offset);
+		void addBinding(uint32_t binding, ShaderUniformTypes format, uint32_t offset, ShaderType stageMask);
+
+		// Add shader entry point. Default is "main".
+		void addEntryPoint(const char* name = "main");
+
+		// build the whole thing. After this, you cant change it easily or at all.
+		void build();
 
 	private:
-		std::unique_ptr<ShaderProgramImpl> impl;
+		// std::unique_ptr<ShaderProgramImpl> impl;
 	};
-
-	/*
-	class Texture;
-	//TEMP IDEOINTI: REMOVE LATER
-	class RenderState
-	{
-
-		ShaderProgram shader;
-		Texture *texture;
-	};
-	*/
 } // namespace celestia

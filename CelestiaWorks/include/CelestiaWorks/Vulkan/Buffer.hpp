@@ -1,8 +1,8 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "Backend/VulkanAPI/Core/CelestiaVulkanTypes.hpp"
+#include "CelestiaVulkanTypes.hpp"
 
-namespace celestia
+namespace celestia::vk
 {
 	namespace buffer
 	{
@@ -20,4 +20,4 @@ namespace celestia
 		void copyBuffer(
 		  VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkDeviceSize srcOffset, VkDeviceSize dstOffset);
 	} // namespace buffer
-} // namespace celestia
+} // namespace celestia::vk

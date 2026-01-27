@@ -66,6 +66,6 @@ void celestia::VertexBuffer::draw(const RendererHandler& renderer, RenderPipelin
 		return;
 	}
 
-	Mesh* meshPtr = bufferImpl->getBufferPairPtr();
+	vk::Mesh* meshPtr = bufferImpl->getBufferPairPtr();
 	renderer.drawVertices(meshPtr, meshPtr->indexBufferSize / sizeof(uint16_t), pipeline->texture->getRawTexturePtr());
 }

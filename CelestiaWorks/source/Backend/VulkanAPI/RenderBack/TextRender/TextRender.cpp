@@ -1,18 +1,18 @@
 #include "TextRender.hpp"
-#include "Backend/VulkanAPI/Core/Buffer.hpp"
-#include "Backend/VulkanAPI/Core/Image.hpp"
-#include "Backend/VulkanAPI/Core/Pipeline.hpp"
-#include "Backend/VulkanAPI/Core/ShaderObject.hpp"
+#include "Vulkan/Buffer.hpp"
+#include "Vulkan/Image.hpp"
+#include "Vulkan/Pipeline.hpp"
+#include "Vulkan/ShaderObject.hpp"
 #include "Backend/VulkanAPI/Resources/FontReader.hpp"
-#include "Backend/VulkanAPI/Core/Device.hpp"
-#include "Backend/VulkanAPI/Core/SwapChain.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/SwapChain.hpp"
 
 #define MAIN_BUFFER 0
 
 celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32_t maxCharsPerBatch)
-	: render(render), descriptors(std::make_unique<Descriptor>()), bufferSize(sizeof(Vec2Aligned) * maxTextObjects),
-	  MAX_TEXT_COUNT(maxTextObjects), MAX_VERTEX_COUNT_PER_BATCH(maxCharsPerBatch * 4u),
-	  MAX_INDEX_COUNT_PER_BATCH(maxCharsPerBatch * 4u * 6u)
+	: render(render), descriptors(std::make_unique<vk::Descriptor>()),
+	  bufferSize(sizeof(vk::Vec2Aligned) * maxTextObjects), MAX_TEXT_COUNT(maxTextObjects),
+	  MAX_VERTEX_COUNT_PER_BATCH(maxCharsPerBatch * 4u), MAX_INDEX_COUNT_PER_BATCH(maxCharsPerBatch * 4u * 6u)
 {
 	indexCount = 0;
 	vertexCount = 0;
@@ -27,11 +27,11 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 
 	for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		storageBuffer[i] = buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+		storageBuffer[i] = vk::buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 		  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	}
 
-	RawMesh tempMesh;
+	vk::RawMesh tempMesh;
 	tempMesh.vertices.resize(MAX_VERTEX_COUNT_PER_BATCH);
 	tempMesh.indices.resize(MAX_INDEX_COUNT_PER_BATCH);
 
@@ -50,28 +50,28 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	}
 
 	// info.descriptors = set;
-	info.mesh = buffer::createMesh(tempMesh);
-	descriptors->addBinding(0, DescriptorType::COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	descriptors->addBinding(1, DescriptorType::STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+	info.mesh = vk::buffer::createMesh(tempMesh);
+	descriptors->addBinding(0, vk::DescriptorType::COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	descriptors->addBinding(1, vk::DescriptorType::STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 	descriptors->build();
 
 	info.layout = descriptors->getLayout();
 
 	// descriptors->build(info.descriptors, info.layout);
 
-	ShaderObject shader;
+	vk::ShaderObject shader;
 	shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::TEXT_BATCH, true);
 	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::TEXT_BATCH, true);
-	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
+	shader.createPushConstants<vk::PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
-	PipelineOptions options{};
+	vk::PipelineOptions options{};
 	options.blending = true;
 
-	Pipeline pipeline;
+	vk::Pipeline pipeline;
 	pipeline.createColorBlendAttachment(options.blending);
-	pipeline.createInputAssembly(DrawingMode::TRIANGLE);
+	pipeline.createInputAssembly(vk::DrawingMode::TRIANGLE);
 	pipeline.createMultisampling();
-	pipeline.createRasterizer(DrawingMode::TRIANGLE);
+	pipeline.createRasterizer(vk::DrawingMode::TRIANGLE);
 	pipeline.createScissors({0, 0}, render.swapChain->extent);
 	pipeline.createViewport({0, 0},
 	  {static_cast<float>(render.swapChain->extent.width), static_cast<float>(render.swapChain->extent.height)});
@@ -86,7 +86,7 @@ celestia::TextRender::TextRender(Render& render, uint32_t maxTextObjects, uint32
 	pipeline.createVertexInputStateCreateInfo(attributeDescriptions, bindingDescription, 1);
 
 	info.material =
-	  pipeline.createPipeline(shader, DrawingMode::TRIANGLE, &info.layout, render.swapChain->getRenderPass());
+	  pipeline.createPipeline(shader, vk::DrawingMode::TRIANGLE, &info.layout, render.swapChain->getRenderPass());
 }
 
 celestia::TextRender::~TextRender()
@@ -95,8 +95,8 @@ celestia::TextRender::~TextRender()
 
 	for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vkDestroyBuffer(Device::context.device, storageBuffer[i].buffer, nullptr);
-		vkFreeMemory(Device::context.device, storageBuffer[i].memory, nullptr);
+		vkDestroyBuffer(vk::Device::context.device, storageBuffer[i].buffer, nullptr);
+		vkFreeMemory(vk::Device::context.device, storageBuffer[i].memory, nullptr);
 	}
 }
 
@@ -124,26 +124,25 @@ void celestia::TextRender::end()
 
 	// needsUpdate = false;
 
-	size_t transformationSize = transformationIndexCounter * sizeof(Vec2Aligned);
+	size_t transformationSize = transformationIndexCounter * sizeof(vk::Vec2Aligned);
 
 	// Only update transformation buffer if we have transformations to update
-	if (transformationIndexCounter > 0 && transformationSize > 0)
+	if(transformationIndexCounter > 0 && transformationSize > 0)
 	{
 		void* data;
-		vkMapMemory(Device::context.device, storageBuffer[render.currentFrame].memory, 0, transformationSize, 0, &data);
+		vkMapMemory(
+		  vk::Device::context.device, storageBuffer[render.currentFrame].memory, 0, transformationSize, 0, &data);
 		std::memcpy(data, transformationBuffer.data(), transformationSize);
-		vkUnmapMemory(Device::context.device, storageBuffer[render.currentFrame].memory);
+		vkUnmapMemory(vk::Device::context.device, storageBuffer[render.currentFrame].memory);
 	}
 
 	size_t vertexSize = vertexCount * sizeof(VertexBatch);
-	
+
 	// Only update buffer if we have vertices to update
-	if (vertexCount > 0 && vertexSize > 0)
+	if(vertexCount > 0 && vertexSize > 0)
 	{
-		buffer::updateBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
+		vk::buffer::updateBuffer(info.mesh->vertexBuffer, 0, vertexSize, glyphBuffer.data());
 	}
-
-
 }
 
 void celestia::TextRender::flush()
@@ -190,7 +189,7 @@ void celestia::TextRender::drawText(const std::vector<VertexBatch>& vertices, co
 		info.descriptors[i]); descriptors->updateSets();
 		}
 		*/
-		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+		for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			descriptors->updateBuffer(1, &storageBuffer[i].buffer, bufferSize, 1, i);
 			descriptors->updateTexture(0, &currentTexturePtr->imageView, render.image->textureSampler, 1, i);

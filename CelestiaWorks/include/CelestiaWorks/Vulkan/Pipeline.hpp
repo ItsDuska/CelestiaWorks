@@ -2,7 +2,7 @@
 #include "CelestiaVulkanTypes.hpp"
 #include "Backend/Utils/Utils.hpp"
 
-namespace celestia
+namespace celestia::vk
 {
 	class SwapChain;
 	class ShaderObject;
@@ -73,4 +73,4 @@ namespace celestia
 		VkPipelineLayoutCreateInfo createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors);
 	};
 
-} // namespace celestia
+} // namespace celestia::vk

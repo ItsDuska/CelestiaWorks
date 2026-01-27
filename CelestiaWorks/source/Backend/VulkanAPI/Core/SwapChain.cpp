@@ -1,5 +1,5 @@
-#include "SwapChain.hpp"
-#include "Device.hpp"
+#include "Vulkan/SwapChain.hpp"
+#include "Vulkan/Device.hpp"
 #include "Backend/Window/WindowContext.hpp"
 #include "Backend/VulkanAPI/Config/VulkanConfig.hpp"
 
@@ -7,7 +7,7 @@
 #include <limits>
 #include <array>
 
-celestia::SwapChain::SwapChain(Device& device) : device(device)
+celestia::vk::SwapChain::SwapChain(Device& device) : device(device)
 {
 	createSwapChain();
 	createImageViews();
@@ -16,7 +16,7 @@ celestia::SwapChain::SwapChain(Device& device) : device(device)
 	createSyncObjects();
 }
 
-celestia::SwapChain::~SwapChain()
+celestia::vk::SwapChain::~SwapChain()
 {
 	cleanupSwapChain();
 	vkDestroyRenderPass(Device::context.device, renderPass, nullptr);
@@ -29,7 +29,7 @@ celestia::SwapChain::~SwapChain()
 	}
 }
 
-void celestia::SwapChain::recreateSwapChain()
+void celestia::vk::SwapChain::recreateSwapChain()
 {
 	PlatformWindow* win = WindowContext::get(); // tallennetaan paikalliseen muuttujaan
 	Vec2i winSize = win->getWindowSize();
@@ -48,37 +48,37 @@ void celestia::SwapChain::recreateSwapChain()
 	createFramebuffers();
 }
 
-VkRenderPass celestia::SwapChain::getRenderPass()
+VkRenderPass celestia::vk::SwapChain::getRenderPass()
 {
 	return renderPass;
 }
 
-VkSemaphore celestia::SwapChain::getImageAvailableSemaphore(int index)
+VkSemaphore celestia::vk::SwapChain::getImageAvailableSemaphore(int index)
 {
 	return imageAvailableSemaphores[index];
 }
 
-VkSemaphore celestia::SwapChain::getRenderFinishedSemaphore(int index)
+VkSemaphore celestia::vk::SwapChain::getRenderFinishedSemaphore(int index)
 {
 	return renderFinishedSemaphores[index];
 }
 
-VkFence& celestia::SwapChain::getInFlightFence(int index)
+VkFence& celestia::vk::SwapChain::getInFlightFence(int index)
 {
 	return inFlightFences[index];
 }
 
-VkSwapchainKHR& celestia::SwapChain::getSwapchain()
+VkSwapchainKHR& celestia::vk::SwapChain::getSwapchain()
 {
 	return swapChain;
 }
 
-VkFramebuffer celestia::SwapChain::getFrameBuffer(int index)
+VkFramebuffer celestia::vk::SwapChain::getFrameBuffer(int index)
 {
 	return framebuffers[index];
 }
 
-VkImageView celestia::SwapChain::createImageView(VkImage image, VkFormat format)
+VkImageView celestia::vk::SwapChain::createImageView(VkImage image, VkFormat format)
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -100,7 +100,7 @@ VkImageView celestia::SwapChain::createImageView(VkImage image, VkFormat format)
 	return imageView;
 }
 
-void celestia::SwapChain::createSwapChain()
+void celestia::vk::SwapChain::createSwapChain()
 {
 	SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
@@ -158,7 +158,7 @@ void celestia::SwapChain::createSwapChain()
 	vkGetSwapchainImagesKHR(Device::context.device, swapChain, &imageCount, images.data());
 }
 
-void celestia::SwapChain::createImageViews()
+void celestia::vk::SwapChain::createImageViews()
 {
 	imageViews.resize(images.size());
 
@@ -168,7 +168,7 @@ void celestia::SwapChain::createImageViews()
 	}
 }
 
-void celestia::SwapChain::createRenderPass()
+void celestia::vk::SwapChain::createRenderPass()
 {
 	VkAttachmentDescription colorAttachment{};
 	colorAttachment.format = imageFormat;
@@ -215,7 +215,7 @@ void celestia::SwapChain::createRenderPass()
 	}
 }
 
-void celestia::SwapChain::createSyncObjects()
+void celestia::vk::SwapChain::createSyncObjects()
 {
 	imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -241,7 +241,7 @@ void celestia::SwapChain::createSyncObjects()
 	}
 }
 
-void celestia::SwapChain::createFramebuffers()
+void celestia::vk::SwapChain::createFramebuffers()
 {
 	framebuffers.resize(imageViews.size());
 
@@ -265,7 +265,7 @@ void celestia::SwapChain::createFramebuffers()
 	}
 }
 
-void celestia::SwapChain::cleanupSwapChain()
+void celestia::vk::SwapChain::cleanupSwapChain()
 {
 	for(size_t i = 0; i < framebuffers.size(); i++)
 	{
@@ -280,7 +280,8 @@ void celestia::SwapChain::cleanupSwapChain()
 	vkDestroySwapchainKHR(Device::context.device, swapChain, nullptr);
 }
 
-VkSurfaceFormatKHR celestia::SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR
+celestia::vk::SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	for(const auto& availableFormat : availableFormats)
 	{
@@ -294,7 +295,8 @@ VkSurfaceFormatKHR celestia::SwapChain::chooseSwapSurfaceFormat(const std::vecto
 	return availableFormats[0];
 }
 
-VkPresentModeKHR celestia::SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR
+celestia::vk::SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
 	for(const auto& availablePresentMode : availablePresentModes)
 	{
@@ -307,7 +309,7 @@ VkPresentModeKHR celestia::SwapChain::chooseSwapPresentMode(const std::vector<Vk
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D celestia::SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D celestia::vk::SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
 	if(capabilities.currentExtent.width != (std::numeric_limits<uint32_t>::max)())
 	{

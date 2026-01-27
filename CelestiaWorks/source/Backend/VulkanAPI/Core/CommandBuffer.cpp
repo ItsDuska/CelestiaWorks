@@ -1,7 +1,6 @@
-#include "CommandBuffer.hpp"
-#include <vulkan/vulkan.h>
+#include "Vulkan/CommandBuffer.hpp"
 
-VkCommandBuffer celestia::beginSingleTimeCommands(VkCommandPool cmdPool, VkDevice device)
+VkCommandBuffer celestia::vk::beginSingleTimeCommands(VkCommandPool cmdPool, VkDevice device)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -21,7 +20,7 @@ VkCommandBuffer celestia::beginSingleTimeCommands(VkCommandPool cmdPool, VkDevic
 	return commandBuffer;
 }
 
-void celestia::endSingleTimeCommands(
+void celestia::vk::endSingleTimeCommands(
   VkQueue graphicsQueue, VkCommandPool cmdPool, VkDevice device, VkCommandBuffer buffer)
 {
 	vkEndCommandBuffer(buffer);

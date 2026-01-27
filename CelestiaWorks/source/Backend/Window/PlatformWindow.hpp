@@ -1,5 +1,5 @@
 #pragma once
-#include "Backend/VulkanAPI/Core/CelestiaVulkanTypes.hpp"
+#include "Vulkan/CelestiaVulkanTypes.hpp"
 
 namespace celestia
 {

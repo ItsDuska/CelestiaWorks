@@ -1,5 +1,5 @@
 #pragma once
-#include "Backend/VulkanAPI/Core/CelestiaVulkanTypes.hpp"
+#include "Vulkan/CelestiaVulkanTypes.hpp"
 
 #include "System/CelestiaTypes.hpp"
 #include "Graphics/VertexBufferInfo.hpp"
@@ -39,9 +39,9 @@ namespace celestia
 
 		void freeBuffers() const;
 
-		Mesh* getBufferPairPtr();
+		vk::Mesh* getBufferPairPtr();
 
 	private:
-		Mesh mesh;
+		vk::Mesh mesh;
 	};
 } // namespace celestia

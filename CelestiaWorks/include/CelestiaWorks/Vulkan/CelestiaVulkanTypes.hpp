@@ -4,7 +4,7 @@
 #include "System/CelestiaTypes.hpp"
 #include <vector>
 
-namespace celestia
+namespace celestia::vk
 {
 
 	struct AllocatedBuffer
@@ -77,4 +77,4 @@ namespace celestia
 		float padding[2]; // To align to 16 bytes
 	};
 
-} // namespace celestia
+} // namespace celestia::vk

@@ -1,6 +1,6 @@
-#include "ShaderObject.hpp"
+#include "Vulkan/ShaderObject.hpp"
 #include "Backend/Utils/Utils.hpp"
-#include "Device.hpp"
+#include "Vulkan/Device.hpp"
 
 // Sprite rendering
 #include "../../../shaders/batchRenderVert.h"
@@ -14,11 +14,11 @@
 #include "../../../shaders/basic/basicFrag.h"
 #include "../../../shaders/basic/basicVert.h"
 
-celestia::ShaderObject::ShaderObject() : pushConstants({})
+celestia::vk::ShaderObject::ShaderObject() : pushConstants({})
 {
 }
 
-celestia::ShaderObject::~ShaderObject()
+celestia::vk::ShaderObject::~ShaderObject()
 {
 	for(VkShaderModule& shader : shaderModules)
 	{
@@ -81,7 +81,8 @@ static const std::vector<uint32_t> getDefaultShaders(celestia::ShaderType shader
 	return std::vector<uint32_t>();
 }
 
-void celestia::ShaderObject::loadShader(const char* filepath, ShaderType shader, RenderGroup type, bool isDefaultShader)
+void celestia::vk::ShaderObject::loadShader(
+  const char* filepath, ShaderType shader, RenderGroup type, bool isDefaultShader)
 {
 	std::vector<uint32_t> byteCode;
 
@@ -111,17 +112,17 @@ void celestia::ShaderObject::loadShader(const char* filepath, ShaderType shader,
 	createShaderStageCreateInfo(convertToVkFlags(shader), shaderModule);
 }
 
-const std::vector<VkPipelineShaderStageCreateInfo> celestia::ShaderObject::getInfos() const
+const std::vector<VkPipelineShaderStageCreateInfo> celestia::vk::ShaderObject::getInfos() const
 {
 	return infos;
 }
 
-const VkPushConstantRange& celestia::ShaderObject::getPushConstant() const
+const VkPushConstantRange& celestia::vk::ShaderObject::getPushConstant() const
 {
 	return pushConstants;
 }
 
-void celestia::ShaderObject::createShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule)
+void celestia::vk::ShaderObject::createShaderStageCreateInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule)
 {
 	VkPipelineShaderStageCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -131,7 +132,7 @@ void celestia::ShaderObject::createShaderStageCreateInfo(VkShaderStageFlagBits s
 	infos.push_back(createInfo);
 }
 
-VkShaderStageFlagBits celestia::ShaderObject::convertToVkFlags(ShaderType type)
+VkShaderStageFlagBits celestia::vk::ShaderObject::convertToVkFlags(ShaderType type)
 {
 	switch(type)
 	{

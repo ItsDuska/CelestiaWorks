@@ -1,7 +1,7 @@
 #pragma once
 #include "Backend/VulkanAPI/RenderBack/VkRender/RenderBackend.hpp"
 #include "Backend/VulkanAPI/Config/VulkanConfig.hpp"
-#include "Backend/VulkanAPI/Core/Descriptor.hpp"
+#include "Vulkan/Descriptor.hpp"
 
 namespace celestia
 {
@@ -11,11 +11,11 @@ namespace celestia
 		DefaultSingleRenderer(Render& render);
 		~DefaultSingleRenderer();
 
-		void draw(Mesh* mesh, const uint32_t amountToDraw, const RawTexture* texture);
+		void draw(vk::Mesh* mesh, const uint32_t amountToDraw, const vk::RawTexture* texture);
 
 	private:
 		Render& render;
-		DrawInfo info;
-		Descriptor descriptor;
+		vk::DrawInfo info;
+		vk::Descriptor descriptor;
 	};
 } // namespace celestia

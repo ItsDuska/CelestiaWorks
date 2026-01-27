@@ -9,6 +9,10 @@
 #include "CelestiaWorks/System/Mouse.hpp"
 #include "CelestiaWorks/Graphics/VertexBuffer.hpp"
 #include "CelestiaWorks/Graphics/RenderTexture.hpp"
+#include "Graphics/RenderPipeline.hpp"
+#include "Graphics/ShaderProgram.hpp"
+#include "Graphics/ShaderTypes.hpp"
+#include "System/Matrix.hpp"
 
 static std::vector<celestia::Vertex> vertices = {{{600.0f, 350.0f}, {0.f, 0.f}, {0.0f, 0.5f, 1.0f}}, // Vertex 8
   {{900.0f, 350.0f}, {1.f, 0.f}, {0.2f, 0.8f, 0.2f}},												 // Vertex 9
@@ -53,9 +57,9 @@ int main()
 		textures[2].loadTexture("assets/RatSpriteSheet.png");
 		textures[3].loadTexture("assets/cats.jpg");
 
-		celestia::RenderPipeline pipeline{};
-		pipeline.shader = nullptr;
-		pipeline.texture = &textures[3];
+		celestia::RenderPipeline pipeline(&textures[3], nullptr);
+		// pipeline.shader = nullptr;
+		// pipeline.texture = &textures[3];
 
 		std::vector<celestia::Sprite> sprites;
 
@@ -87,11 +91,11 @@ int main()
 
 		celestia::Vec2i mousePos;
 
-		celestia::Color rTColor(75,100,25,255);
-		celestia::RenderTexture rTexture({400,400},false);
+		celestia::Color rTColor(75, 100, 25, 255);
+		celestia::RenderTexture rTexture({400, 400}, false);
 		rTexture.setClearColor(rTColor);
 
-		celestia::Sprite sussy({0,0},{350,350});
+		celestia::Sprite sussy({0, 0}, {350, 350});
 		sussy.setTexture(textures[1]);
 
 		while(window.isOpen())
@@ -112,7 +116,7 @@ int main()
 			rTexture.endRenderPass();
 
 			const celestia::Texture* tempTex = rTexture.getTexture();
-			celestia::Sprite amogTex({550,350}, {200,200});
+			celestia::Sprite amogTex({550, 350}, {200, 200});
 			amogTex.setTexture(*tempTex);
 			window.beginRenderPass();
 
@@ -131,16 +135,13 @@ int main()
 				testSprite.setTextureRectPosition({rectPositionX, 0});
 			}
 
-			 window.draw(text);
-
+			window.draw(text);
 
 			window.draw(text1);
 
 			window.draw(buffer, pipeline);
 
 			window.endRenderPass();
-
-			// Sleep(10);
 		}
 	}
 	catch(const std::exception& e)
@@ -153,44 +154,30 @@ int main()
 
 	return EXIT_SUCCESS;
 }
-
 /*
-	Miten vois toimia:
+struct ExamplePushConstant
+{
+	celestia::Mat4 guh;
+	celestia::Mat4 guh2;
+};
 
-	celestia::WindowHandle window(widht,height,name);
-
+void exampleCodeFunc(celestia::WindowHandle& window)
+{
 	celestia::Texture texture;
-	if (!texture.loadTexture(imagePath))
-	{
-		std::cout << "ERROR LOADING TEXTURE";
-	}
+	texture.loadTexture("assets/test123.png");
 
-	celestia::RenderObject player(width,height,pos,color,texture);
+	// esimerkki koodi
+	celestia::ShaderProgram shader;
+	shader.loadFromFile("amogus.vert", celestia::ShaderType::VERTEX_SHADER);
+	shader.loadFromFile("amogus.frag", celestia::ShaderType::FRAGMENT_SHADER);
+	// shader.addBinding(0, ) // lisää 0 bindingiksi combined image sampler
+	shader.addPushConstant<ExamplePushConstant>(0, celestia::ShaderType::VERTEX_SHADER);
+	shader.build();
 
-	celestia::Event event;
+	celestia::RenderPipeline pipeline(&texture, &shader);
 
-	while (window.isOnline())
-	{
-		window.pollEvent(event);
-		if (event.type == celestia::Event::Shutdown)
-		{
-			window.close();
-		}
+	celestia::Sprite sprite({50.f, 50.f}, {50.f, 50.f});
 
-		window.clear(celestia::Color::BLACK);
-		window.beginRendering();
-
-		window.draw(player);
-
-		window.endRendering();
-	}
-
-
-*/
-
-/*
-
-TODO: TEXT RENDERING!
-TEE TAPA LUODA STORAGE BUFFEREITA JA S�IL� NE ESIM RENDERI HOMMASSA TAI JOSSAIN MUUALLA.
-
+	window.draw(sprite, pipeline);
+}
 */

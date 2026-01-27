@@ -15,7 +15,7 @@
 
 struct VmaAllocator_T;
 
-namespace celestia
+namespace celestia::vk
 {
 	struct QueueFamilyIndices
 	{
@@ -53,7 +53,6 @@ namespace celestia
 		DeletionQueue deletionQueue;
 	};
 
-
 	class Window;
 
 	class Device
@@ -62,10 +61,11 @@ namespace celestia
 		Device();
 		~Device();
 		Device(const Device&) = delete;
-		Device& operator = (const Device&) = delete;
+		Device& operator=(const Device&) = delete;
 
 		SwapChainSupportDetails getSwapChainSupport();
 		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+
 	public:
 		/*
 		VkSurfaceKHR surface;
@@ -82,6 +82,7 @@ namespace celestia
 	private:
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
+
 	private:
 		void createInstance();
 		void createDebugMessenger();
@@ -103,17 +104,15 @@ namespace celestia
 
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
-		void destroyDebugUtilsMessengerEXT(VkInstance instance,
-			VkDebugUtilsMessengerEXT debugMessenger,
-			const VkAllocationCallbacks* pAllocator);
+		void destroyDebugUtilsMessengerEXT(
+		  VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
-		VkResult createDebugUtilsMessengerEXT(
-			VkInstance instance,
-			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-			const VkAllocationCallbacks* pAllocator,
-			VkDebugUtilsMessengerEXT* pDebugMessenger);
+		VkResult
+		createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+		  const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 
-		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
-
+		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		  VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		  void* pUserData);
 	};
-}
+} // namespace celestia::vk

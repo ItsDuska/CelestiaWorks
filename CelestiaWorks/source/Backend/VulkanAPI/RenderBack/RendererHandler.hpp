@@ -13,9 +13,13 @@ namespace celestia
 	class BatchSpriteRender;
 	class TextRender;
 	class DefaultSingleRenderer;
-	struct RawTexture;
 	struct Font_t;
-	struct Mesh;
+	namespace vk
+	{
+		struct RawTexture;
+		struct Mesh;
+
+	} // namespace vk
 
 	class RendererHandler
 	{
@@ -35,13 +39,13 @@ namespace celestia
 		void draw(const Drawable& drawable, RenderPipeline& pipeline) const;
 
 		// Bacth rendering functions
-		void drawSprite(const VertexPositions* quad, const RawTexture* texture) const;
+		void drawSprite(const VertexPositions* quad, const vk::RawTexture* texture) const;
 		void drawQuad(const Vec2& position, const Vec2& size, const Vec3& color) const;
 		void drawText(const std::vector<VertexBatch>& vertices, const int size, const Vec2& position,
 		  const Font_t& font, bool dirty, const int id) const;
 
 		// normal draw call. Will draw it instantly.
-		void drawVertices(Mesh* meshPtr, const uint32_t amountToDraw, const RawTexture* texture) const;
+		void drawVertices(vk::Mesh* meshPtr, const uint32_t amountToDraw, const vk::RawTexture* texture) const;
 
 		void beginRenderPass() const;
 		void endRenderPass() const;
@@ -50,6 +54,7 @@ namespace celestia
 
 		// TEXT RENDERING
 		void createTextRenderer(uint32_t maxTextObjects, uint32_t maxCharsPerBatch);
+
 	private:
 		void switchRenderTarget(RenderTarget* newTarget);
 

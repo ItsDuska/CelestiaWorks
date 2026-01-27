@@ -1,8 +1,8 @@
-#include "Pipeline.hpp"
-#include "Device.hpp"
-#include "SwapChain.hpp"
-#include "ShaderObject.hpp"
-//#include "Descriptor.hpp"
+#include "Vulkan/Pipeline.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/SwapChain.hpp"
+#include "Vulkan/ShaderObject.hpp"
+// #include "Descriptor.hpp"
 #include "Backend/Utils/Utils.hpp"
 
 // TODO: Tee tästä template functio. template <typename Vertex_t>
@@ -11,7 +11,7 @@
 // Use nullptr for descriptor if not using any uniform buffers or textures.
 // Tästä pitää tulla myös funktio jota voidaan käyttää kaikkialla muualla
 
-const celestia::Material celestia::Pipeline::createPipeline(
+const celestia::vk::Material celestia::vk::Pipeline::createPipeline(
   ShaderObject& shader, DrawingMode drawMode, VkDescriptorSetLayout* descriptors, VkRenderPass renderpass)
 {
 	Material material{};
@@ -37,7 +37,7 @@ const celestia::Material celestia::Pipeline::createPipeline(
 	return material;
 }
 
-void celestia::Pipeline::createInputAssembly(DrawingMode mode)
+void celestia::vk::Pipeline::createInputAssembly(DrawingMode mode)
 {
 	VkPipelineInputAssemblyStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -45,16 +45,16 @@ void celestia::Pipeline::createInputAssembly(DrawingMode mode)
 
 	switch(mode)
 	{
-	case celestia::DrawingMode::TRIANGLE: info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; break;
-	case celestia::DrawingMode::POINTS: info.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
-	case celestia::DrawingMode::LINES: info.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; break;
+	case celestia::vk::DrawingMode::TRIANGLE: info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; break;
+	case celestia::vk::DrawingMode::POINTS: info.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
+	case celestia::vk::DrawingMode::LINES: info.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; break;
 	default: break;
 	}
 
 	builder.inputAssembly = info;
 }
 
-void celestia::Pipeline::createViewport(Vec2 position, Vec2 dimensions)
+void celestia::vk::Pipeline::createViewport(Vec2 position, Vec2 dimensions)
 {
 	VkViewport result{};
 	result.x = position.x;
@@ -68,7 +68,7 @@ void celestia::Pipeline::createViewport(Vec2 position, Vec2 dimensions)
 	builder.viewport = result;
 }
 
-void celestia::Pipeline::createScissors(Vec2i offset, VkExtent2D extent)
+void celestia::vk::Pipeline::createScissors(Vec2i offset, VkExtent2D extent)
 {
 	VkRect2D scissor{};
 	scissor.offset = {offset.x, offset.y};
@@ -77,7 +77,7 @@ void celestia::Pipeline::createScissors(Vec2i offset, VkExtent2D extent)
 	builder.scissor = scissor;
 }
 
-void celestia::Pipeline::createRasterizer(DrawingMode mode)
+void celestia::vk::Pipeline::createRasterizer(DrawingMode mode)
 {
 	VkPipelineRasterizationStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -93,16 +93,16 @@ void celestia::Pipeline::createRasterizer(DrawingMode mode)
 
 	switch(mode)
 	{
-	case celestia::DrawingMode::TRIANGLE: info.polygonMode = VK_POLYGON_MODE_FILL; break;
-	case celestia::DrawingMode::POINTS: info.polygonMode = VK_POLYGON_MODE_POINT; break;
-	case celestia::DrawingMode::LINES: info.polygonMode = VK_POLYGON_MODE_LINE; break;
+	case celestia::vk::DrawingMode::TRIANGLE: info.polygonMode = VK_POLYGON_MODE_FILL; break;
+	case celestia::vk::DrawingMode::POINTS: info.polygonMode = VK_POLYGON_MODE_POINT; break;
+	case celestia::vk::DrawingMode::LINES: info.polygonMode = VK_POLYGON_MODE_LINE; break;
 	default: break;
 	}
 
 	builder.rasterizer = info;
 }
 
-void celestia::Pipeline::createMultisampling()
+void celestia::vk::Pipeline::createMultisampling()
 {
 	VkPipelineMultisampleStateCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -116,7 +116,7 @@ void celestia::Pipeline::createMultisampling()
 	builder.multisampling = info;
 }
 
-void celestia::Pipeline::createColorBlendAttachment(bool blending)
+void celestia::vk::Pipeline::createColorBlendAttachment(bool blending)
 {
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 	colorBlendAttachment.colorWriteMask =
@@ -133,7 +133,7 @@ void celestia::Pipeline::createColorBlendAttachment(bool blending)
 	builder.colorBlendAttachment = colorBlendAttachment;
 }
 
-void celestia::Pipeline::createVertexInputStateCreateInfo(
+void celestia::vk::Pipeline::createVertexInputStateCreateInfo(
   utils::CustomVertexInputAttributeDescriptionFactory& attributeDescriptions,
   const VkVertexInputBindingDescription& bindingDescription, uint32_t count)
 {
@@ -149,7 +149,7 @@ void celestia::Pipeline::createVertexInputStateCreateInfo(
 }
 
 VkPipelineLayoutCreateInfo
-celestia::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors)
+celestia::vk::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout* descriptors)
 {
 	VkPipelineLayoutCreateInfo info{};
 	info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -174,7 +174,7 @@ celestia::Pipeline::createLayoutInfo(ShaderObject& shader, VkDescriptorSetLayout
 	return info;
 }
 
-VkPipeline celestia::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass pass)
+VkPipeline celestia::vk::BuildPipeline::buildPipeline(VkDevice device, VkRenderPass pass)
 {
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;

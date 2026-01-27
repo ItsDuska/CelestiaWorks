@@ -1,11 +1,11 @@
-﻿#include "Descriptor.hpp"
-#include "Device.hpp"
-#include "Buffer.hpp"
-#include "Image.hpp"
+﻿#include "Vulkan/Descriptor.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/Buffer.hpp"
+#include "Vulkan/Image.hpp"
 #include <array>
 #include <iostream>
 
-celestia::Descriptor::Descriptor()
+celestia::vk::Descriptor::Descriptor()
 {
 	bindingCount = 0;
 	enableBindless = false;
@@ -20,13 +20,13 @@ celestia::Descriptor::Descriptor()
 	}
 }
 
-celestia::Descriptor::~Descriptor()
+celestia::vk::Descriptor::~Descriptor()
 {
 	// Cleanup is handled by the deletion queue in Device class
 	// This is called when the device is destroyed
 }
 
-void celestia::Descriptor::addBinding(
+void celestia::vk::Descriptor::addBinding(
   uint32_t binding, DescriptorType type, VkShaderStageFlags shaderStages, uint32_t descriptorCount)
 {
 	VkDescriptorType vkType = toVkType(type);
@@ -75,7 +75,7 @@ void celestia::Descriptor::addBinding(
 	bindingCount++;
 }
 
-void celestia::Descriptor::build()
+void celestia::vk::Descriptor::build()
 {
 	if(isBuilt)
 	{
@@ -158,7 +158,7 @@ void celestia::Descriptor::build()
 	isBuilt = true;
 }
 
-void celestia::Descriptor::updateTexture(
+void celestia::vk::Descriptor::updateTexture(
   uint32_t binding, const VkImageView* imageViews, VkSampler sampler, uint32_t count, uint32_t frameIndex)
 {
 	if(!isBuilt)
@@ -221,7 +221,7 @@ void celestia::Descriptor::updateTexture(
 	pendingWrites.push_back(writeDescriptorSet);
 }
 
-void celestia::Descriptor::updateBuffer(
+void celestia::vk::Descriptor::updateBuffer(
   uint32_t binding, VkBuffer* buffers, VkDeviceSize size, uint32_t count, uint32_t frameIndex)
 {
 	if(!isBuilt)
@@ -273,7 +273,7 @@ void celestia::Descriptor::updateBuffer(
 	pendingWrites.push_back(writeDescriptorSet);
 }
 
-void celestia::Descriptor::flushWrites()
+void celestia::vk::Descriptor::flushWrites()
 {
 	if(!pendingWrites.empty())
 	{
@@ -283,12 +283,12 @@ void celestia::Descriptor::flushWrites()
 	}
 }
 
-void celestia::Descriptor::clearWrites()
+void celestia::vk::Descriptor::clearWrites()
 {
 	pendingWrites.clear();
 }
 
-VkDescriptorType celestia::Descriptor::toVkType(DescriptorType type)
+VkDescriptorType celestia::vk::Descriptor::toVkType(DescriptorType type)
 {
 	switch(type)
 	{
@@ -301,13 +301,13 @@ VkDescriptorType celestia::Descriptor::toVkType(DescriptorType type)
 	}
 }
 
-celestia::BindingInfo* celestia::Descriptor::findBinding(uint32_t binding)
+celestia::vk::BindingInfo* celestia::vk::Descriptor::findBinding(uint32_t binding)
 {
 	auto it = bindings.find(binding);
 	return (it != bindings.end()) ? &it->second : nullptr;
 }
 
-void celestia::Descriptor::addWrite(uint32_t binding, VkDescriptorSet descriptorSet)
+void celestia::vk::Descriptor::addWrite(uint32_t binding, VkDescriptorSet descriptorSet)
 {
 	BindingInfo* bindingInfo = findBinding(binding);
 	if(!bindingInfo)
@@ -334,7 +334,7 @@ void celestia::Descriptor::addWrite(uint32_t binding, VkDescriptorSet descriptor
 	pendingWrites.push_back(writeDescriptorSet);
 }
 
-VkDescriptorSet celestia::Descriptor::getDescriptorSet(uint32_t frameIndex) const
+VkDescriptorSet celestia::vk::Descriptor::getDescriptorSet(uint32_t frameIndex) const
 {
 	if(frameIndex >= MAX_FRAMES_IN_FLIGHT)
 	{
@@ -351,7 +351,7 @@ VkDescriptorSet celestia::Descriptor::getDescriptorSet(uint32_t frameIndex) cons
 	return descriptorSets[frameIndex];
 }
 
-VkDescriptorSetLayout celestia::Descriptor::getLayout() const
+VkDescriptorSetLayout celestia::vk::Descriptor::getLayout() const
 {
 	if(!isBuilt)
 	{

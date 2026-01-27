@@ -1,6 +1,6 @@
 #include "Graphics/Font.hpp"
 #include "Backend/VulkanAPI/Resources/FontReader.hpp"
-#include "Backend/VulkanAPI/Core/Image.hpp"
+#include "Vulkan/Image.hpp"
 #include <iostream>
 #include <vulkan/vulkan.h>
 
@@ -17,7 +17,7 @@ celestia::Font::~Font()
 	// Only delete if the texture was successfully created
 	if(bitmapData->texture.allocatedImage.image != VK_NULL_HANDLE)
 	{
-		Image::deleteTextureImage(bitmapData->texture);
+		vk::Image::deleteTextureImage(bitmapData->texture);
 	}
 }
 

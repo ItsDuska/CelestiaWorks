@@ -1,7 +1,7 @@
 #pragma once
 #include "Backend/VulkanAPI/RenderBack/VkRender/RenderBackend.hpp"
 #include "Backend/VulkanAPI/Config/VulkanConfig.hpp"
-#include "Backend/VulkanAPI/Core/Descriptor.hpp"
+#include "Vulkan/Descriptor.hpp"
 #include <unordered_map>
 #include <stack>
 
@@ -29,7 +29,7 @@ namespace celestia
 		uint32_t vertexCount;
 		uint32_t indexCount;
 
-		Mesh* mesh;
+		vk::Mesh* mesh;
 	};
 
 	struct Font_t;
@@ -50,16 +50,16 @@ namespace celestia
 
 	private:
 		Render& render;
-		DrawInfo info;
-		std::unique_ptr<Descriptor> descriptors;
+		vk::DrawInfo info;
+		std::unique_ptr<vk::Descriptor> descriptors;
 
-		const RawTexture* currentTexturePtr;
-		Material defaultMaterial;
+		const vk::RawTexture* currentTexturePtr;
+		vk::Material defaultMaterial;
 
-		AllocatedBuffer storageBuffer[MAX_FRAMES_IN_FLIGHT];
+		vk::AllocatedBuffer storageBuffer[MAX_FRAMES_IN_FLIGHT];
 		const VkDeviceSize bufferSize;
 
-		std::vector<Vec2Aligned> transformationBuffer;
+		std::vector<vk::Vec2Aligned> transformationBuffer;
 		int transformationIndexCounter;
 		// std::vector<int> idBuffer;
 

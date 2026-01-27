@@ -8,7 +8,6 @@
 #include <vulkan/vulkan.h>
 #include <memory>
 
-
 static std::unique_ptr<celestia::RendererHandler> handler = nullptr;
 
 celestia::RendererHandler& celestia::RendererHandler::getInstance()
@@ -18,7 +17,7 @@ celestia::RendererHandler& celestia::RendererHandler::getInstance()
 
 void celestia::RendererHandler::init(uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
 {
-	handler = std::make_unique<RendererHandler>(maxTexturesInShader,maxQuadsPerBatch);
+	handler = std::make_unique<RendererHandler>(maxTexturesInShader, maxQuadsPerBatch);
 }
 
 void celestia::RendererHandler::cleanup()
@@ -44,7 +43,6 @@ void celestia::RendererHandler::setActiveRenderTarget(celestia::RenderTarget* ta
 	coreRenderer->setRenderTarget(target);
 }
 
-
 celestia::RenderTarget* celestia::RendererHandler::getActiveRenderTarget() const
 {
 	return activeTarget;
@@ -60,7 +58,7 @@ void celestia::RendererHandler::draw(const Drawable& drawable, RenderPipeline& p
 	drawable.draw(*this, &pipeline);
 }
 
-void celestia::RendererHandler::drawSprite(const VertexPositions* quad, const RawTexture* texture) const
+void celestia::RendererHandler::drawSprite(const VertexPositions* quad, const vk::RawTexture* texture) const
 {
 	batchSpriteRenderer->drawQuad(quad, texture);
 }
@@ -80,7 +78,7 @@ void celestia::RendererHandler::drawText(const std::vector<VertexBatch>& vertice
 }
 
 void celestia::RendererHandler::drawVertices(
-  Mesh* meshPtr, const uint32_t amountToDraw, const RawTexture* texture) const
+  vk::Mesh* meshPtr, const uint32_t amountToDraw, const vk::RawTexture* texture) const
 {
 	defaultSingleRenderer->draw(meshPtr, amountToDraw, texture);
 }

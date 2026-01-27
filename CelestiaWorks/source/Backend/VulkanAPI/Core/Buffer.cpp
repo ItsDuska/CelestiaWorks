@@ -1,10 +1,10 @@
-#include "Buffer.hpp"
-#include "CommandBuffer.hpp"
-#include "Backend/VulkanAPI/Core/Device.hpp"
+#include "Vulkan/Buffer.hpp"
+#include "Vulkan/CommandBuffer.hpp"
+#include "Vulkan/Device.hpp"
 #include "Backend/VulkanAPI/Config/VulkanConfig.hpp"
 
-celestia::AllocatedBuffer
-celestia::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+celestia::vk::AllocatedBuffer
+celestia::vk::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
 	if(size == 0)
 	{
@@ -47,7 +47,7 @@ celestia::buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMe
  * tiedetyill� funktioilla kuten "this->getDataSize();"
  */
 
-celestia::Mesh* celestia::buffer::createMesh(RawMesh& rawMesh)
+celestia::vk::Mesh* celestia::vk::buffer::createMesh(RawMesh& rawMesh)
 {
 	Mesh* mesh = new Mesh;
 	mesh->indexBufferSize = static_cast<uint32_t>(rawMesh.indices.size() * sizeof(uint16_t));
@@ -57,7 +57,7 @@ celestia::Mesh* celestia::buffer::createMesh(RawMesh& rawMesh)
 	return mesh;
 }
 
-void celestia::buffer::updateBuffer(
+void celestia::vk::buffer::updateBuffer(
   AllocatedBuffer& dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, const void* vertexData)
 {
 	// Skip update if there's no data to update
@@ -80,7 +80,7 @@ void celestia::buffer::updateBuffer(
 	vkFreeMemory(Device::context.device, stagingBuffer.memory, nullptr);
 }
 
-uint32_t celestia::buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t celestia::vk::buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(Device::context.physicalDevice, &memProperties);
@@ -96,8 +96,8 @@ uint32_t celestia::buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyF
 	throw std::runtime_error("Failed to find suitable memory type!\n");
 }
 
-celestia::AllocatedBuffer
-celestia::buffer::createVertexBuffer(void* vertices, size_t bufferSize, VkBufferUsageFlags flag)
+celestia::vk::AllocatedBuffer
+celestia::vk::buffer::createVertexBuffer(void* vertices, size_t bufferSize, VkBufferUsageFlags flag)
 {
 	AllocatedBuffer stagingBuffer = createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -125,7 +125,7 @@ celestia::buffer::createVertexBuffer(void* vertices, size_t bufferSize, VkBuffer
 	return vertexBuffer;
 }
 
-celestia::AllocatedBuffer celestia::buffer::createIndexBuffer(void* indicies, size_t bufferSize)
+celestia::vk::AllocatedBuffer celestia::vk::buffer::createIndexBuffer(void* indicies, size_t bufferSize)
 {
 	AllocatedBuffer stagingBuffer = buffer::createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 	  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -153,7 +153,7 @@ celestia::AllocatedBuffer celestia::buffer::createIndexBuffer(void* indicies, si
 	return indexBuffer;
 }
 
-void celestia::buffer::copyBuffer(
+void celestia::vk::buffer::copyBuffer(
   VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkDeviceSize srcOffset, VkDeviceSize dstOffset)
 {
 	VkCommandBuffer commandBuffer = beginSingleTimeCommands(Device::context.commandPool, Device::context.device);

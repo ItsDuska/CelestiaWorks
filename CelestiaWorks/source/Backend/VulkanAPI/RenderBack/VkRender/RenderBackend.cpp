@@ -1,9 +1,9 @@
 #include "RenderBackend.hpp"
 #include "Backend/Window/WindowContext.hpp"
-#include "Backend/VulkanAPI/Core/Device.hpp"
-#include "Backend/VulkanAPI/Core/SwapChain.hpp"
-#include "Backend/VulkanAPI/Core/Pipeline.hpp"
-#include "Backend/VulkanAPI/Core/Image.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/SwapChain.hpp"
+#include "Vulkan/Pipeline.hpp"
+#include "Vulkan/Image.hpp"
 #include "Graphics/RenderTarget.hpp"
 
 #include "Backend/Utils/Utils.hpp"
@@ -13,9 +13,9 @@
 
 celestia::Render::Render()
 {
-	device = std::make_unique<Device>();
-	swapChain = std::make_unique<SwapChain>(*device);
-	image = std::make_unique<Image>();
+	device = std::make_unique<vk::Device>();
+	swapChain = std::make_unique<vk::SwapChain>(*device);
+	image = std::make_unique<vk::Image>();
 	rendering = false;
 	clearColor = {0.f, 0.f, 0.f, 1.f};
 	hasBindedTEMP = false;
@@ -43,7 +43,7 @@ celestia::Render::~Render()
 {
 }
 
-void celestia::Render::submitIndexedDraw(DrawInfo& info)
+void celestia::Render::submitIndexedDraw(vk::DrawInfo& info)
 {
 	if(!rendering)
 	{
@@ -55,8 +55,8 @@ void celestia::Render::submitIndexedDraw(DrawInfo& info)
 
 	vkCmdBindPipeline(currentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.pipeline);
 
-	vkCmdBindDescriptorSets(currentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.layout, 0, 1,
-	  &info.descriptor, 0, nullptr);
+	vkCmdBindDescriptorSets(
+	  currentCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, info.material.layout, 0, 1, &info.descriptor, 0, nullptr);
 
 	// TODO: tee t�� kivemmi.
 	// Mat4 model(1.f);
@@ -68,7 +68,7 @@ void celestia::Render::submitIndexedDraw(DrawInfo& info)
 
 	// TODO: add custom push Constants to this
 	vkCmdPushConstants(currentCommandBuffer, info.material.layout, VK_SHADER_STAGE_VERTEX_BIT, 0,
-	  sizeof(PUSH_CONSTANTS), &constants);
+	  sizeof(vk::PUSH_CONSTANTS), &constants);
 
 	VkDeviceSize offset = 0;
 
@@ -91,9 +91,9 @@ void celestia::Render::beginRendering()
 	if(!isOffscreenRendering)
 	{
 		// Window rendering: handle swapchain synchronization
-		vkWaitForFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
+		vkWaitForFences(vk::Device::context.device, 1, &swapChain->getInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
-		VkResult result = vkAcquireNextImageKHR(Device::context.device, swapChain->getSwapchain(), UINT64_MAX,
+		VkResult result = vkAcquireNextImageKHR(vk::Device::context.device, swapChain->getSwapchain(), UINT64_MAX,
 		  swapChain->getImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
 
 		if(result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -106,7 +106,7 @@ void celestia::Render::beginRendering()
 			throw std::runtime_error("Failed to present swap chain image!\n");
 		}
 
-		vkResetFences(Device::context.device, 1, &swapChain->getInFlightFence(currentFrame));
+		vkResetFences(vk::Device::context.device, 1, &swapChain->getInFlightFence(currentFrame));
 		vkResetCommandBuffer(commandBuffers[currentFrame], 0);
 	}
 	else
@@ -130,11 +130,12 @@ void celestia::Render::beginRendering()
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 
-	if (activeRenderTarget)
+	if(activeRenderTarget)
 	{
 		renderPassInfo.renderPass = activeRenderTarget->getRenderPass();
 		renderPassInfo.framebuffer = activeRenderTarget->getFramebuffer();
-		renderPassInfo.renderArea.extent = { (uint32_t)activeRenderTarget->getSize().x, (uint32_t)activeRenderTarget->getSize().y};
+		renderPassInfo.renderArea.extent = {
+		  (uint32_t)activeRenderTarget->getSize().x, (uint32_t)activeRenderTarget->getSize().y};
 	}
 	else
 	{
@@ -189,8 +190,8 @@ void celestia::Render::endRendering()
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphore;
 
-		if(vkQueueSubmit(Device::context.graphicsQueue, 1, &submitInfo, swapChain->getInFlightFence(currentFrame)) !=
-		   VK_SUCCESS)
+		if(vkQueueSubmit(vk::Device::context.graphicsQueue, 1, &submitInfo,
+			 swapChain->getInFlightFence(currentFrame)) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to submit draw command buffer!");
 		}
@@ -207,7 +208,7 @@ void celestia::Render::endRendering()
 		presentInfo.pImageIndices = &imageIndex;
 		presentInfo.pResults = nullptr;
 
-		VkResult result = vkQueuePresentKHR(Device::context.presentQueue, &presentInfo);
+		VkResult result = vkQueuePresentKHR(vk::Device::context.presentQueue, &presentInfo);
 
 		if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
 		   WindowContext::get()->isFramebufferResized())
@@ -229,14 +230,14 @@ void celestia::Render::endRendering()
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &offscreenCommandBuffer;
 
-		if(vkQueueSubmit(Device::context.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+		if(vkQueueSubmit(vk::Device::context.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to submit offscreen command buffer!");
 		}
 
 		// Wait for GPU to complete offscreen work before reusing command buffer
-		vkQueueWaitIdle(Device::context.graphicsQueue);
-		
+		vkQueueWaitIdle(vk::Device::context.graphicsQueue);
+
 		// Reset the offscreen command buffer state for next use
 		vkResetCommandBuffer(offscreenCommandBuffer, 0);
 	}
@@ -266,12 +267,11 @@ void celestia::Render::setClearColor(celestia::Color& color)
 
 void celestia::Render::cleanUp()
 {
-	vkDeviceWaitIdle(Device::context.device);
+	vkDeviceWaitIdle(vk::Device::context.device);
 	vkFreeCommandBuffers(
-	  Device::context.device, Device::context.commandPool, MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
-	vkFreeCommandBuffers(
-	  Device::context.device, Device::context.commandPool, 1, &offscreenCommandBuffer);
-	Device::context.deletionQueue.flush();
+	  vk::Device::context.device, vk::Device::context.commandPool, MAX_FRAMES_IN_FLIGHT, commandBuffers.data());
+	vkFreeCommandBuffers(vk::Device::context.device, vk::Device::context.commandPool, 1, &offscreenCommandBuffer);
+	vk::Device::context.deletionQueue.flush();
 }
 
 void celestia::Render::setFramerateLimit(const int frameRate)
@@ -302,11 +302,11 @@ void celestia::Render::createCommandBuffers()
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Device::context.commandPool;
+	allocInfo.commandPool = vk::Device::context.commandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-	if(vkAllocateCommandBuffers(Device::context.device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+	if(vkAllocateCommandBuffers(vk::Device::context.device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate command buffers!");
 	}
@@ -316,11 +316,11 @@ void celestia::Render::createOffscreenCommandBuffer()
 {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = Device::context.commandPool;
+	allocInfo.commandPool = vk::Device::context.commandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = 1;
 
-	if(vkAllocateCommandBuffers(Device::context.device, &allocInfo, &offscreenCommandBuffer) != VK_SUCCESS)
+	if(vkAllocateCommandBuffers(vk::Device::context.device, &allocInfo, &offscreenCommandBuffer) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate offscreen command buffer!");
 	}

@@ -1,5 +1,5 @@
 #pragma once
-#include <Backend/VulkanAPI/Core/Descriptor.hpp>
+#include <Vulkan/Descriptor.hpp>
 
 namespace celestia
 {
@@ -9,6 +9,6 @@ namespace celestia
 		ShaderProgramImpl();
 
 	private:
-		Descriptor descriptorFactory;
+		vk::Descriptor descriptorFactory;
 	};
 } // namespace celestia

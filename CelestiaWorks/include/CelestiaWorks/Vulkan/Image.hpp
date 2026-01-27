@@ -2,7 +2,7 @@
 #include <vulkan/vulkan.h>
 #include "CelestiaVulkanTypes.hpp"
 
-namespace celestia
+namespace celestia::vk
 {
 	class Image
 	{
@@ -48,4 +48,4 @@ namespace celestia
 		  float maxLod = 0.0f);
 	};
 
-}; // namespace celestia
+}; // namespace celestia::vk

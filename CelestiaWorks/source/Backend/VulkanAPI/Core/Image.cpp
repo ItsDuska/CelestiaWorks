@@ -1,7 +1,7 @@
-#include "Image.hpp"
-#include "Device.hpp"
-#include "Buffer.hpp"
-#include "CommandBuffer.hpp"
+#include "Vulkan/Image.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/Buffer.hpp"
+#include "Vulkan/CommandBuffer.hpp"
 #include <vulkan/vulkan_core.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -9,21 +9,21 @@
 
 #include <iostream>
 
-celestia::Image::Image()
+celestia::vk::Image::Image()
 {
 	Vec2i temp;
 	defaultTexture = createTextureImage(nullptr, temp, true);
 	this->textureSampler = createTextureSampler();
 }
 
-celestia::Image::~Image()
+celestia::vk::Image::~Image()
 {
 	deleteTextureImage(defaultTexture);
 
 	vkDestroySampler(Device::context.device, textureSampler, nullptr);
 }
 
-void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+void celestia::vk::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
   VkMemoryPropertyFlags properties, AllocatedImage& image)
 {
 	if(imageSize.x <= 0 || imageSize.y <= 0)
@@ -68,7 +68,8 @@ void celestia::Image::createImage(Vec2i imageSize, VkFormat format, VkImageTilin
 	vkBindImageMemory(Device::context.device, image.image, image.memory, 0);
 }
 
-celestia::RawTexture celestia::Image::createTextureImage(const char* filepath, Vec2i& size, bool isDefaultTexture)
+celestia::vk::RawTexture
+celestia::vk::Image::createTextureImage(const char* filepath, Vec2i& size, bool isDefaultTexture)
 {
 	static int id = 0;
 
@@ -117,7 +118,7 @@ celestia::RawTexture celestia::Image::createTextureImage(const char* filepath, V
 	return texture;
 }
 
-void celestia::Image::deleteTextureImage(RawTexture& texture)
+void celestia::vk::Image::deleteTextureImage(RawTexture& texture)
 {
 	vkDeviceWaitIdle(Device::context.device);
 #ifdef ENABLE_VALIDATION_LAYER
@@ -128,20 +129,20 @@ void celestia::Image::deleteTextureImage(RawTexture& texture)
 	vkFreeMemory(Device::context.device, texture.allocatedImage.memory, nullptr);
 }
 
-void celestia::Image::createTextureFromBuffer(
+void celestia::vk::Image::createTextureFromBuffer(
   const void* bufferPtr, const VkDeviceSize& bufferSize, const Vec2i& size, RawTexture& texture, VkFormat format)
 {
-	if (bufferPtr == nullptr)
+	if(bufferPtr == nullptr)
 	{
 		throw std::invalid_argument("ERROR: Buffer pointer is null in createTextureFromBuffer!");
 	}
 
-	if (bufferSize == 0)
+	if(bufferSize == 0)
 	{
 		throw std::invalid_argument("ERROR: Buffer size is zero in createTextureFromBuffer!");
 	}
 
-	if (size.x <= 0 || size.y <= 0)
+	if(size.x <= 0 || size.y <= 0)
 	{
 		throw std::invalid_argument("ERROR: Invalid texture dimensions in createTextureFromBuffer!");
 	}
@@ -172,7 +173,7 @@ void celestia::Image::createTextureFromBuffer(
 	texture.imageView = createImageView(texture.allocatedImage.image, format);
 }
 
-void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
+void celestia::vk::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
 	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(Device::context.commandPool, Device::context.device);
 
@@ -187,7 +188,7 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	barrier.image = image;
 	// Set aspect mask based on the new layout
-	if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	if(newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 	{
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 	}
@@ -216,7 +217,8 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+	else if(oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
+			newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	{
 		barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -224,7 +226,7 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 		sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+	else if(oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -232,10 +234,11 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	else if(oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 	{
 		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		barrier.dstAccessMask =
+		  VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -251,7 +254,7 @@ void celestia::Image::transitionImageLayout(VkImage image, VkImageLayout oldLayo
 	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
-void celestia::Image::copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u imageSize)
+void celestia::vk::Image::copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u imageSize)
 {
 	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(Device::context.commandPool, Device::context.device);
 
@@ -274,7 +277,7 @@ void celestia::Image::copyBufferToImage(VkBuffer buffer, VkImage image, Vec2u im
 	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
-VkImageView celestia::Image::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectMask)
+VkImageView celestia::vk::Image::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectMask)
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -297,7 +300,7 @@ VkImageView celestia::Image::createImageView(VkImage image, VkFormat format, VkI
 }
 
 VkSampler
-celestia::Image::createTextureSampler(VkFilter magFilter, VkFilter minFilter, VkSamplerAddressMode addressModeU,
+celestia::vk::Image::createTextureSampler(VkFilter magFilter, VkFilter minFilter, VkSamplerAddressMode addressModeU,
   VkSamplerAddressMode addressModeV, VkSamplerAddressMode addressModeW, bool enableAnisotropy, float maxAnisotropy,
   VkBorderColor borderColor, VkSamplerMipmapMode mipmapMode, float mipLodBias, float minLod, float maxLod)
 {
@@ -329,7 +332,7 @@ celestia::Image::createTextureSampler(VkFilter magFilter, VkFilter minFilter, Vk
 }
 
 // Compute shader image methods
-celestia::RawTexture celestia::Image::createStorageImage(Vec2i size, VkFormat format)
+celestia::vk::RawTexture celestia::vk::Image::createStorageImage(Vec2i size, VkFormat format)
 {
 	static int id = 0;
 	RawTexture texture{};
@@ -344,7 +347,7 @@ celestia::RawTexture celestia::Image::createStorageImage(Vec2i size, VkFormat fo
 	return texture;
 }
 
-celestia::RawTexture celestia::Image::createStorageImageForSampling(Vec2i size, VkFormat format)
+celestia::vk::RawTexture celestia::vk::Image::createStorageImageForSampling(Vec2i size, VkFormat format)
 {
 	static int id = 0;
 	RawTexture texture{};
@@ -361,8 +364,8 @@ celestia::RawTexture celestia::Image::createStorageImageForSampling(Vec2i size, 
 	return texture;
 }
 
-celestia::RawTexture
-celestia::Image::createStorageImageWithData(Vec2i size, VkFormat format, const void* data, VkDeviceSize dataSize)
+celestia::vk::RawTexture
+celestia::vk::Image::createStorageImageWithData(Vec2i size, VkFormat format, const void* data, VkDeviceSize dataSize)
 {
 	// Create staging buffer
 	AllocatedBuffer stagingBuffer = buffer::createBuffer(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -390,7 +393,7 @@ celestia::Image::createStorageImageWithData(Vec2i size, VkFormat format, const v
 	return storageTexture;
 }
 
-void celestia::Image::copyImageToBuffer(const RawTexture& image, VkBuffer buffer, Vec2i imageSize)
+void celestia::vk::Image::copyImageToBuffer(const RawTexture& image, VkBuffer buffer, Vec2i imageSize)
 {
 	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(Device::context.commandPool, Device::context.device);
 
@@ -411,7 +414,8 @@ void celestia::Image::copyImageToBuffer(const RawTexture& image, VkBuffer buffer
 	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
-void celestia::Image::transitionImageLayoutForCompute(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
+void celestia::vk::Image::transitionImageLayoutForCompute(
+  VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
 	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(Device::context.commandPool, Device::context.device);
 
@@ -470,7 +474,7 @@ void celestia::Image::transitionImageLayoutForCompute(VkImage image, VkImageLayo
 	  Device::context.graphicsQueue, Device::context.commandPool, Device::context.device, cmdBuffer);
 }
 
-VkImageView celestia::Image::createImageViewForStorage(VkImage image, VkFormat format)
+VkImageView celestia::vk::Image::createImageViewForStorage(VkImage image, VkFormat format)
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

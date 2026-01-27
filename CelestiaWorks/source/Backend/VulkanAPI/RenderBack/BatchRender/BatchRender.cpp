@@ -1,15 +1,15 @@
 #include "BatchRender.hpp"
-#include "Backend/VulkanAPI/Core/Buffer.hpp"
-#include "Backend/VulkanAPI/Core/Descriptor.hpp"
-#include "Backend/VulkanAPI/Core/Image.hpp"
-#include "Backend/VulkanAPI/Core/Pipeline.hpp"
-#include "Backend/VulkanAPI/Core/ShaderObject.hpp"
-#include "Backend/VulkanAPI/Core/SwapChain.hpp"
+#include "Vulkan/Buffer.hpp"
+#include "Vulkan/Descriptor.hpp"
+#include "Vulkan/Image.hpp"
+#include "Vulkan/Pipeline.hpp"
+#include "Vulkan/ShaderObject.hpp"
+#include "Vulkan/SwapChain.hpp"
 
 #include <iostream>
 
 celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTexturesInShader, uint32_t maxQuadsPerBatch)
-	: render(render), descriptors(std::make_unique<Descriptor>()), MAX_TEXTURES_IN_SHADER(maxTexturesInShader),
+	: render(render), descriptors(std::make_unique<vk::Descriptor>()), MAX_TEXTURES_IN_SHADER(maxTexturesInShader),
 	  MAX_QUAD_COUNT(maxQuadsPerBatch), MAX_VERTEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u),
 	  MAX_INDEX_COUNT_PER_BATCH(maxQuadsPerBatch * 4u * 6u)
 {
@@ -20,7 +20,7 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 
 	quadBuffer.resize(MAX_VERTEX_COUNT_PER_BATCH);
 
-	RawMesh tempMesh;
+	vk::RawMesh tempMesh;
 	tempMesh.vertices.resize(MAX_VERTEX_COUNT_PER_BATCH);
 	tempMesh.indices.resize(MAX_INDEX_COUNT_PER_BATCH);
 
@@ -38,33 +38,33 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 		offset += 4;
 	}
 
-	info.mesh = buffer::createMesh(tempMesh);
+	info.mesh = vk::buffer::createMesh(tempMesh);
 	// info.descriptors = set;
 
 	textures[0] = render.image->defaultTexture.imageView;
 	// descriptors->addBinding(0, DescriptorType::BINDLESS_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_IN_SHADER,
 	// MAX_TEXTURES_IN_SHADER);
 
-	descriptors->addBinding(0, DescriptorType::BINDLESS_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
+	descriptors->addBinding(0, vk::DescriptorType::BINDLESS_IMAGE, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// descriptors->flushWrites();
 	descriptors->build();
 	info.layout = descriptors->getLayout();
 
 	// descriptors->build(info.descriptors, info.layout); // INFO.DESCRIPTORS ON NULL?
 
-	ShaderObject shader;
+	vk::ShaderObject shader;
 	shader.loadShader(nullptr, ShaderType::VERTEX_SHADER, RenderGroup::SPRITE_BATCH, true);
 	shader.loadShader(nullptr, ShaderType::FRAGMENT_SHADER, RenderGroup::SPRITE_BATCH, true);
-	shader.createPushConstants<PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
+	shader.createPushConstants<vk::PUSH_CONSTANTS>(0, ShaderType::VERTEX_SHADER);
 
-	PipelineOptions options{};
+	vk::PipelineOptions options{};
 	options.blending = true;
 
-	Pipeline pipeline;
+	vk::Pipeline pipeline;
 	pipeline.createColorBlendAttachment(options.blending);
-	pipeline.createInputAssembly(DrawingMode::TRIANGLE);
+	pipeline.createInputAssembly(vk::DrawingMode::TRIANGLE);
 	pipeline.createMultisampling();
-	pipeline.createRasterizer(DrawingMode::TRIANGLE);
+	pipeline.createRasterizer(vk::DrawingMode::TRIANGLE);
 	pipeline.createScissors({0, 0}, render.swapChain->extent);
 	pipeline.createViewport({0, 0},
 	  {static_cast<float>(render.swapChain->extent.width), static_cast<float>(render.swapChain->extent.height)});
@@ -81,7 +81,7 @@ celestia::BatchSpriteRender::BatchSpriteRender(Render& render, uint32_t maxTextu
 	pipeline.createVertexInputStateCreateInfo(attributeDescriptions, bindingDescription, 1);
 
 	info.material =
-	  pipeline.createPipeline(shader, DrawingMode::TRIANGLE, &info.layout, render.swapChain->getRenderPass());
+	  pipeline.createPipeline(shader, vk::DrawingMode::TRIANGLE, &info.layout, render.swapChain->getRenderPass());
 }
 
 // clean everything
@@ -103,14 +103,13 @@ void celestia::BatchSpriteRender::endBatch()
 {
 	// vertex buffer updateing..
 	size_t size = vertexCount * sizeof(VertexBatch);
-	buffer::updateBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
+	vk::buffer::updateBuffer(info.mesh->vertexBuffer, 0, size, quadBuffer.data());
 }
 
 // the real draw command in nutshell...
 void celestia::BatchSpriteRender::flush()
 {
-	descriptors->updateTexture(
-	  0, textures, render.image->textureSampler, textureSlotIndex, render.currentFrame);
+	descriptors->updateTexture(0, textures, render.image->textureSampler, textureSlotIndex, render.currentFrame);
 	descriptors->flushWrites();
 
 	info.descriptor = descriptors->getDescriptorSet(render.currentFrame);
@@ -156,7 +155,7 @@ void celestia::BatchSpriteRender::drawQuad(const Vec2& position, const Vec2& siz
 	indexCount += 6;
 }
 
-void celestia::BatchSpriteRender::drawQuad(const VertexPositions* quad, const RawTexture* texture)
+void celestia::BatchSpriteRender::drawQuad(const VertexPositions* quad, const vk::RawTexture* texture)
 {
 	if(quad == nullptr)
 	{
@@ -218,13 +217,13 @@ void celestia::BatchSpriteRender::drawQuad(const VertexPositions* quad, const Ra
 	indexCount += 6;
 }
 
-celestia::Material celestia::BatchSpriteRender::getMaterial() const
+celestia::vk::Material celestia::BatchSpriteRender::getMaterial() const
 {
 	return info.material;
 }
 
-celestia::FullDescriptorSet celestia::BatchSpriteRender::getDescriptors()
+celestia::vk::FullDescriptorSet celestia::BatchSpriteRender::getDescriptors()
 {
-	FullDescriptorSet output{info.descriptor, info.layout};
+	vk::FullDescriptorSet output{info.descriptor, info.layout};
 	return output;
 }

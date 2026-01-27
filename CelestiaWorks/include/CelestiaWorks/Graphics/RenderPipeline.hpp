@@ -5,13 +5,32 @@
 namespace celestia
 {
 
+	struct PipelineState
+	{
+
+	};
+
+
+
+
+
 	/**
 	 * @brief Render options.
 	 * Defines how things are in the pipeline, what shaders to use
 	 */
 
-	struct RenderPipeline
+	class RenderPipeline
 	{
+	public:
+		RenderPipeline(const Texture* texture, const ShaderProgram* shader)
+			: texture(texture), shader(shader)
+		{
+
+		}
+
+
+
+	//private:
 		const Texture* texture;
 		const ShaderProgram* shader;
 	};

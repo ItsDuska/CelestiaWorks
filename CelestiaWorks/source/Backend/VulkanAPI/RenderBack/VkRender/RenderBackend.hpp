@@ -1,15 +1,19 @@
 #pragma once
 #include <memory>
-#include "Backend/VulkanAPI/Core/CelestiaVulkanTypes.hpp"
+#include "Vulkan/CelestiaVulkanTypes.hpp"
 #include <chrono>
 
 namespace celestia
 {
-	class Device;
-	class SwapChain;
-	class Pipeline;
+	namespace vk
+	{
+		class Device;
+		class SwapChain;
+		class Pipeline;
+		class Image;
+	} // namespace vk
+
 	class Window;
-	class Image;
 	class RenderTarget;
 
 	class Render
@@ -20,7 +24,7 @@ namespace celestia
 		Render& operator=(const Render&) = delete;
 		~Render();
 
-		void submitIndexedDraw(DrawInfo& info);
+		void submitIndexedDraw(vk::DrawInfo& info);
 		void beginRendering();
 		void endRendering();
 		void setClearColor(Color& color);
@@ -38,9 +42,9 @@ namespace celestia
 		friend class TextRender;
 		friend class DefaultSingleRenderer;
 
-		std::unique_ptr<Device> device;
-		std::unique_ptr<SwapChain> swapChain;
-		std::unique_ptr<Image> image;
+		std::unique_ptr<vk::Device> device;
+		std::unique_ptr<vk::SwapChain> swapChain;
+		std::unique_ptr<vk::Image> image;
 
 		std::vector<VkCommandBuffer> commandBuffers;
 		VkCommandBuffer offscreenCommandBuffer; // Separate command buffer for offscreen rendering
@@ -50,7 +54,7 @@ namespace celestia
 		bool rendering;
 		bool hasBindedTEMP;
 		Vec4 clearColor;
-		PUSH_CONSTANTS constants;
+		vk::PUSH_CONSTANTS constants;
 
 		RenderTarget* activeRenderTarget = nullptr;
 		bool isOffscreenRendering = false; // Track if we're doing offscreen rendering

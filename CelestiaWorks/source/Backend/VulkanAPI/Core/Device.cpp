@@ -1,4 +1,4 @@
-#include "Device.hpp"
+#include "Vulkan/Device.hpp"
 
 #ifdef _WIN32
 #include "Windows.h"
@@ -19,7 +19,7 @@ const std::vector<const char*> validationLayers = {
 const std::vector<const char*> deviceExtensions = {
   VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_MAINTENANCE3_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
 
-celestia::Device::Device()
+celestia::vk::Device::Device()
 {
 	createInstance();
 #ifdef ENABLE_VALIDATION_LAYER
@@ -31,7 +31,7 @@ celestia::Device::Device()
 	createAllocator();
 }
 
-celestia::Device::~Device()
+celestia::vk::Device::~Device()
 {
 	// deletionQueue.flush();
 	vmaDestroyAllocator(context.allocator);
@@ -46,12 +46,12 @@ celestia::Device::~Device()
 	vkDestroyInstance(instance, nullptr);
 }
 
-celestia::SwapChainSupportDetails celestia::Device::getSwapChainSupport()
+celestia::vk::SwapChainSupportDetails celestia::vk::Device::getSwapChainSupport()
 {
 	return querySwapChainSupport(context.physicalDevice);
 }
 
-void celestia::Device::destroyDebugUtilsMessengerEXT(
+void celestia::vk::Device::destroyDebugUtilsMessengerEXT(
   VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 {
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -62,7 +62,7 @@ void celestia::Device::destroyDebugUtilsMessengerEXT(
 	}
 }
 
-void celestia::Device::createInstance()
+void celestia::vk::Device::createInstance()
 {
 #ifdef ENABLE_VALIDATION_LAYER
 	if(!supportLayers())
@@ -109,7 +109,7 @@ void celestia::Device::createInstance()
 	}
 }
 
-void celestia::Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+void celestia::vk::Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -123,7 +123,7 @@ void celestia::Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCre
 	createInfo.pUserData = nullptr;
 }
 
-void celestia::Device::createDebugMessenger()
+void celestia::vk::Device::createDebugMessenger()
 {
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);
@@ -134,7 +134,7 @@ void celestia::Device::createDebugMessenger()
 	}
 }
 
-void celestia::Device::createSurface()
+void celestia::vk::Device::createSurface()
 {
 	PlatformWindow* window = WindowContext::get();
 
@@ -165,7 +165,7 @@ void celestia::Device::createSurface()
 #endif
 }
 
-void celestia::Device::createDevice()
+void celestia::vk::Device::createDevice()
 {
 	pickPhysicalDevice();
 
@@ -225,7 +225,7 @@ void celestia::Device::createDevice()
 	vkGetDeviceQueue(context.device, indices.presentFamily.value(), 0, &context.presentQueue);
 }
 
-void celestia::Device::createCommandPool()
+void celestia::vk::Device::createCommandPool()
 {
 	QueueFamilyIndices queueFamilyIndices = findQueueFamilies(context.physicalDevice);
 
@@ -241,7 +241,7 @@ void celestia::Device::createCommandPool()
 	}
 }
 
-void celestia::Device::createAllocator()
+void celestia::vk::Device::createAllocator()
 {
 	VmaAllocatorCreateInfo allocatorInfo = {};
 	allocatorInfo.physicalDevice = context.physicalDevice;
@@ -250,7 +250,7 @@ void celestia::Device::createAllocator()
 	vmaCreateAllocator(&allocatorInfo, &context.allocator);
 }
 
-VkResult celestia::Device::createDebugUtilsMessengerEXT(VkInstance instance,
+VkResult celestia::vk::Device::createDebugUtilsMessengerEXT(VkInstance instance,
   const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator,
   VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
@@ -266,9 +266,9 @@ VkResult celestia::Device::createDebugUtilsMessengerEXT(VkInstance instance,
 	}
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL celestia::Device::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-  VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-  void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL celestia::vk::Device::debugCallback(
+  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType,
+  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 #ifdef _WIN32
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -284,7 +284,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL celestia::Device::debugCallback(VkDebugUtilsMessa
 	return VK_FALSE;
 }
 
-bool celestia::Device::supportLayers()
+bool celestia::vk::Device::supportLayers()
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -315,7 +315,7 @@ bool celestia::Device::supportLayers()
 	return true;
 }
 
-void celestia::Device::supportedExtensions()
+void celestia::vk::Device::supportedExtensions()
 {
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -336,7 +336,7 @@ void celestia::Device::supportedExtensions()
 #endif // ENABLE_VALIDATION_LAYER
 }
 
-std::vector<const char*> celestia::Device::getExtensions() // VK_EXT_DESCRIPTOR_INDEXING_EXTENSION
+std::vector<const char*> celestia::vk::Device::getExtensions() // VK_EXT_DESCRIPTOR_INDEXING_EXTENSION
 {
 	std::vector<const char*> extensions = {
 	  VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
@@ -355,7 +355,7 @@ std::vector<const char*> celestia::Device::getExtensions() // VK_EXT_DESCRIPTOR_
 	return extensions;
 }
 
-bool celestia::Device::checkDeviceExtensionSupport(VkPhysicalDevice device)
+bool celestia::vk::Device::checkDeviceExtensionSupport(VkPhysicalDevice device)
 {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -373,7 +373,7 @@ bool celestia::Device::checkDeviceExtensionSupport(VkPhysicalDevice device)
 	return requiredExtensions.empty();
 }
 
-bool celestia::Device::isDeviceSuitable(VkPhysicalDevice device)
+bool celestia::vk::Device::isDeviceSuitable(VkPhysicalDevice device)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -398,7 +398,7 @@ bool celestia::Device::isDeviceSuitable(VkPhysicalDevice device)
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-void celestia::Device::pickPhysicalDevice()
+void celestia::vk::Device::pickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -430,7 +430,7 @@ void celestia::Device::pickPhysicalDevice()
 	}
 }
 
-celestia::QueueFamilyIndices celestia::Device::findQueueFamilies(VkPhysicalDevice device)
+celestia::vk::QueueFamilyIndices celestia::vk::Device::findQueueFamilies(VkPhysicalDevice device)
 {
 	QueueFamilyIndices indices;
 	uint32_t queueFamilyCount = 0;
@@ -467,7 +467,7 @@ celestia::QueueFamilyIndices celestia::Device::findQueueFamilies(VkPhysicalDevic
 	return indices;
 }
 
-celestia::SwapChainSupportDetails celestia::Device::querySwapChainSupport(VkPhysicalDevice device)
+celestia::vk::SwapChainSupportDetails celestia::vk::Device::querySwapChainSupport(VkPhysicalDevice device)
 {
 	SwapChainSupportDetails details;
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, context.surface, &details.capabilities);
@@ -494,17 +494,17 @@ celestia::SwapChainSupportDetails celestia::Device::querySwapChainSupport(VkPhys
 	return details;
 }
 
-bool celestia::QueueFamilyIndices::isComplete()
+bool celestia::vk::QueueFamilyIndices::isComplete()
 {
 	return graphicsFamily.has_value() && presentFamily.has_value();
 }
 
-void celestia::DeletionQueue::pushFunction(std::function<void()>&& function)
+void celestia::vk::DeletionQueue::pushFunction(std::function<void()>&& function)
 {
 	deletors.push_back(function);
 }
 
-void celestia::DeletionQueue::flush()
+void celestia::vk::DeletionQueue::flush()
 {
 	for(auto it = deletors.rbegin(); it != deletors.rend(); it++)
 	{

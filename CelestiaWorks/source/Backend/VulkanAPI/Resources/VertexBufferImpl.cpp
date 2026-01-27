@@ -1,6 +1,6 @@
 #include "VertexBufferImpl.hpp"
-#include "Backend/VulkanAPI/Core/Device.hpp"
-#include "Backend/VulkanAPI/Core/Buffer.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/Buffer.hpp"
 #include "Backend/Utils/IndexBufferGenerator.hpp"
 
 static VkBufferUsageFlags CelestiaUsageToVk(celestia::Usage usage)
@@ -28,7 +28,7 @@ celestia::VertexBufferImpl::VertexBufferImpl()
 void celestia::VertexBufferImpl::create(Vertex* vertices, size_t vertexCount, DrawType drawType, Usage usage)
 {
 	mesh.vertexBufferSize = vertexCount * sizeof(Vertex);
-	this->mesh.vertexBuffer = buffer::createVertexBuffer(vertices, mesh.vertexBufferSize, CelestiaUsageToVk(usage));
+	this->mesh.vertexBuffer = vk::buffer::createVertexBuffer(vertices, mesh.vertexBufferSize, CelestiaUsageToVk(usage));
 
 	if(usage == Usage::STATIC_INDEXED || usage == Usage::STREAM_INDEXED)
 	{
@@ -36,7 +36,7 @@ void celestia::VertexBufferImpl::create(Vertex* vertices, size_t vertexCount, Dr
 		std::vector<uint16_t> indicies = createIndexBufferForDrawType(vertexCount, drawType);
 
 		mesh.indexBufferSize = indicies.size() * sizeof(uint16_t);
-		this->mesh.indexBuffer = buffer::createIndexBuffer(indicies.data(), mesh.indexBufferSize);
+		this->mesh.indexBuffer = vk::buffer::createIndexBuffer(indicies.data(), mesh.indexBufferSize);
 	}
 }
 
@@ -48,14 +48,14 @@ void celestia::VertexBufferImpl::freeBuffers() const
 		return;
 	}
 
-	vkDestroyBuffer(Device::context.device, mesh.vertexBuffer.buffer, nullptr);
+	vkDestroyBuffer(vk::Device::context.device, mesh.vertexBuffer.buffer, nullptr);
 	if(mesh.indexBuffer.buffer != nullptr)
 	{
-		vkDestroyBuffer(Device::context.device, mesh.indexBuffer.buffer, nullptr);
+		vkDestroyBuffer(vk::Device::context.device, mesh.indexBuffer.buffer, nullptr);
 	}
 }
 
-celestia::Mesh* celestia::VertexBufferImpl::getBufferPairPtr()
+celestia::vk::Mesh* celestia::VertexBufferImpl::getBufferPairPtr()
 {
 	return &mesh;
 }

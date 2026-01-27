@@ -1,6 +1,7 @@
 #include "Graphics/Sprite.hpp"
 #include "Backend/VulkanAPI/RenderBack/RendererHandler.hpp"
 #include "Graphics/Texture.hpp"
+#include "Vulkan/CelestiaVulkanTypes.hpp"
 
 celestia::Sprite::Sprite(Vec2 position, Vec2 size) : texture(nullptr), textureRect({})
 {
@@ -81,7 +82,8 @@ const celestia::VertexPositions* celestia::Sprite::getQuad() const
 
 void celestia::Sprite::draw(const RendererHandler& renderer, RenderPipeline* pipeline) const
 {
-	renderer.drawSprite(quad, texture->getRawTexturePtr());
+	const vk::RawTexture* rawText = texture->getRawTexturePtr();
+	renderer.drawSprite(quad, rawText);
 }
 
 void celestia::Sprite::updateQuadPosition()

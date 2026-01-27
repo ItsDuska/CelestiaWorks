@@ -6,7 +6,10 @@
 namespace celestia
 {
 	class Window;
-	class Descriptor;
+	namespace vk
+	{
+		class Descriptor;
+	}
 
 	class BatchSpriteRender
 	{
@@ -21,21 +24,21 @@ namespace celestia
 
 		void drawQuad(const Vec2& position, const Vec2& size, const Vec3& color);
 
-		void drawQuad(const VertexPositions* quad, const RawTexture* texture);
+		void drawQuad(const VertexPositions* quad, const vk::RawTexture* texture);
 
-		Material getMaterial() const;
-		FullDescriptorSet getDescriptors();
+		vk::Material getMaterial() const;
+		vk::FullDescriptorSet getDescriptors();
 
 	private:
 		Render& render;
-		DrawInfo info;
+		vk::DrawInfo info;
 
 		std::vector<VertexBatch> quadBuffer;
 		int vertexCount;
 		int indexCount;
 		std::array<int, NUMBER_OF_TEXTURE_IN_SHADER> textureSlots;
 		VkImageView textures[NUMBER_OF_TEXTURE_IN_SHADER]{};
-		std::unique_ptr<Descriptor> descriptors;
+		std::unique_ptr<vk::Descriptor> descriptors;
 		VkDescriptorSet descriptorSets[MAX_FRAMES_IN_FLIGHT]; // Store descriptor sets for each frame
 		int textureSlotIndex;
 

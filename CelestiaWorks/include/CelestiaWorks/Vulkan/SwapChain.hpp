@@ -2,8 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-
-namespace celestia
+namespace celestia::vk
 {
 	class Device;
 	class Window;
@@ -14,7 +13,7 @@ namespace celestia
 		SwapChain(Device& device);
 		~SwapChain();
 		SwapChain(const SwapChain&) = delete;
-		SwapChain& operator = (const SwapChain&) = delete;
+		SwapChain& operator=(const SwapChain&) = delete;
 
 		void recreateSwapChain();
 		VkRenderPass getRenderPass();
@@ -23,8 +22,10 @@ namespace celestia
 		VkFence& getInFlightFence(int index);
 		VkSwapchainKHR& getSwapchain();
 		VkFramebuffer getFrameBuffer(int index);
+
 	public:
 		VkExtent2D extent;
+
 	private:
 		void createSwapChain();
 		void createImageViews();
@@ -35,8 +36,9 @@ namespace celestia
 
 		VkImageView createImageView(VkImage image, VkFormat format);
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-		VkPresentModeKHR chooseSwapPresentMode(const std::vector < VkPresentModeKHR>& availablePresentModes);
+		VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
 	private:
 		Device& device;
 		VkSwapchainKHR swapChain;
@@ -50,4 +52,4 @@ namespace celestia
 		std::vector<VkSemaphore> renderFinishedSemaphores;
 		std::vector<VkFence> inFlightFences;
 	};
-}
+} // namespace celestia::vk

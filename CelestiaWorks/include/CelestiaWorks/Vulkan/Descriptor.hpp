@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace celestia
+namespace celestia::vk
 {
 
 	enum class DescriptorType
@@ -87,4 +87,4 @@ namespace celestia
 		bool isBuilt;
 	};
 
-} // namespace celestia
+} // namespace celestia::vk

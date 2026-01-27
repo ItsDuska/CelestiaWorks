@@ -1,7 +1,7 @@
-#include "FrameBuffer.hpp"
-#include "Backend/VulkanAPI/Core/CelestiaVulkanTypes.hpp"
-#include "Device.hpp"
-#include "Image.hpp"
+#include "Vulkan/FrameBuffer.hpp"
+#include "Vulkan/CelestiaVulkanTypes.hpp"
+#include "Vulkan/Device.hpp"
+#include "Vulkan/Image.hpp"
 #include "System/Vector.hpp"
 
 #include <exception>
@@ -12,7 +12,7 @@
 
 namespace celestia
 {
-	FrameBuffer::FrameBuffer(Vec2i size, bool hasDepthBuffer, VkFormat colorFormat)
+	vk::FrameBuffer::FrameBuffer(Vec2i size, bool hasDepthBuffer, VkFormat colorFormat)
 		: size(size), colorFormat(colorFormat), hasDepth(hasDepthBuffer), renderPass(VK_NULL_HANDLE),
 		  frameBuffer(VK_NULL_HANDLE)
 	{
@@ -20,12 +20,12 @@ namespace celestia
 		init();
 	}
 
-	FrameBuffer::~FrameBuffer()
+	vk::FrameBuffer::~FrameBuffer()
 	{
 		cleanup();
 	}
 
-	void FrameBuffer::beginRenderPass(VkCommandBuffer cmdBuffer, const Vec4& clearColor)
+	void vk::FrameBuffer::beginRenderPass(VkCommandBuffer cmdBuffer, const Vec4& clearColor)
 	{
 		std::array<VkClearValue, 2> clearValues{};
 		clearValues[0].color = {{clearColor.x, clearColor.y, clearColor.z, clearColor.w}};
@@ -48,12 +48,12 @@ namespace celestia
 		vkCmdBeginRenderPass(cmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
 
-	void FrameBuffer::endRenderPass(VkCommandBuffer cmdBuffer)
+	void vk::FrameBuffer::endRenderPass(VkCommandBuffer cmdBuffer)
 	{
 		vkCmdEndRenderPass(cmdBuffer);
 	}
 
-	void FrameBuffer::createRenderPass()
+	void vk::FrameBuffer::createRenderPass()
 	{
 		std::vector<VkAttachmentDescription> attachments;
 		std::vector<VkAttachmentReference> colorRefs;
@@ -149,7 +149,7 @@ namespace celestia
 		}
 	}
 
-	void FrameBuffer::createColorTexture()
+	void vk::FrameBuffer::createColorTexture()
 	{
 		Image::createImage(size, colorFormat, VK_IMAGE_TILING_OPTIMAL,
 		  VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -161,7 +161,7 @@ namespace celestia
 		  colorTexture.allocatedImage.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 	}
 
-	void FrameBuffer::createDepthTexture()
+	void vk::FrameBuffer::createDepthTexture()
 	{
 		Image::createImage(size, depthFormat, VK_IMAGE_TILING_OPTIMAL,
 		  VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -174,7 +174,7 @@ namespace celestia
 		  VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 	}
 
-	void FrameBuffer::createFramebuffer()
+	void vk::FrameBuffer::createFramebuffer()
 	{
 		std::vector<VkImageView> attachments;
 		attachments.push_back(colorTexture.imageView);
@@ -199,10 +199,10 @@ namespace celestia
 		}
 	}
 
-	void FrameBuffer::cleanup()
+	void vk::FrameBuffer::cleanup()
 	{
 		vkDeviceWaitIdle(Device::context.device);
-		
+
 		if(frameBuffer != VK_NULL_HANDLE)
 		{
 			vkDestroyFramebuffer(Device::context.device, frameBuffer, nullptr);
@@ -223,7 +223,7 @@ namespace celestia
 		}
 	}
 
-	void FrameBuffer::init()
+	void vk::FrameBuffer::init()
 	{
 		try
 		{
@@ -242,7 +242,7 @@ namespace celestia
 		}
 	}
 
-	void FrameBuffer::resize(Vec2i newSize)
+	void vk::FrameBuffer::resize(Vec2i newSize)
 	{
 		cleanup();
 		size = newSize;
